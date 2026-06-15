@@ -153,13 +153,21 @@ As of 0.21, the render pipeline is the engine's `createRenderer`, not a site-own
 processor. `render.ts` calls `createRenderer(ecxcRegistry, { stagger: true, sanitizeSchema:
 ecSanitizeSchema })` once and re-exports its `renderMarkdown`; `markdownToHtml(md, opts)` in
 `utils.ts` is a thin delegate that threads the optional `resolve` (the `cairn:` link resolver)
-through. The seven directive components (`card/grid/alert/cta/split/panel/passage`) live in
+through. The directive components live in
 `components.ts` as `ComponentDef`s with the `build(ctx)` slot model: each reads `ctx.slot('title')`,
 `ctx.slot('body')`, and declared `ctx.attributes` (an `icon` attribute of `type: 'icon'`, a `role`
 select), and arranges kit markup with `hastscript`. A local `head(ctx)` helper rebuilds the
 icon-plus-heading row the removed `splitHead` used to return. A caution alert with no explicit icon
 defaults to the `warning` glyph inside `buildAlert`. The icon path data is the adapter's
 `icons: ICON_PATHS` (`icons.ts`), an `IconSet`.
+
+**Picker metadata (cairn 0.56.2).** Each `ComponentDef` also declares the optional picker fields the
+0.56.2 component system reads: an `icon` glyph and a `group` for the insert catalog, a structured
+`preview` sample that opts the guided form into the two-pane live preview (the configured component
+rendered through this site's own pipeline), and `hidden` on the four nested-only components
+(`panel/program/day/zone`), which keeps them out of the top-level catalog while leaving them
+round-trip-editable. The `href` attribute carries a `pattern`, so a mistyped program link is caught
+in the form.
 
 **Sanitize: one engine floor, extended.** The engine applies `rehype-sanitize` by default inside
 `createRenderer`, after `rehype-raw` and before the component dispatch, so the built directive markup

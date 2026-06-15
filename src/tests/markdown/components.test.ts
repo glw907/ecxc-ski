@@ -43,4 +43,36 @@ describe('ecxcRegistry', () => {
 		expect(html).toContain('<aside class="ec-aside"');
 		expect(html).not.toContain('<h2');
 	});
+
+	it('gives every component a group, an icon, and a preview', () => {
+		for (const def of ecxcRegistry.defs) {
+			expect(def.group, `${def.name} group`).toBeTruthy();
+			expect(def.icon, `${def.name} icon`).toBeTruthy();
+			expect(def.preview, `${def.name} preview`).toBeTruthy();
+		}
+	});
+
+	it('hides exactly the four nested-only components from the catalog', () => {
+		const hidden = ecxcRegistry.defs.filter((d) => d.hidden).map((d) => d.name);
+		expect(hidden.sort()).toEqual(['day', 'panel', 'program', 'zone']);
+	});
+
+	it('only references declared attributes and slots in every preview', () => {
+		for (const def of ecxcRegistry.defs) {
+			const declaredAttrs = new Set((def.attributes ?? []).map((a) => a.key));
+			for (const key of Object.keys(def.preview?.attributes ?? {})) {
+				expect(declaredAttrs.has(key), `${def.name} preview attr ${key}`).toBe(true);
+			}
+			const declaredSlots = new Set((def.slots ?? []).map((s) => s.name));
+			for (const name of Object.keys(def.preview?.slots ?? {})) {
+				expect(declaredSlots.has(name), `${def.name} preview slot ${name}`).toBe(true);
+			}
+		}
+	});
+
+	it('validates the program href pattern', () => {
+		const program = ecxcRegistry.get('program');
+		const href = program?.attributes?.find((a) => a.key === 'href');
+		expect(href?.pattern?.source).toBe('^(#|/|cairn:|https?://)');
+	});
 });

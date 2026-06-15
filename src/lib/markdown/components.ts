@@ -317,7 +317,15 @@ function buildSplit(ctx: Ctx): Element {
 
 const ICON_ATTR = { key: 'icon', label: 'Icon', type: 'icon' as const };
 const ROLE_ATTR = { key: 'role', label: 'Role', type: 'select' as const, options: ['primary', 'secondary'] };
-const HREF_ATTR = { key: 'href', label: 'Link', type: 'text' as const };
+const HREF_ATTR = {
+	key: 'href',
+	label: 'Link',
+	type: 'text' as const,
+	pattern: {
+		source: '^(#|/|cairn:|https?://)',
+		message: 'Use an anchor (#id), a path (/page), a cairn: link, or a full URL.',
+	},
+};
 const META_ATTR = { key: 'meta', label: 'Meta line', type: 'text' as const };
 const CTA_ATTR = { key: 'cta', label: 'Link label', type: 'text' as const };
 const KIND_ATTR = { key: 'kind', label: 'Kind', type: 'select' as const, options: ['group', 'solo', 'rest'] };
@@ -335,6 +343,9 @@ const components: ComponentDef[] = [
 		build: buildCard,
 		attributes: [ICON_ATTR, ROLE_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Cards',
+		icon: 'info',
+		preview: { attributes: { icon: 'flag' }, slots: { title: 'Title', body: 'Body copy.' } },
 	},
 	{
 		name: 'grid',
@@ -344,6 +355,9 @@ const components: ComponentDef[] = [
 		build: buildGrid,
 		attributes: [ICON_ATTR, ROLE_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Cards',
+		icon: 'path',
+		preview: { attributes: { icon: 'path' }, slots: { title: 'Title', body: '- Item one\n- Item two' } },
 	},
 	{
 		name: 'alert',
@@ -353,6 +367,9 @@ const components: ComponentDef[] = [
 		build: buildAlert,
 		attributes: [ICON_ATTR, { key: 'role', label: 'Role', type: 'select', required: true, options: ['caution'] }],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Callouts',
+		icon: 'warning',
+		preview: { attributes: { role: 'caution' }, slots: { title: 'Heads up', body: 'What to watch for.' } },
 	},
 	{
 		name: 'cta',
@@ -363,6 +380,12 @@ const components: ComponentDef[] = [
 		build: buildCta,
 		attributes: [ICON_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Cards',
+		icon: 'flag',
+		preview: {
+			attributes: { icon: 'flag' },
+			slots: { title: 'Get started', body: '<a class="download-link" href="#">Sign up</a>' },
+		},
 	},
 	{
 		name: 'split',
@@ -372,6 +395,14 @@ const components: ComponentDef[] = [
 			'::::split[Title]\n:::panel{icon="hand-coins"}\nFirst panel.\n:::\n\n:::panel{icon="handshake"}\nSecond panel.\n:::\n::::',
 		build: buildSplit,
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Cards',
+		icon: 'handshake',
+		preview: {
+			slots: {
+				title: 'Title',
+				body: ':::panel{icon="hand-coins"}\nFirst panel.\n:::\n\n:::panel{icon="handshake"}\nSecond panel.\n:::',
+			},
+		},
 	},
 	{
 		name: 'panel',
@@ -381,6 +412,10 @@ const components: ComponentDef[] = [
 		build: buildPanel,
 		attributes: [ICON_ATTR, ROLE_ATTR],
 		slots: [BODY_SLOT],
+		group: 'Cards',
+		icon: 'hand-coins',
+		hidden: true,
+		preview: { attributes: { icon: 'hand-coins' }, slots: { body: 'Panel content.' } },
 	},
 	{
 		name: 'passage',
@@ -390,6 +425,9 @@ const components: ComponentDef[] = [
 		build: buildPassage,
 		attributes: [ICON_ATTR, ROLE_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Callouts',
+		icon: 'compass',
+		preview: { attributes: { icon: 'compass' }, slots: { title: 'Title', body: 'Body copy.' } },
 	},
 	{
 		name: 'aside',
@@ -399,6 +437,9 @@ const components: ComponentDef[] = [
 		build: buildAside,
 		attributes: [{ key: 'id', label: 'Anchor id', type: 'text' }],
 		slots: [OPTIONAL_TITLE_SLOT, BODY_SLOT],
+		group: 'Callouts',
+		icon: 'chat-circle',
+		preview: { slots: { title: 'Term', body: 'A short definition or note.' } },
 	},
 	{
 		name: 'section',
@@ -409,6 +450,12 @@ const components: ComponentDef[] = [
 		build: buildSection,
 		attributes: [ICON_ATTR, ROLE_ATTR, META_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Page structure',
+		icon: 'flag',
+		preview: {
+			attributes: { icon: 'path', meta: 'Eyebrow' },
+			slots: { title: 'Section title', body: 'Section content, including other directives.' },
+		},
 	},
 	{
 		name: 'programs',
@@ -418,6 +465,13 @@ const components: ComponentDef[] = [
 			'::::programs\n:::program[Summer training]{icon="path" href="#summer-training" meta="Jun–Aug" cta="See summer training"}\nWhat it is.\n:::\n\n:::program[Talkeetna camp]{icon="tent" href="#talkeetna-camp" meta="July" cta="See the camp" role="secondary"}\nWhat it is.\n:::\n::::',
 		build: buildPrograms,
 		slots: [BODY_SLOT],
+		group: 'Page structure',
+		icon: 'users-three',
+		preview: {
+			slots: {
+				body: ':::program[Summer training]{icon="path" href="#summer-training" meta="Jun–Aug" cta="See summer training"}\nWhat it is.\n:::\n\n:::program[Talkeetna camp]{icon="tent" href="#talkeetna-camp" meta="July" cta="See the camp" role="secondary"}\nWhat it is.\n:::',
+			},
+		},
 	},
 	{
 		name: 'program',
@@ -427,6 +481,13 @@ const components: ComponentDef[] = [
 		build: buildProgram,
 		attributes: [ICON_ATTR, HREF_ATTR, META_ATTR, CTA_ATTR, ROLE_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Page structure',
+		icon: 'person-simple-run',
+		hidden: true,
+		preview: {
+			attributes: { icon: 'path', href: '#anchor', meta: 'Dates', cta: 'Learn more' },
+			slots: { title: 'Name', body: 'Short blurb.' },
+		},
 	},
 	{
 		name: 'week',
@@ -436,6 +497,13 @@ const components: ComponentDef[] = [
 			'::::week\n:::day[Mon]{kind="group" time="10:30–12:15"}\n**Group practice.** Focus.\n:::\n:::day[Tue]{kind="solo" time="on your own"}\nSolo work.\n:::\n::::',
 		build: buildWeek,
 		slots: [BODY_SLOT],
+		group: 'Page structure',
+		icon: 'calendar-blank',
+		preview: {
+			slots: {
+				body: ':::day[Mon]{kind="group" time="10:30–12:15"}\n**Group practice.** Focus.\n:::\n:::day[Tue]{kind="solo" time="on your own"}\nSolo work.\n:::',
+			},
+		},
 	},
 	{
 		name: 'day',
@@ -445,6 +513,13 @@ const components: ComponentDef[] = [
 		build: buildDay,
 		attributes: [KIND_ATTR, TIME_ATTR],
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Page structure',
+		icon: 'calendar-blank',
+		hidden: true,
+		preview: {
+			attributes: { kind: 'group', time: '10:30–12:15' },
+			slots: { title: 'Mon', body: 'Focus for the day.' },
+		},
 	},
 	{
 		name: 'spectrum',
@@ -454,6 +529,11 @@ const components: ComponentDef[] = [
 			'::::spectrum\n:::zone[Group one]\nWho it is for.\n:::\n\n:::zone[Group two]\nWho it is for.\n:::\n::::',
 		build: buildSpectrum,
 		slots: [BODY_SLOT],
+		group: 'Page structure',
+		icon: 'users-three',
+		preview: {
+			slots: { body: ':::zone[Group one]\nWho it is for.\n:::\n\n:::zone[Group two]\nWho it is for.\n:::' },
+		},
 	},
 	{
 		name: 'zone',
@@ -462,6 +542,10 @@ const components: ComponentDef[] = [
 		insertTemplate: ':::zone[Group name]\nWho it is for.\n:::',
 		build: buildZone,
 		slots: [TITLE_SLOT, BODY_SLOT],
+		group: 'Page structure',
+		icon: 'person-simple-run',
+		hidden: true,
+		preview: { slots: { title: 'Group name', body: 'Who it is for.' } },
 	},
 	{
 		name: 'figure',
@@ -470,6 +554,9 @@ const components: ComponentDef[] = [
 		insertTemplate: ':::figure[Caption]\n![Alt text](/images/photo.webp)\n:::',
 		build: buildFigure,
 		slots: [OPTIONAL_TITLE_SLOT, BODY_SLOT],
+		group: 'Media',
+		icon: 'info',
+		preview: { slots: { title: 'Caption', body: '![Alt text](/images/photo.webp)' } },
 	},
 	{
 		name: 'gallery',
@@ -478,6 +565,9 @@ const components: ComponentDef[] = [
 		insertTemplate: ':::gallery[Title]\n![One](/images/one.webp)\n![Two](/images/two.webp)\n:::',
 		build: buildGallery,
 		slots: [OPTIONAL_TITLE_SLOT, BODY_SLOT],
+		group: 'Media',
+		icon: 'info',
+		preview: { slots: { title: 'Title', body: '![One](/images/one.webp)\n![Two](/images/two.webp)' } },
 	},
 	{
 		name: 'checklist',
@@ -487,6 +577,9 @@ const components: ComponentDef[] = [
 		build: buildChecklist,
 		attributes: [{ key: 'cols', label: 'Columns', type: 'select', options: ['1', '2'] }],
 		slots: [BODY_SLOT],
+		group: 'Lists',
+		icon: 'backpack',
+		preview: { slots: { body: '- First item\n- Second item' } },
 	},
 	{
 		name: 'faq',
@@ -495,6 +588,9 @@ const components: ComponentDef[] = [
 		insertTemplate: '::::faq\n- **A question?** The answer.\n- **Another?** The answer.\n::::',
 		build: buildFaq,
 		slots: [BODY_SLOT],
+		group: 'Lists',
+		icon: 'question',
+		preview: { slots: { body: '- **A question?** The answer.\n- **Another?** The answer.' } },
 	},
 ];
 

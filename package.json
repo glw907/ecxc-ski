@@ -34,7 +34,7 @@
     "wrangler": "^4.93.1"
   },
   "dependencies": {
-    "@glw907/cairn-cms": "^0.56.0",
+    "@glw907/cairn-cms": "^0.56.2",
     "gray-matter": "^4",
     "hast-util-sanitize": "^5.0.2",
     "hast-util-to-html": "^9.0.5",

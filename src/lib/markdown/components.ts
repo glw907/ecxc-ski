@@ -227,13 +227,6 @@ function buildSpectrum(ctx: Ctx): Element {
 	return h('div', { className: ['ec-spectrum'] }, [bar, h('div', { className: ['ec-spectrum-zones'] }, zones)]);
 }
 
-function buildFigure(ctx: Ctx): Element {
-	const caption = ctx.slot('title');
-	const kids: ElementContent[] = [...ctx.slot('body')];
-	if (caption.length > 0) kids.push(h('figcaption', {}, caption));
-	return h('figure', { className: ['ec-figure'] }, kids);
-}
-
 function buildGallery(ctx: Ctx): Element {
 	const kids: ElementContent[] = [];
 	if (ctx.slot('title').length > 0)
@@ -546,17 +539,6 @@ const components: ComponentDef[] = [
 		icon: 'person-simple-run',
 		hidden: true,
 		preview: { slots: { title: 'Group name', body: 'Who it is for.' } },
-	},
-	{
-		name: 'figure',
-		label: 'Figure',
-		description: 'A captioned image. The body holds a markdown image; the title is the caption.',
-		insertTemplate: ':::figure[Caption]\n![Alt text](/images/photo.webp)\n:::',
-		build: buildFigure,
-		slots: [OPTIONAL_TITLE_SLOT, BODY_SLOT],
-		group: 'Media',
-		icon: 'info',
-		preview: { slots: { title: 'Caption', body: '![Alt text](/images/photo.webp)' } },
 	},
 	{
 		name: 'gallery',

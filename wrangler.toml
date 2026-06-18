@@ -24,6 +24,12 @@ binding = "AUTH_DB"
 database_name = "cairn-ecxc-auth"
 database_id = "a47c56d2-25ef-4131-a505-8c9fd5a92f1f"
 
+# cairn-cms 0.57+: R2 bucket backing the media library. The /media delivery route streams
+# content-addressed image bytes from here; the adapter's assets block names this binding.
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "ecxc-media"
+
 # cairn-cms 0.36+: ship cairn's structured log events to Workers Logs.
 [observability]
 enabled = true

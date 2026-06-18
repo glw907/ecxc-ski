@@ -1,7 +1,7 @@
 import type { PageServerLoad, EntryGenerator } from './$types';
 import { createPublicRoutes } from '@glw907/cairn-cms/delivery';
 import { site, ORIGIN, SITE_DESCRIPTION } from '$lib/content';
-import { cairn } from '$lib/cairn.config';
+import { cairn, publicMediaResolver } from '$lib/cairn.config';
 
 export const prerender = true;
 
@@ -12,6 +12,9 @@ const routes = createPublicRoutes({
   siteName: cairn.siteName,
   description: SITE_DESCRIPTION,
   feeds: { rss: ORIGIN + '/feed.xml', json: ORIGIN + '/feed.json' },
+  // The same resolver the render path uses, so a frontmatter hero (once adopted) resolves at
+  // delivery. Body media: references resolve through cairn.render above.
+  resolveMedia: publicMediaResolver,
 });
 
 export const entries: EntryGenerator = () => routes.entries();

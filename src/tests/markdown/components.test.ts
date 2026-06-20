@@ -6,17 +6,14 @@ describe('ecxcRegistry', () => {
 	it('registers the primitives in document order', () => {
 		expect(ecxcRegistry.names).toEqual([
 			'card', 'grid', 'alert', 'cta', 'split', 'panel', 'passage', 'aside', 'section',
-			'programs', 'program', 'week', 'day', 'spectrum', 'zone', 'figure', 'gallery',
+			'programs', 'program', 'week', 'day', 'spectrum', 'zone', 'gallery',
 			'checklist', 'faq',
 		]);
 	});
 
-	it('wraps a :::figure body image in a figure with a figcaption', async () => {
-		const html = await renderMarkdown(':::figure[Athletes at East]\n![Athletes warming up](/images/east.webp)\n:::\n');
-		expect(html).toContain('<figure class="ec-figure"');
-		expect(html).toContain('<img');
-		expect(html).toContain('<figcaption>Athletes at East</figcaption>');
-	});
+	// The custom ec-figure component was dropped in the cairn 0.57.0 cutover because cairn reserves the
+	// `figure` directive name (its built-in remarkFigure owns it). No ecxc content uses `:::figure`, and
+	// the engine's figure behavior is covered by cairn's own suite, so the site no longer tests it.
 
 	it('wraps a :::gallery body in an ec-gallery container', async () => {
 		const html = await renderMarkdown(':::gallery[Camp]\n![One](/a.webp)\n![Two](/b.webp)\n:::\n');

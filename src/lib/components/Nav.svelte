@@ -5,15 +5,32 @@
 
   let { onSearchOpen }: { onSearchOpen: () => void } = $props();
 
-  let dark = $state(browser && document.documentElement.getAttribute('data-theme') === 'ecxc-dark');
+  /** The two explicit theme choices; app.css defines both as named DaisyUI themes. */
+  type Theme = 'ecxc' | 'ecxc-dark';
+
+  /**
+   * Resolves the theme the toggle should show: `<html>`'s live `data-theme` if a visitor (or the
+   * app.html head script) already set one, otherwise the current system scheme, so the icon is
+   * correct on first paint even before any explicit choice exists. Only called client-side (the
+   * `browser` guard below), so `document`/`window` are always safe to read here.
+   */
+  function resolveTheme(): Theme {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr === 'ecxc' || attr === 'ecxc-dark') return attr;
+    return matchMedia('(prefers-color-scheme: dark)').matches ? 'ecxc-dark' : 'ecxc';
+  }
+
+  let theme = $state<Theme>(browser ? resolveTheme() : 'ecxc');
+  let dark = $derived(theme === 'ecxc-dark');
   let mobileOpen = $state(false);
 
+  /** Flips the explicit theme, writes it to `<html>` and the persistence cookie (no localStorage;
+   *  the cookie is the one source the app.html no-flash script also reads). */
   function toggleTheme() {
-    dark = !dark;
-    const theme = dark ? 'ecxc-dark' : 'ecxc';
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    document.cookie = `theme=${theme}; max-age=${60 * 60 * 24 * 365}; path=/; SameSite=Lax`;
+    const next: Theme = theme === 'ecxc-dark' ? 'ecxc' : 'ecxc-dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.cookie = `cairn-site-theme=${next}; path=/; max-age=31536000; samesite=lax`;
+    theme = next;
   }
 
   function isActive(href: string): boolean {

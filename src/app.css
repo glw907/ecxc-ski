@@ -1,4 +1,11 @@
 @import "tailwindcss";
+
+/* Nunito, self-hosted via Fontsource so the display face is the real one on first paint
+   (CLS-safe, no third-party font origin). Registers as 'Nunito Variable' below. This @import
+   must precede every other rule (the CSS @import ordering rule Tailwind's own @plugin lines
+   don't carry), so it sits directly under the Tailwind import. */
+@import '@fontsource-variable/nunito/index.css';
+
 @plugin "daisyui" {
   themes: ecxc --default, ecxc-dark --prefersdark;
 }
@@ -55,7 +62,7 @@
 
 @theme {
   --font-body: 'Alegreya Sans', system-ui, sans-serif;
-  --font-display: 'Nunito', system-ui, sans-serif;
+  --font-display: 'Nunito Variable', system-ui, sans-serif;
   --font-mono: 'iA Writer Mono S', ui-monospace, monospace;
   --default-font-family: 'Alegreya Sans', system-ui, sans-serif;
   --default-mono-font-family: 'iA Writer Mono S', ui-monospace, monospace;

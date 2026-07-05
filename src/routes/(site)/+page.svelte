@@ -15,7 +15,7 @@
        the brand on first contact. -->
   <div class="welcome-hero">
     <div class="welcome-photo">
-      <img src="/images/ec-xc-hero.webp" alt="ECXC athletes training" />
+      <img src={data.heroSrc} alt="ECXC athletes training" />
     </div>
     <div class="welcome-panel">
       <h2 class="welcome-heading">

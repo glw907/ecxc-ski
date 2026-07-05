@@ -65,3 +65,17 @@ Site gate green; permalink crawl diff (with the sanctioned redirect deltas); res
 spot-check at 320/1440/2560 beating the live site; local admin smoke prep; CHANGELOG/STATUS;
 the consolidated TEMPLATE + COMPONENT findings report (both rebuilds' harvest, ranked, for
 the morning). **Deploy waits for Geoff.**
+
+## REDO AMENDMENT (Geoff, 2026-07-05 morning): the flexibility test
+
+The first execution deviated to an in-place migration; Geoff ruled the redo AND sharpened
+the purpose: **ecxc is the test of Waymark's design flexibility.** The architecture is now a
+LOCKED CALL, not preamble: Task 1 produces a FRESH Waymark scaffold (the in-place branch
+becomes the transfer source, nothing more). The ecxc identity must be reached through the
+seams — the theme layer (tokens, fonts), site-declared components, and documented extension
+points — with at most surgical, individually-named chrome overrides. Every place the seams
+cannot express the design is a TOP-RANK TEMPLATE FINDING (a missing seam: nav composition,
+header slots, whatever the design demanded). A conformance check runs after Task 1: if the
+scaffold is not demonstrably fresh Waymark, the workflow stops rather than compounds.
+Transfer inventory from the first execution: the 13-component registry, the migrated
+content and vocabulary, the redirects, the waiver fixes, the contact-form port.

@@ -8,7 +8,6 @@
 import { defineAdapter, defineConcept, fieldset, fields, githubApp, parseSiteConfig } from '@glw907/cairn-cms';
 import { normalizeAssets, makeMediaResolver, readCommittedManifest } from '@glw907/cairn-cms/media';
 import { renderMarkdown, registry } from './render.js';
-import { wrapScrollableTables } from './render/table-scroll.js';
 import siteYaml from './site.config.yaml?raw';
 // The ?url import resolves the compiled stylesheets to their served URLs (the hashed assets in a
 // build), so the editor's preview frame can link the same sheets the (site) layout loads. They
@@ -85,15 +84,11 @@ export const cairn = defineAdapter({
   media: { bucketBinding: 'MEDIA_BUCKET' },
   rendering: {
     // The entry-aware render: the editor preview and every public page call this one function.
-    // The default media resolver backs the public build; the preview path injects its own. After
-    // the engine's own renderMarkdown, wrapScrollableTables (the showcase's own post-processing
-    // rehype step, since createRenderer keeps its internal plugin ordering closed) wraps every
-    // bare markdown table in a scrollable, labeled region, so a table never blows out a narrow
-    // viewport (prose.css's .table-scroll class already expects this wrapper).
-    render: async ({ body, resolve, resolveMedia }) => {
-      const html = await renderMarkdown(body, { resolve, resolveMedia: resolveMedia ?? publicMediaResolver });
-      return wrapScrollableTables(html);
-    },
+    // The default media resolver backs the public build; the preview path injects its own.
+    // The site's own table-scroll rehype step is wired into render.ts's createRenderer call (the
+    // engine's rehypePlugins seam), so this delegates straight to renderMarkdown.
+    render: ({ body, resolve, resolveMedia }) =>
+      renderMarkdown(body, { resolve, resolveMedia: resolveMedia ?? publicMediaResolver }),
     components: registry,
   },
   editor: {

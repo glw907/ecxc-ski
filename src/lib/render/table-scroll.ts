@@ -1,16 +1,12 @@
-// The showcase's own post-processing rehype step, run after the engine's renderMarkdown. cairn's
-// public createRenderer keeps its internal remark/rehype plugin ordering closed (rehypeDispatch and
-// the sanitize floor are engine-internal for safety), so a site adds its own render behavior at the
-// boundary: over the HTML string createRenderer already returned, not inside the engine's pipeline.
+// ecxc's own rehype step, composed onto the engine's pipeline through createRenderer's
+// `rehypePlugins` option (render.ts), so it runs on the hast tree cairn already built instead of
+// re-parsing the rendered HTML string.
 //
 // A markdown table renders as a bare `<table>` with no wrapper. `.prose table { display: block;
 // overflow-x: auto }` alone made a narrow viewport scroll a wide table instead of squeezing its
 // columns, but it also strips the table's row/cell display roles from the accessibility tree (a
 // `display: block` table is no longer exposed as a table to a screen reader, in every current
 // engine). The standard fix keeps the table a real table and scrolls a wrapper around it instead.
-import { unified } from 'unified';
-import rehypeParse from 'rehype-parse';
-import rehypeStringify from 'rehype-stringify';
 import { visit, SKIP } from 'unist-util-visit';
 import { toString } from 'hast-util-to-string';
 import type { Root, Element } from 'hast';
@@ -73,16 +69,4 @@ export function rehypeTableScroll() {
       return SKIP;
     });
   };
-}
-
-const processor = unified().use(rehypeParse, { fragment: true }).use(rehypeTableScroll).use(rehypeStringify);
-
-/**
- * Post-process rendered HTML so every table sits inside a scrollable, labeled region. Called from
- *  the site's `rendering.render` after `renderMarkdown`, so it applies to the public build, the
- *  feed, and the editor preview alike, the three callers of the one render function.
- */
-export async function wrapScrollableTables(html: string): Promise<string> {
-  const file = await processor.process(html);
-  return String(file);
 }

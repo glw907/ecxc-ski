@@ -2,16 +2,16 @@
 // half of the CMS: which repo to commit to, the editable concepts and their fieldset, the render
 // the editor preview mirrors, and the GitHub App identity.
 //
-// The component registry is empty for now: the pre-rebuild registry (src/lib/markdown/components.ts,
-// kept in git history at the commit before this one) declared its attributes as a flat array, a shape
-// this package version's ComponentDef no longer accepts (attributes are now a fields.* record). Task 2
-// of the rebuild-from-Waymark plan rationalizes the eighteen legacy directives into Waymark's starter
-// set plus ecxc's own domain components (programs, week/day, spectrum/zone), declared via
-// defineComponent. Until then, an unregistered directive in content renders untouched (raw syntax)
-// rather than failing the build.
-import { defineAdapter, defineConcept, fieldset, fields, githubApp, defineRegistry } from '@glw907/cairn-cms';
+// The component registry is `ecxcRegistry` (src/lib/markdown/components.ts), Task 2 of the
+// rebuild-from-Waymark plan's rationalized directive set: Waymark's `alert`/`cta`/`faq` shapes,
+// `callout` for the old grid-with-a-list instances, a collapsed `passage` for the old titled-card
+// instances, and the plan's named domain set (programs, week/day, spectrum/zone), plus `aside` and
+// `checklist` kept as small site-declared leftovers. See that file's header comment for the full
+// mapping and its reasoning.
+import { defineAdapter, defineConcept, fieldset, fields, githubApp } from '@glw907/cairn-cms';
 import { normalizeAssets, makeMediaResolver } from '@glw907/cairn-cms/media';
 import { markdownToHtml } from './utils.js';
+import { ecxcRegistry } from './markdown/components.js';
 import { ICON_PATHS } from './markdown/icons.js';
 import { siteConfig } from './config.js';
 // The ?url import resolves the compiled stylesheet to its served URL (the hashed asset in a
@@ -80,8 +80,7 @@ export const cairn = defineAdapter({
     // the live site. A per-call resolver (the admin preview's) still wins when supplied.
     render: ({ body, resolve, resolveMedia }) =>
       markdownToHtml(body, { resolve, resolveMedia: resolveMedia ?? publicMediaResolver }),
-    // Empty pending Task 2's directive rationalization; see the file header comment.
-    components: defineRegistry({ components: [] }),
+    components: ecxcRegistry,
     icons: ICON_PATHS,
   },
   editor: {

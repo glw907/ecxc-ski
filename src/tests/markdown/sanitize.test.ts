@@ -4,10 +4,9 @@ import { renderMarkdown } from '$lib/markdown/render';
 // The engine render applies the sanitize floor itself (after rehype-raw, before the component
 // dispatch). ECXC extends that floor with one author attribute (ariaLabel) via ecSanitizeSchema.
 // These tests render real content through renderMarkdown and assert the floor strips hostile
-// markup while keeping the author HTML ECXC relies on. The registry-dependent assertions (the
-// card directive's classes, the download-link-to-btn promotion inside :::cta) moved out with the
-// pre-rebuild registry; Task 2 of the rebuild-from-Waymark plan restores their coverage against
-// the rationalized registry.
+// markup while keeping the author HTML ECXC relies on. The registry-dependent assertions live in
+// components.test.ts, against the rationalized registry Task 2 of the rebuild-from-Waymark plan
+// declared.
 describe('engine sanitize floor (ECXC schema)', () => {
   it('drops a script and an event-handler attribute in authored raw HTML', async () => {
     const out = await renderMarkdown('Intro.\n\n<p onclick="x()">hi</p>\n\n<script>alert(1)</script>\n');

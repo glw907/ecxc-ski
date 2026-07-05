@@ -91,14 +91,15 @@
 
   /* ─── About: worked example of the ECXC design language ──────
      The page is built from a small, reusable kit (see the Pass-4 design
-     spec). Each primitive maps to a DaisyUI component so it's idiomatic
-     and portable; the scoped CSS here only tunes spacing and the one
-     custom primitive (the icon chip):
+     spec, re-rationalized in the rebuild-from-Waymark plan's Task 2). Each
+     primitive maps to a DaisyUI component so it's idiomatic and portable;
+     the scoped CSS here only tunes spacing and the one custom primitive
+     (the icon chip):
 
-       module   → DaisyUI .card (subtle: border + shadow-sm)
+       module   → .ec-passage / .ec-callout (global, no card chrome)
        caution  → .ec-alert.ec-alert-caution: subtle alert, amber chrome
-       grid     → .ec-grid (global): card body of parallel titled points
-       action   → DaisyUI .btn.btn-primary
+       points   → .ec-callout-points (global): a callout's parallel list
+       action   → .cta-link (reuses .download-link's button styling)
        icon     → .ec-icon bare glyph (default); .ec-chip tile = one focal accent
 
      Color encodes salience, never decoration:
@@ -117,24 +118,14 @@
      as one top-to-bottom cascade continuing the title (0s) and lede (0.06s) above it.
      The delay comes from the engine's data-rise ordinal (mapped just below), not an
      inline style, so the sanitize floor can drop `style`. The module rhythm itself
-     (1.4rem, the band's 1.1rem tier) lives in app.css so the preview frame gets it. */
-  .static-page :global(.ec-card),
+     lives in app.css so the preview frame gets it. Every directive that produces a
+     top-level module rises the same way; the old `section` band no longer wraps
+     training's modules, so what used to be one band-level rise is now each of its
+     former contents (week, alert, spectrum, checklist, cta, faq) rising on its own. */
   .static-page :global(.ec-passage),
+  .static-page :global(.ec-callout),
   .static-page :global(.ec-alert) {
     animation: module-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  /* Training's only alert sits inside a section band, which carries the entrance. */
-  .static-page[data-page="training"] :global(.ec-band .ec-alert) {
-    animation: none;
-  }
-  /* A training section band is a top-level module: it carries a data-rise ordinal and
-     rises as one unit. Its inner modules ride that entrance, so they don't animate
-     again (the override below beats the .ec-card rule on specificity). */
-  .static-page[data-page="training"] :global(.ec-band) {
-    animation: module-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .static-page[data-page="training"] :global(.ec-band .ec-card) {
-    animation: none;
   }
   /* data-rise ordinal → cascade delay (0.16 + n*0.04s). The engine stamps the index on
      each top-level module; past the enumerated set a module holds the final step. */
@@ -165,10 +156,9 @@
     .static-page,
     .static-page :global(.page-title),
     .static-page :global(.post-body > p:first-child),
-    .static-page :global(.ec-card),
     .static-page :global(.ec-passage),
-    .static-page :global(.ec-alert),
-    .static-page[data-page="training"] :global(.ec-band) {
+    .static-page :global(.ec-callout),
+    .static-page :global(.ec-alert) {
       animation: none;
     }
   }

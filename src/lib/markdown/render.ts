@@ -1,11 +1,11 @@
-// ECXC's render pipeline, composed from cairn-core. The registry is empty pending Task 2 of the
-// rebuild-from-Waymark plan (directive rationalization); see the header comment on cairn.config.ts
-// for why the pre-rebuild registry could not carry forward unmodified. `sanitizeSchema` extends the
+// ECXC's render pipeline, composed from cairn-core. `ecxcRegistry` (components.ts) is Task 2 of
+// the rebuild-from-Waymark plan's rationalized directive set. `sanitizeSchema` extends the
 // engine's sanitize floor with the one author raw-HTML attribute ECXC's content still uses.
-import { createRenderer, defineRegistry } from '@glw907/cairn-cms';
+import { createRenderer } from '@glw907/cairn-cms';
+import { ecxcRegistry } from './components.js';
 import { ecSanitizeSchema } from './sanitize.js';
 
-const renderer = createRenderer(defineRegistry({ components: [] }), { sanitizeSchema: ecSanitizeSchema });
+const renderer = createRenderer(ecxcRegistry, { sanitizeSchema: ecSanitizeSchema });
 
 /** Render a post/page body to sanitized HTML. Pass opts.resolve to rewrite cairn: links. */
 export const renderMarkdown = renderer.renderMarkdown;

@@ -233,8 +233,6 @@ body {
   border-radius: 3px;
 }
 .page-title,
-.ec-band-title,
-.ec-cta-head h2,
 .post-body :is(h2, h3) {
   text-wrap: balance;
 }
@@ -244,9 +242,11 @@ body {
 
 /* ─── In-page scrolling ────────────────────────────────────
    Smooth scroll for anchor jumps (program cards, footnotes, the FAQ pointer);
-   anchored targets clear the 3.75rem sticky header with scroll-margin. */
+   anchored targets clear the 3.75rem sticky header with scroll-margin. Since the
+   directive rationalization dropped the `section` band wrapper, a program card's
+   jump target is a plain heading, so the margin moves there directly. */
 html { scroll-behavior: smooth; }
-.ec-band, .ec-aside { scroll-margin-block-start: 4.75rem; }
+.post-body h2, .post-body h3, .ec-aside { scroll-margin-block-start: 4.75rem; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
@@ -377,8 +377,8 @@ html { scroll-behavior: smooth; }
 }
 
 /* ─── Component head row: `.ec-head` ─────────────────────────
-   The icon-and-title row shared by card, grid, passage, and cta heads. Global so it
-   renders the same on every page; the `.post-body` prefix on the title keeps it above
+   The icon-and-title row shared by passage and callout heads. Global so it renders
+   the same on every page; the `.post-body` prefix on the title keeps it above
    `.post-body h2` on specificity. */
 .ec-head {
   display: flex;
@@ -390,8 +390,7 @@ html { scroll-behavior: smooth; }
   inline-size: 1.6rem;
   block-size: 1.6rem;
 }
-.post-body .ec-head h2,
-.post-body .ec-cta h2 {
+.post-body .ec-head h2 {
   margin: 0;
   font-size: 1.3rem;
 }
@@ -399,91 +398,22 @@ html { scroll-behavior: smooth; }
   margin-block-start: 0;
 }
 
-/* ─── Split + panel: `.ec-split` / `.ec-panel` ───────────────
-   Two or more labelled panels laid side by side, each with its own icon. Global so
-   every page that uses `split` gets the layout (About and Volunteers today). */
-.ec-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.9rem;
-  margin-block-start: 0.25rem;
-}
-.ec-panel {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  background: var(--color-base-200);
-  border-radius: 0.75rem;
-  padding: 1.1rem 1.2rem;
-}
-.ec-panel .ec-icon {
-  margin-block-start: 0.1rem;
-}
-.ec-panel .ec-glyph {
-  inline-size: 1.5rem;
-  block-size: 1.5rem;
-}
-.post-body .ec-panel p {
-  margin: 0;
-}
-.post-body .ec-panel strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  margin-block-end: 0.3rem;
-  color: var(--color-heading);
-}
-@media (max-width: 640px) {
-  .ec-split {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ─── Titled prose passage: `.ec-passage` ────────────────────
    A section head + body at full page width, with no card border or wash. A hair of
-   inline padding aligns its text with the bordered modules above and below. */
+   inline padding aligns its text with the bordered modules above and below. Also the
+   old `card`'s home: neither module carried a visual distinction content depended on,
+   so the lighter (borderless) of the two survives the directive rationalization. */
 .ec-passage {
   padding-inline: 0.25rem;
 }
 
-/* ─── Call to action: `.ec-cta` ──────────────────────────────
-   A compact, left-aligned action card. Fireweed is the action colour, so this is the
-   one module that wears it: a quiet wash and edge, and the icon overrides the ambient
-   green; the head row is icon + title, then a short note and the button. Flatter and
-   tighter than a standard module card. */
-.ec-cta {
-  border: 1px solid color-mix(in oklab, var(--color-primary) 22%, var(--color-border-subtle));
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--color-primary) 4%, var(--color-base-100));
+/* ─── Call to action: `.cta` ──────────────────────────────────
+   A single elevated link (Waymark's `cta` shape: label + url, no card). The link
+   itself rides the site's existing `.download-link` button styling; this only spaces
+   the wrapping paragraph. */
+.cta {
+  margin-block: 1.4rem;
 }
-.ec-cta .ec-icon {
-  color: var(--color-primary);
-}
-.ec-cta .card-body {
-  padding: 1.1rem 1.3rem;
-  gap: 0;
-}
-.ec-cta-head {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-block-end: 0.45rem;
-}
-.ec-cta-head .ec-glyph {
-  inline-size: 1.5rem;
-  block-size: 1.5rem;
-}
-.ec-cta .btn {
-  margin-block-start: 0.5rem;
-}
-.ec-cta .section-body {
-  color: var(--color-body-soft);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-.ec-cta .section-body p { margin-block: 0; }
-.ec-cta .section-body p + p { margin-block-start: 0.4rem; }
-.ec-cta .section-body a.download-link { margin-block: 0.7rem 0.2rem; }
 
 /* ─── Subtle alert card: `.ec-alert` ─────────────────────────
    A reusable aside that still carries weight. A faint role-tinted wash
@@ -691,86 +621,6 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
   .ec-program { transition: none; }
 }
 
-/* ─── Page section band: `.ec-band` ──────────────────────────
-   A major section (the intro chooser, summer training, the camp) held as one
-   coherent act: a strong header over a clear top boundary, with generous space
-   above, so the page reads as distinct sections instead of one continuous run.
-   The header icon and eyebrow wear the working green for every role; the body
-   holds the section's own modules. */
-.ec-band {
-  --band-edge: var(--color-spruce-accent);
-  margin-block-start: 4rem;
-  padding-block-start: 1.9rem;
-  border-block-start: 1px solid var(--color-border-subtle);
-}
-.ec-band-head { margin-block-end: 1.6rem; }
-.ec-band-eyebrow {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--band-edge);
-  margin-block-end: 0.7rem;
-}
-.ec-band-titlerow {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-.ec-band-titlerow .ec-glyph {
-  inline-size: 2.05rem;
-  block-size: 2.05rem;
-}
-/* Optical seat: the tent glyph's base sits ~32px high in its 256 viewBox, so a
-   box-centered tent reads as raised next to the title. Drop it onto the floor the
-   runner already sits on. Keyed to the glyph, so it travels with the icon. */
-.ec-band-titlerow .ec-ico-tent {
-  transform: translateY(0.12rem);
-}
-/* Two-part selector so the section title beats `.post-body h2` (which would otherwise
-   shrink it to 1.25rem and add a 2.25em top margin that knocks the title out of line
-   with its icon). The bare class still applies anywhere the page chrome isn't present. */
-.ec-band-title,
-.post-body .ec-band-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(1.6rem, 3.8vw, 1.8rem);
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-  color: var(--color-heading);
-}
-/* Hanging header: the section header sits at the column edge while the body indents
-   beneath it, so each section reads as one bracketed unit. A casual reader feels the
-   grouping; the outdented header over the indented body is the craft a designer reads. */
-.ec-band-body {
-  padding-inline-start: 1.75rem;
-}
-.ec-band-body > :first-child {
-  margin-block-start: 0;
-}
-/* Subsection rhythm: a clear break above each `###`, then it hugs its content (the
-   next block's top margin is reset so the heading sits close to what it labels). */
-.ec-band-body > h3 {
-  margin-block: 1.9rem 0.5rem;
-}
-.ec-band-body > h3 + * {
-  margin-block-start: 0;
-}
-/* Section lede: the opening paragraph steps up a touch, so each section starts the
-   way the page does, on a slightly larger, slightly heavier line. */
-.ec-band-body > p:first-child {
-  font-size: 0.98rem;
-  font-weight: 500;
-  color: var(--color-body);
-}
-@media (max-width: 640px) {
-  .ec-band { margin-block-start: 3rem; }
-  .ec-band-body { padding-inline-start: 0.85rem; }
-}
-
 /* ─── Weekly schedule: `.ec-week` ────────────────────────────
    The group practices as one compact UI unit: a soft recessed panel (a base-200 fill,
    no border or shadow, so it's lighter than a card). Day and time lead each row, the
@@ -908,63 +758,45 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
   text-align: center;
 }
 
-/* ─── Image set: `.ec-gallery` ───────────────────────────────
-   A small set of images in a responsive grid. The body holds the
-   markdown images; an optional title heads the set. */
-.ec-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 0.75rem;
-  margin-block: 1.25rem;
+/* ─── Callout: `.ec-callout` ──────────────────────────────────
+   A highlighted note, its head row shared with `.ec-passage` (`.ec-head`), plus an
+   optional points list: a set of parallel items (convictions, ways to help) each
+   led by an accent-coloured marker, reusing the base-200 tile ground the old `grid`
+   directive's cells wore. Tone is a modifier for the wash; `note` is the only one
+   real content uses today, so `tip`/`warning` share its accent until a page needs
+   otherwise. */
+.ec-callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: 0.75rem;
+  background: var(--color-base-200);
 }
-.ec-gallery img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  aspect-ratio: 4 / 3;
-}
-
-/* ─── Grid card body: `.ec-grid` ─────────────────────────────
-   A set of parallel, titled points (peers, not a sequence) inside a
-   module card: convictions, activity types, ways to help. Two columns
-   on desktop, one on mobile. The orphan cell of an odd-count grid spans
-   the full width, serving as both an orphan fix and a "featured point" slot for
-   the longest/most-important item placed last. Cells reuse the base-200
-   surface of the .ec-split panels; colour stays in the card-head icon. */
-.ec-grid {
+.ec-callout .section-body { color: var(--color-body-soft); }
+.ec-callout-points {
   list-style: none;
   padding: 0;
-  margin-block-start: 0.5rem;
+  margin-block-start: 0.7rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.9rem;
+  gap: 0.6rem;
 }
-.ec-grid > li {
-  margin: 0;
-  background: var(--color-base-200);
-  border-radius: 0.7rem;
-  padding: 1rem 1.1rem;
-  /* supporting prose: smaller and one step quieter than body, so the bold
-     term clearly leads the cell (the term carries it on weight + font +
-     heading colour, not on a near-equal size) */
-  font-size: 0.85rem;
+.ec-callout-points > li {
+  position: relative;
+  padding-inline-start: 1.1rem;
+  font-size: 0.9rem;
   line-height: 1.5;
   color: var(--color-body-soft);
 }
-.ec-grid > li > strong:first-child {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1rem;
+.ec-callout-points > li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.55em;
+  inline-size: 0.4rem;
+  block-size: 0.4rem;
+  border-radius: 50%;
+  background: var(--color-spruce-accent);
+}
+.ec-callout-points > li > strong:first-child {
   color: var(--color-heading);
-  margin-block-end: 0.2rem;
-}
-/* odd-count orphan / featured cell spans full width */
-.ec-grid > li:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
-@media (max-width: 640px) {
-  .ec-grid { grid-template-columns: 1fr; }
 }
 
 /* ─── Checklist: `.ec-checklist` ─────────────────────────────
@@ -1003,34 +835,49 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
   .post-body .ec-checklist-2col { columns: 1; }
 }
 
-/* ─── FAQ list: `.ec-faq` ────────────────────────────────────
-   A ruled question-and-answer list: each item leads with its question in the display
-   face over the answer, divided by a hairline. No boxes, just rhythm. */
+/* ─── FAQ: `.ec-faq` ──────────────────────────────────────────
+   One question per native <details>/<summary> disclosure, ruled apart by a hairline
+   like the old question-and-answer list, so a reader who wants the whole FAQ still
+   sees a rhythm of rows; each row now opens independently. */
 .post-body .ec-faq {
-  list-style: none;
-  padding: 0;
-  margin-block: 1.1rem;
-}
-.post-body .ec-faq > li {
   margin: 0;
   padding-block: 0.85rem;
   border-block-start: 1px solid var(--color-border-subtle);
-  font-size: 0.92rem;
-  line-height: 1.55;
-  color: var(--color-body);
 }
-.post-body .ec-faq > li:first-child {
+.post-body .ec-faq:first-of-type {
   border-block-start: 0;
   padding-block-start: 0;
 }
-.post-body .ec-faq > li > strong:first-child {
-  display: block;
+.post-body .ec-faq-question {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1rem;
   color: var(--color-heading);
-  margin-block-end: 0.2rem;
+  cursor: pointer;
 }
+.post-body .ec-faq-question::marker,
+.post-body .ec-faq-question::-webkit-details-marker {
+  display: none;
+}
+.post-body .ec-faq-question::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: var(--color-muted);
+}
+.post-body .ec-faq[open] > .ec-faq-question::after {
+  content: "−";
+}
+.post-body .ec-faq-answer {
+  margin-block-start: 0.4rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+.post-body .ec-faq-answer p { margin: 0; }
 
 /* ─── Page-level headings ─────────────────────────────────── */
 .page-title {
@@ -1134,16 +981,10 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
 }
 
 /* Rhythm between top-level modules. */
-.static-page .ec-card,
 .static-page .ec-passage,
+.static-page .ec-callout,
 .static-page .ec-alert {
   margin-block-start: 1.4rem;
-}
-
-/* An alert inside a section band stays on the band's lighter 1.1rem tier
-   (training's only alert sits inside one). */
-.static-page .ec-band .ec-alert {
-  margin-block-start: 1.1rem;
 }
 
 /* In-page jump links (table of contents) for long content pages */
@@ -1170,14 +1011,23 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
 .post-body p { margin-block: 1em; }
 .post-body p:first-child { margin-block-start: 0; }
 
+/* A top-level `##` reads as its own act: a clear top rule and generous space above,
+   so a long page (Volunteers, Training) breaks into distinct chapters. This carries
+   the weight the old `section` directive's band wrapper gave those chapters; a plain
+   heading now gets it for free, with no dedicated component needed. */
 .post-body h2 {
+  margin-block: 4rem 0.9rem;
+  padding-block-start: 1.9rem;
+  border-block-start: 1px solid var(--color-border-subtle);
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  margin-block: 2.25em 0.55em;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.8vw, 1.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
   color: var(--color-heading);
+}
+@media (max-width: 640px) {
+  .post-body h2 { margin-block-start: 3rem; }
 }
 .post-body h3 {
   font-family: var(--font-display);
@@ -1206,9 +1056,9 @@ a:hover .ec-arr-back { transform: translateX(-3px); }
 }
 /* Tailwind's preflight resets `ul,ol{list-style:none}`, which would leave plain
    markdown lists with no markers (reading as text runs, not a list). Restore
-   them for ordinary content lists; `.ec-grid` (parallel tiles) and task lists
-   opt out and stay markerless. */
-.post-body ul:not(.ec-grid):not(.ec-checklist):not(.ec-faq):not(.contains-task-list) { list-style: disc; }
+   them for ordinary content lists; `.ec-checklist` (its own check-box marker) and
+   `.ec-callout-points` (its own dot marker) opt out and stay markerless. */
+.post-body ul:not(.ec-checklist):not(.ec-callout-points):not(.contains-task-list) { list-style: disc; }
 .post-body ol { list-style: decimal; }
 .post-body li {
   margin-block: 0.25em;

@@ -109,7 +109,7 @@
         <div class="doc-subtitle">Waiver, Release &amp; Medical Authorization</div>
       </div>
       <div class="doc-title-block">
-        <div class="doc-notice" style="text-align:right">Minor's Name: <span class="name-repeat"></span></div>
+        <div class="doc-notice">Minor's Name: <span class="name-repeat"></span></div>
       </div>
     </div>
 
@@ -184,7 +184,7 @@
         <div class="doc-subtitle">Waiver, Release &amp; Medical Authorization</div>
       </div>
       <div class="doc-title-block">
-        <div class="doc-notice" style="text-align:right">Minor's Name: <span class="name-repeat"></span></div>
+        <div class="doc-notice">Minor's Name: <span class="name-repeat"></span></div>
       </div>
     </div>
 
@@ -415,7 +415,6 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--waiver-accent);
-    white-space: nowrap;
   }
   .blue-title { color: var(--waiver-info); }
   .section-rule { flex: 1; height: 1px; background: var(--waiver-rule); }
@@ -654,5 +653,40 @@
 
   @media (max-width: 8.5in) {
     .page { width: 100%; }
+    /* The header's two blocks (logo/subtitle, right-aligned title-and-notice) are sized in
+       fixed inches for the print page (backlog #12's oklch pass kept the print metaphor's
+       measurements); on a narrow screen those widths no longer fit side by side, so they
+       stack instead, and the fixed min-widths shrink to a viewport-relative cap. */
+    .doc-header {
+      flex-wrap: wrap;
+    }
+    .doc-title,
+    .doc-notice {
+      text-align: left;
+      max-width: 100%;
+    }
+    .name-repeat {
+      min-width: 40%;
+    }
+    /* The print page's own inch-based padding (0.75in a side) reads fine at letter width but
+       eats nearly half a phone viewport; a screen reader of the waiver on a phone gets a
+       smaller, still-generous margin instead. @media print re-asserts the inch padding above,
+       so the letter page itself is untouched. */
+    .page {
+      padding: 1.25rem 1rem;
+    }
+    /* The two fixed-inch fill-in blanks (a signature line's "as parent of ___", a page-2/3
+       header's name repeat) shrink to a viewport-relative width rather than force a minimum
+       the narrow page can't give them. */
+    .blank-lg {
+      min-width: 45%;
+    }
+    /* The rotated DRAFT watermark is generated content, not part of the reader's flow, but its
+       96pt un-rotated run is wide enough that the rotated bounding box still forces the page
+       (and so the whole document) wider than a phone viewport. Shrinking it is the one change
+       here that isn't a reflow of real content. */
+    .page::after {
+      font-size: 42pt;
+    }
   }
 </style>

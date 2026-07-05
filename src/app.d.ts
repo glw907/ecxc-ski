@@ -1,5 +1,5 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
-import type { ExecutionContext } from '@cloudflare/workers-types';
+import type { ExecutionContext, SendEmail } from '@cloudflare/workers-types';
 // The binding-shaped types ship from the /sveltekit subpath, so the Platform block intersects
 // them rather than restating every engine binding by hand. CairnMediaBindings adds MEDIA_BUCKET,
 // present because this site turns media on.
@@ -10,7 +10,16 @@ import '@glw907/cairn-cms/ambient';
 declare global {
   namespace App {
     interface Platform {
-      env: CairnPlatformBindings & CairnMediaBindings;
+      env: CairnPlatformBindings &
+        CairnMediaBindings & {
+          // The contact form's own bindings (contact.remote.ts): SEND_EMAIL is the
+          // fixed-destination Email Routing binding (wrangler.toml), distinct from cairn's own
+          // unrestricted EMAIL binding. CONTACT_EMAIL and TURNSTILE_SECRET_KEY are Worker
+          // secrets, set by name only.
+          SEND_EMAIL: SendEmail;
+          CONTACT_EMAIL: string;
+          TURNSTILE_SECRET_KEY?: string;
+        };
       context: ExecutionContext;
       caches: CacheStorage & { default: Cache };
     }

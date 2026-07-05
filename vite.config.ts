@@ -16,4 +16,15 @@ export default defineConfig({
       manifestPath: '/src/content/.cairn/index.json',
     }),
   ],
+  // The contact form's SEND_EMAIL path (contact.remote.ts) imports the ambient
+  // `cloudflare:email` module, which exists only inside the Workers runtime; keep it external
+  // so Rolldown doesn't try to resolve it at build time.
+  ssr: {
+    external: ['cloudflare:email'],
+  },
+  build: {
+    rollupOptions: {
+      external: ['cloudflare:email'],
+    },
+  },
 });

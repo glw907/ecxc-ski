@@ -16,6 +16,7 @@ on a phone.
   import { page } from '$app/state';
   import { extractMenu } from '@glw907/cairn-cms';
   import { siteConfig } from '$lib/cairn.config';
+  import SearchModal from './SearchModal.svelte';
 
   const nav = extractMenu(siteConfig, 'primary', 2);
 
@@ -41,20 +42,26 @@ on a phone.
       {siteConfig.siteName}
     </a>
 
-    <nav class="site-nav flex flex-wrap items-center gap-s text-step--1" aria-label="Primary">
-      {#each nav as item (item.url ?? item.label)}
-        {@const current = item.url ? isCurrent(item.url) : false}
-        <a
-          href={item.url}
-          aria-current={current ? 'page' : undefined}
-          class="inline-flex min-h-11 items-center px-xs no-underline {current
-            ? 'font-semibold text-primary'
-            : 'font-medium text-muted hover:text-base-content'}"
-        >
-          {item.label}
-        </a>
-      {/each}
-    </nav>
+    <!-- The nav and the search trigger share one wrapping flex group (the showcase/907 shape), so a
+         future theme toggle (Task 4's job) has a slot to join without reworking this layout. -->
+    <div class="flex flex-wrap items-center gap-s">
+      <nav class="site-nav flex flex-wrap items-center gap-s text-step--1" aria-label="Primary">
+        {#each nav as item (item.url ?? item.label)}
+          {@const current = item.url ? isCurrent(item.url) : false}
+          <a
+            href={item.url}
+            aria-current={current ? 'page' : undefined}
+            class="inline-flex min-h-11 items-center px-xs no-underline {current
+              ? 'font-semibold text-primary'
+              : 'font-medium text-muted hover:text-base-content'}"
+          >
+            {item.label}
+          </a>
+        {/each}
+      </nav>
+
+      <SearchModal />
+    </div>
   </div>
 </header>
 

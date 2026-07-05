@@ -79,22 +79,25 @@ verified locally but not pushed or deployed. The engine's rolling status is
 ### Template findings (consolidated, ranked; both rebuilds' harvest)
 
 Reported back to cairn-cms per the plan's harvest step. Ranked by how much it would bite the
-next Waymark-based rebuild; items also filed by 907.life's rebuild are marked so.
+next Waymark-based rebuild; items also filed by 907.life's rebuild are marked so. Each carries
+where it belongs: a cairn-cms engine default, a docs/process fix, or deferred.
 
 1. **No custom rehype/render seam on the render pipeline (also filed by 907.life).** ecxc did
    not independently need a post-render hook this pass (no table-scroll equivalent to wire), but
    Task 2's directive rationalization confirms the same shape of gap from a different angle: a
    site's own component `build()` functions run inside the engine's fixed pipeline with no
-   extension point beyond the registry itself. Recommend the fix 907.life already proposed: an
-   optional rehype-plugins parameter on the render pipeline factory.
+   extension point beyond the registry itself. **Belongs:** a cairn-cms engine default (an
+   optional rehype-plugins parameter on the render pipeline factory, the fix 907.life already
+   proposed); **deferred**, already filed, not yet built.
 2. **The engine's sitemap surface only sees concept-derived routes (also filed by 907.life,
    independently hit here too).** `sitemapResponse` and the site resolver hand back concept
    permalinks only; ecxc's site-owned `/archives`, `/tags`, `/tags/[tag]`, `/contact`, `/waiver`
    are all invisible to it and hand-listed in the site's own `sitemap.xml`, with nothing tying
    that list to the route tree—exactly how `/archives` went missing from the pre-rebuild
    sitemap in the first place. Two independent sites hitting the identical gap is a strong
-   signal: an optional extra-static-routes list, or a build check flagging an undeclared route
-   directory, is worth an engine-side answer before a third site adds its own routes.
+   signal. **Belongs:** a cairn-cms engine default (an optional extra-static-routes list, or a
+   build check flagging an undeclared route directory); **deferred**, worth an engine-side answer
+   before a third site adds its own routes.
 3. **A scaffold-copy checklist gap can hide a render-time or responsive contract across a whole
    pass (pattern match to 907.life's table-scroll finding, different mechanism).** 907.life's
    rebuild found a CSS class documented as needing a paired render step that rode unwired for
@@ -102,52 +105,62 @@ next Waymark-based rebuild; items also filed by 907.life's rebuild are marked so
    pass's own find—the waiver's fixed-inch print CSS never getting a narrow-viewport pass
    across the four tasks that touched the page—is the same shape of gap: nothing in the plan's
    task acceptance criteria named a responsive check, so it rode along until an explicit
-   `scrollWidth` check caught it in the closing task. Two sites landing in the same shape of gap
-   from different CSS mechanisms suggests the fix is procedural (an explicit responsive-check
-   line in a rebuild plan's earlier task acceptance, not only the closing gate task) as much as
-   it is an engine feature.
+   `scrollWidth` check caught it in the closing task. **Belongs:** primarily docs/process (an
+   explicit responsive-check line in a rebuild plan's earlier task acceptance, not only the
+   closing gate task, the next time a plan of this shape is written); secondarily the same
+   engine default as finding 1.
 4. **The v2 grammar's `fields.url` cannot express an internal link.** `URL_RE` requires an
    absolute `http(s)` URL, so a `cta`'s or `program`'s href/url attribute—which routinely wants
    an in-page anchor, a site-relative path, or a `cairn:` reference—cannot use `fields.url` at
    all; every such attribute in ecxc's registry is a `fields.text` with a hand-rolled pattern
-   (`^(#|/|cairn:|https?://)`) instead. Worth a `fields.link` (or a widened `fields.url`) that
-   accepts the same four forms out of the box; this is not an ecxc-specific need, any site with
-   an in-page CTA or anchor-linked nav hits it.
+   (`^(#|/|cairn:|https?://)`) instead. This is not an ecxc-specific need; any site with an
+   in-page CTA or anchor-linked nav hits it. **Belongs:** a cairn-cms engine default (a
+   `fields.link`, or a widened `fields.url`, accepting the same four forms out of the box);
+   **deferred**, newly filed by this pass.
 5. **Theme toggle: already landed, closing the loop (907.life's finding, ecxc consumes it
    unchanged).** 907.life's rebuild asked for the manual light/dark toggle to land in the
    template itself; it did, at cairn-cms `main` (held, unpublished). ecxc's own Task 4 confirms
    the mechanism generalizes to a second site with a completely different palette
    (fireweed/spruce vs. 907's cream/aurora-green): a bare `cairn-site-theme` cookie, no rename,
-   both sites' own `resolveTheme()`/`toggleTheme()` shape ports unchanged.
+   both sites' own `resolveTheme()`/`toggleTheme()` shape ports unchanged. **Belongs:** nowhere
+   further; already a cairn-cms engine default, shipped and held pending publish.
 
 ### Component findings (ecxc-specific; the eighteen-to-thirteen rationalization)
 
 The directive rationalization (Task 2) is a live test of the v2 component grammar against a
-denser, older content set than 907.life's eight posts. What fought the grammar, ranked:
+denser, older content set than 907.life's eight posts. What fought the grammar, ranked, each
+tagged where it belongs: the showcase's starter component defaults, docs, or deferred.
 
 1. **No rich-body CTA.** Waymark's starter `cta` is attribute-only (label, url, variant); the
    pre-rebuild `cta` was a titled card wrapping rich markdown (an intro, an embedded link, a
    postscript). The rationalization moves the framing prose to plain paragraphs around a bare
    `:::cta:::` and drops the card body entirely, a real capability loss for a site that wants a
-   call-to-action with supporting copy in the same visual unit, not only a button.
+   call-to-action with supporting copy in the same visual unit, not only a button. **Belongs:**
+   a showcase/starter-template default question (does the starter `cta` widen, or does a site
+   that wants this reach for `passage` + `cta` side by side, the pattern this rebuild landed on);
+   **deferred**, worth a docs note in the directive-authoring guide either way.
 2. **No `newTab` on the starter `cta`.** An external app-install link (ecxc's CrewLAB) needs to
    open in a new tab; Waymark's `cta` has no attribute for it. ecxc added its own `newTab`
-   boolean. Not an unusual need (any site linking to an external app or partner site hits it);
-   worth folding into the starter shape.
+   boolean. Not an unusual need (any site linking to an external app or partner site hits it).
+   **Belongs:** a showcase/starter-template default (fold `newTab` into the starter `cta`
+   shape); low effort, worth doing rather than deferring.
 3. **No anchor-id on `callout`.** ecxc's old `aside`/`card` occasionally served as a deep-link
    target (a footnote's `#gloss-*` destination). Waymark's `callout` has no `id` attribute for
    this; ecxc's own `aside` (kept as a small leftover specifically because `callout`'s intent,
    drawing attention, is the opposite of a quiet gloss) carries its own `id`. A footnote/gloss
-   primitive is plausibly out of scope for the starter set, but an `id` attribute on `callout`
-   itself, for any component used as a link target, is a small, generally useful addition.
+   primitive is plausibly out of scope for the starter set. **Belongs:** a showcase/starter-
+   template default (an `id` attribute on `callout` itself, useful for any component used as a
+   link target); **deferred**, small enough to bundle with finding 2 rather than ship alone.
 4. **`card`'s `role` attribute was dead weight.** Collapsing `card` and `passage` into one
    `passage` surfaced that `card`'s declared `role` attribute was never read by its own `build()`,
-   a component schema and its build function had drifted apart with nothing to catch it. Worth a
-   lint or a runtime dev-mode warning when a declared attribute is never read inside `build()`.
+   a component schema and its build function had drifted apart with nothing to catch it.
+   **Belongs:** a cairn-cms engine default, but tooling rather than a component shape (a lint or
+   a runtime dev-mode warning when a declared attribute is never read inside `build()`);
+   **deferred**, a DX finding for the engine backlog, not this pass's job to build.
 5. **The domain set (`programs`/`program`, `week`/`day`, `spectrum`/`zone`) carried over with an
    unchanged shape, no friction.** This is exactly the shape `defineComponent` is for: a
-   site-owned, honestly scoped vocabulary the starter set was never going to include. No engine
-   change suggested here; it is the charter working as intended.
+   site-owned, honestly scoped vocabulary the starter set was never going to include. **Belongs:**
+   nowhere; no engine or docs change suggested, the charter working as intended.
 
 **Follow-ups (carried).** BACKLOG.md's #12, #17, and #18 (the waiver tokenization and the two
 launch redirects) are functionally resolved by this pass, but the backlog file itself is

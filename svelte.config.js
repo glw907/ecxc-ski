@@ -15,10 +15,6 @@ const config = {
     // SvelteKit's global Origin check off; cairn's guard restores the strict Origin check for the
     // site's own non-admin form POSTs, so this is not a net loss. (BACKLOG #29.)
     csrf: { checkOrigin: false },
-    experimental: {
-      // Pass 9 spike: opt into experimental remote functions for the contact form.
-      remoteFunctions: true
-    },
     prerender: {
       // A 5xx during prerender means a page actually crashed, so fail the build. This is what makes
       // the content graph fail-closed: a dangling cairn: link target throws "cairn link target not

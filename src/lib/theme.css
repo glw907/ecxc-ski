@@ -1,0 +1,390 @@
+/* ============================================================================
+   Waymark, cairn's public reading template, neutral by default. The one file a site owner
+   edits to re-skin. The signature cairn theme identity (the display serif, the warm-tinted paper,
+   the cairn-glyph rule, the diamond bullet, the hanging pull-quote) lives on as an opt-in layer
+   behind `[data-flourish]` in prose.css, not the default; see the "The cairn theme" section of
+   docs/internal/public-design-system.md for where it lives and how a theme re-enables it.
+
+   RE-SKIN RECIPE (the committed N). The whole surface, chrome and article alike,
+   reads the role tokens in the two theme blocks below, so editing them re-skins
+   everything. The prose reading surface is included at zero extra edits.
+
+     1. The brand accent: edit `--color-primary` (and its dark sibling). To stay
+        contrast-stable, ROTATE THE HUE only — change the third oklch value (the
+        248 here) and hold the lightness and chroma. `--color-primary-content`
+        (the text on the accent) keeps its light/dark value.
+     2. The paper and ink: `--color-base-100` (paper) and `--color-base-content`
+        (ink), plus the `-200`/`-300` steps, light and dark.
+     3. Secondary, accent, neutral, and the four status hues follow the same
+        pattern if you want them on-brand; most owners leave them.
+     4. The faces: swap `--font-display` and `--font-body` in the `@theme` block.
+     5. Optional fine-tuning of the design scale, all of it in the `@theme` block:
+        the type ratio lives in the `--text-step-*` clamps, the space-scale steps in
+        `--spacing-*`, the rhythm in `--leading-*` and `--tracking-*`, and the reading
+        column in `--container-measure` and `--container-measure-wide`. The muted ink
+        and the card hairline are color roles in the same block, `--color-muted` and
+        `--color-card-border`. Because each of these sits in `@theme`, Tailwind also
+        emits a NAMED UTILITY for it (`text-step-*`, the spacing utilities such as
+        `gap-m`/`px-m`/`mt-2xl`, `leading-*`, `tracking-*`, `max-w-measure` and
+        `max-w-measure-wide`, `font-display`/`font-body`/`font-mono`, `text-muted`,
+        and `border-card-border`), which the chrome markup uses instead of an
+        arbitrary-value bracket. Editing one token here re-tunes both the `var()`
+        consumers and the utility, so the whole surface tracks the change.
+     6. The status-ink seam. Retuning a status FILL above (the `--color-info`,
+        `--color-success`, `--color-warning` in the two `@plugin` blocks) is only
+        half of that status: the callout and alert titles and left rules, and the
+        code highlighter's string / function / number colours, read a SEPARATE
+        on-surface ink token, `--cairn-<status>-ink`, defined in the :root and the
+        dark `prefers-color-scheme` block below. A fill is too light to read as
+        small text, so the ink is a darker tone of the SAME hue. When you retune a
+        status hue, retune its matching `--cairn-<status>-ink` (light AND dark) to
+        the same hue, or the directive text and the code colours desync from the
+        fills.
+
+   About fourteen role values cover the brand-and-base headline: a new accent and
+   a new paper-and-ink, the change most owners make. That set is `--color-primary`
+   and `-content`, the three `--color-base-*` steps, and `--color-base-content`,
+   light and dark. A FULL status rebrand is more, because each status carries both
+   a fill (the `@plugin` block) and an on-surface ink (the `--cairn-*-ink` layer,
+   step 6). Every prose element, the code highlighter, the chrome, and the
+   components recolor from these tokens, because none of them hard-codes a colour;
+   they all read them. The CI contrast gate (`check:public-tokens`) proves the
+   re-skinned theme still clears AA in both sRGB and P3, and its token-resolution
+   check fails the build if a rule references a token no block defines.
+
+   This file is linked by the (site) layout and by the editor preview config, so
+   the reader and the author see the same surface. The token grammar matches the
+   admin's Warm Stone system (`src/lib/components/cairn-admin.css`); only the
+   palette differs.
+
+   TIER MAP (the starter-template custom-surface ledger,
+   docs/internal/design/2026-06-30-showcase-custom-surface-ledger.md):
+     - Tier 1: the two `@plugin "daisyui/theme"` blocks (cairn, cairn-dark). The showcase's own
+       DaisyUI theme, kept verbatim. Not the admin's Warm Stone.
+     - Tier 2 (owned, the documented floor): the on-surface inks (--color-muted and the
+       --cairn-<status>-ink set), the elevation pair (--color-card-border, --cairn-shadow), the CTA
+       pair (--cairn-cta-*), and the code-highlight binding (pre.shiki plus the engine-owned
+       .cairn-tok-* class contract). cairn names the class contract; the site colors it. --color-muted
+       and --color-card-border live in @theme (so the text-muted / border-card-border utilities
+       generate) but keep their Tier-2 role; their dark siblings override in the dark block.
+     - Tier 3 (the Phase-2 fold target): the design-scale token home. The type scale
+       (--text-step-*), the space scale (--spacing-*), the faces (--font-*), and the
+       tracking/leading/measure values (--tracking-*, --leading-*, --container-measure*) move from
+       :root into Tailwind 4 `@theme`, where the named utilities generate, so the chrome markup stops
+       wrapping them in arbitrary-value brackets. The values stay; only the home moves.
+   ============================================================================ */
+@import 'tailwindcss';
+
+/* The editorial pairing, self-hosted via Fontsource variable packages so the real faces are the
+   default first paint (CLS-safe, the performance dimension) with no third-party font origin. These
+   `@import` rules must precede every other rule, so they sit directly under the Tailwind import.
+   Fontsource registers each family as "<Name> Variable"; the `--font-*` tokens below name them
+   exactly. Loading them here, not in the layout, means the editor preview frame links this same sheet
+   and gets the same faces (the parity rule). All three faces here need only the `wght` axis. */
+@import '@fontsource-variable/figtree/index.css';
+@import '@fontsource-variable/source-sans-3/index.css';
+@import '@fontsource-variable/source-code-pro/index.css';
+
+/* The bespoke reading surface (Task 5), kept in its own file but pulled in here so it ships in this
+   one sheet. theme.css is the single stylesheet the (site) layout and the editor preview config both
+   link, so importing prose.css here is what carries the article surface to BOTH the reader and the
+   author (the parity rule) at zero extra wiring. prose.css reads only the tokens defined below; it
+   adds no second color source. Its rules are @layer components, the same layer as the token bindings
+   at the foot of this file, so they resolve in the documented cascade order. */
+@import './prose.css';
+
+/* themes: false drops DaisyUI's built-in light/dark themes so they do not claim :root; the two
+   cairn themes below are the only ones, exactly as the admin sheet runs only its own. */
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* The light theme (default). DaisyUI 5 reads these role tokens at point of use,
+   so every `bg-base-100` / `text-primary` utility and every component tracks them. */
+@plugin "daisyui/theme" {
+  name: "cairn";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* neutral paper under neutral ink: a clean near-white/near-black ladder, no hue tint */
+  --color-base-100: oklch(98.4% 0 0);
+  --color-base-200: oklch(96.4% 0 0);
+  --color-base-300: oklch(90.8% 0 0);
+  --color-base-content: oklch(25% 0 0);
+  /* the one brand accent: a deep, confident ink-blue. Re-skin by rotating the hue. */
+  --color-primary: oklch(45% 0.1 248);
+  --color-primary-content: oklch(99% 0.01 248);
+  --color-secondary: oklch(50% 0.02 75);
+  --color-secondary-content: oklch(99% 0.005 75);
+  --color-accent: oklch(52% 0.07 235);
+  --color-accent-content: oklch(99% 0.01 235);
+  /* the warm near-black used for the inverted CTA house-ad in light mode */
+  --color-neutral: oklch(27% 0.013 72);
+  --color-neutral-content: oklch(97% 0.003 75);
+  /* status fills (dark-enough for near-white content, except warning which takes dark ink). The
+     info and success lightnesses are pinned at the AA floor the dual-gamut gate (check:public-tokens)
+     measures for their near-white -content: info L=55% holds 4.6:1, success L=54% holds 4.7:1, both
+     in sRGB and P3. Hue and chroma are held, so the contrast-stable recolor recipe still applies. */
+  --color-info: oklch(55% 0.1 235);
+  --color-info-content: oklch(99% 0.01 235);
+  --color-success: oklch(54% 0.12 150);
+  --color-success-content: oklch(99% 0.01 150);
+  --color-warning: oklch(80% 0.13 78);
+  --color-warning-content: oklch(28% 0.05 78);
+  --color-error: oklch(58% 0.19 27);
+  --color-error-content: oklch(99% 0.01 27);
+
+  /* modest, stone-grade geometry (not zero broadsheet, not bubbly); depth/noise off by default */
+  --radius-selector: 0.28rem;
+  --radius-field: 0.4rem;
+  --radius-box: 0.625rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* The dark sibling, applied automatically under prefers-color-scheme: dark. Same neutral,
+   hue-free base ladder as the light theme, so light and dark read as one theme. Status fills
+   lift to a lighter tone and take dark content, the admin's dark convention. */
+@plugin "daisyui/theme" {
+  name: "cairn-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(24% 0 0);
+  --color-base-200: oklch(20% 0 0);
+  --color-base-300: oklch(32% 0 0);
+  --color-base-content: oklch(92% 0 0);
+  --color-primary: oklch(74% 0.1 248);
+  --color-primary-content: oklch(22% 0.03 248);
+  --color-secondary: oklch(72% 0.02 75);
+  --color-secondary-content: oklch(22% 0.01 75);
+  --color-accent: oklch(76% 0.08 235);
+  --color-accent-content: oklch(22% 0.03 235);
+  --color-neutral: oklch(86% 0.006 75);
+  --color-neutral-content: oklch(22% 0.01 75);
+  --color-info: oklch(70% 0.1 235);
+  --color-info-content: oklch(24% 0.04 235);
+  --color-success: oklch(66% 0.12 150);
+  --color-success-content: oklch(24% 0.04 150);
+  --color-warning: oklch(82% 0.13 78);
+  --color-warning-content: oklch(25% 0.05 78);
+  --color-error: oklch(66% 0.17 27);
+  --color-error-content: oklch(24% 0.05 27);
+
+  --radius-selector: 0.28rem;
+  --radius-field: 0.4rem;
+  --radius-box: 0.625rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* The editorial faces, moved into @theme so Tailwind 4 generates the `font-display`/`font-body`/
+   `font-mono` utilities the chrome markup folds onto. @theme still emits each token at :root, so
+   every `var(--font-display)` reference in prose.css and below keeps resolving unchanged. The
+   `font-mono` token overrides Tailwind's default mono utility, which is intended (the template's
+   own face). */
+@theme {
+  --font-display: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Source Sans 3 Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Source Code Pro Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Fluid type scale, Utopia-style; about a 1.24 ratio, clamp() so display scales while body holds.
+     In @theme so Tailwind generates the `text-step-*` utilities the chrome markup folds onto; the
+     vars are still emitted at :root, so prose.css's `var(--text-step-*)` keeps resolving. The
+     display steps (2 through 5) hold one step back from the original ratio, a humanist sans reads
+     large at a lower size than a display serif did; step--1, step-0, and step-1 (caption, body,
+     lead) are unchanged. */
+  --text-step--1: clamp(0.84rem, 0.81rem + 0.14vw, 0.92rem);  /* caption, meta */
+  --text-step-0: clamp(1.06rem, 1.01rem + 0.27vw, 1.22rem);   /* body, 17 to 19.5px */
+  --text-step-1: clamp(1.27rem, 1.19rem + 0.43vw, 1.53rem);   /* lead, h4 */
+  --text-step-2: clamp(1.27rem, 1.19rem + 0.43vw, 1.53rem);   /* h3, index title */
+  --text-step-3: clamp(1.52rem, 1.39rem + 0.66vw, 1.91rem);   /* h2 */
+  --text-step-4: clamp(1.83rem, 1.63rem + 1vw, 2.39rem);      /* section display, stat */
+  --text-step-5: clamp(2.19rem, 1.9rem + 1.45vw, 2.98rem);    /* h1, masthead */
+
+  /* Fluid space scale (Utopia 3xs to 2xl). In @theme so Tailwind generates the spacing utilities
+     (`gap-m`, `px-m`, `py-xs`, `mt-2xl`, …); the vars still emit at :root for the CSS consumers. */
+  --spacing-3xs: clamp(0.31rem, 0.3rem + 0.05vw, 0.34rem);
+  --spacing-2xs: clamp(0.5rem, 0.48rem + 0.11vw, 0.56rem);
+  --spacing-xs: clamp(0.75rem, 0.72rem + 0.16vw, 0.84rem);
+  --spacing-s: clamp(1rem, 0.96rem + 0.22vw, 1.13rem);
+  --spacing-m: clamp(1.5rem, 1.43rem + 0.33vw, 1.69rem);
+  --spacing-l: clamp(2rem, 1.91rem + 0.43vw, 2.25rem);
+  --spacing-xl: clamp(3rem, 2.83rem + 0.87vw, 3.5rem);
+  --spacing-2xl: clamp(4rem, 3.74rem + 1.3vw, 4.75rem);
+
+  /* Leading and tracking. In @theme so Tailwind generates `leading-tight`/`-snug`/`-body` and
+     `tracking-tight`/`tracking-eyebrow`; the values override Tailwind's default leading/tracking
+     utilities, which is intended (the template's own rhythm). The vars still emit at :root for the
+     CSS consumers (prose.css, the routes). */
+  --leading-body: 1.65;
+  --leading-snug: 1.4;
+  --leading-tight: 1.12;
+  --tracking-tight: -0.011em;
+  --tracking-eyebrow: 0.12em;
+
+  /* The reading measure, about 66ch; structural, so figures and pull-quotes break past it. In @theme
+     so Tailwind generates `max-w-measure`/`max-w-measure-wide` (the `--container-*` namespace powers
+     the max-w-* utilities); the vars still emit at :root for the CSS consumers. */
+  --container-measure: 44rem;
+  --container-measure-wide: 58rem;
+
+  /* The muted on-surface ink and the card-border hairline, as color roles so Tailwind generates
+     `text-muted`/`border-muted` and `border-card-border`. These are the light values; the dark
+     siblings override them in the prefers-color-scheme block below. DaisyUI does not define these
+     roles, and the public @theme emits at :root only on the (site) layout, so the admin sheet's own
+     scoped `--color-muted` does not collide. */
+  --color-muted: oklch(46% 0.013 72);
+  --color-card-border: color-mix(in oklab, var(--color-base-content) 9%, transparent);
+}
+
+/* ----------------------------------------------------------------------------
+   The cairn-authored token layer. DaisyUI's theme blocks above hold only the
+   role and geometry tokens; these custom properties add what DaisyUI does not
+   cover and the field leaves generic: the editorial type scale, the fluid space
+   scale, the reading measure, the prose rhythm, and the code ramp. They read the
+   DaisyUI roles where relevant, so a re-skin of the roles carries them too.
+
+   Constant tokens and the LIGHT on-surface inks sit on :root; the DARK siblings
+   sit under the same prefers-color-scheme query DaisyUI uses for `cairn-dark`,
+   guarded by `:not([data-theme])` so an explicit choice wins over the system
+   scheme, exactly the guard DaisyUI's own compiled `cairn-dark` block uses. The
+   header's theme toggle (`SiteHeader.svelte`) sets `data-theme="cairn-dark"` on
+   `<html>` for an explicit dark choice, which the `[data-theme='cairn-dark']`
+   block below matches unconditionally, so the roles and these customs switch in
+   lockstep whether the scheme comes from the OS or from the toggle.
+   ---------------------------------------------------------------------------- */
+:root {
+  /* The design-scale tokens (the faces, the type and space scales, the leading, tracking, and
+     measure values) live in the @theme block above, where Tailwind generates their named utilities.
+     @theme re-emits each at :root, so the var() references throughout this file resolve unchanged. */
+
+  /* The single owl-selector rhythm variable; headings, figures, and pre override it locally. */
+  --flow-space: 1.35em;
+
+  /* The code-block ramp. Each token reads a role, so a re-skin recolors code with no edit. The
+     engine's build-time highlighter emits the .cairn-tok-* token classes (a fixed contract it
+     owns); the @layer components rules below bind each class to one of these role variables. */
+  --cairn-code-bg: var(--color-base-200);
+  --cairn-code-border: var(--color-base-300);
+  --cairn-code-ink: var(--color-base-content);
+  --cairn-code-comment: var(--color-muted);
+  --cairn-code-keyword: var(--color-primary);
+  --cairn-code-string: var(--cairn-success-ink);
+  --cairn-code-function: var(--cairn-info-ink);
+  --cairn-code-number: var(--cairn-warning-ink);
+  --cairn-code-punct: var(--color-muted);
+
+  /* On-surface inks (light). A fill tone fails as small text, the admin's lesson, so the muted
+     text and each status word read a darker ink than the matching `-content` fill pair. Each status
+     ink holds its fill's hue (the warning ink at 76, aligned to the warning fill and its dark
+     sibling), so the directive titles and the code colours track the fills under a re-skin; the
+     re-skin recipe at the top of this file (step 6) names this seam. */
+  /* --color-muted (the muted on-surface ink) lives in the @theme block above so Tailwind generates
+     the text-muted utility; @theme re-emits its light value at :root, and the dark sibling below
+     overrides it. The status inks have no utility and stay here. */
+  --cairn-success-ink: oklch(45% 0.1 150);
+  --cairn-warning-ink: oklch(52% 0.11 76);
+  --cairn-error-ink: oklch(50% 0.17 27);
+  --cairn-info-ink: oklch(48% 0.1 235);
+
+  /* Elevation (light): a near-invisible hairline plus a soft shadow carry a floating card. The
+     hairline (--color-card-border) lives in the @theme block above so Tailwind generates the
+     border-card-border utility; the dark sibling below overrides it. */
+  --cairn-shadow: 0 1px 2px color-mix(in oklab, var(--color-base-content) 6%, transparent),
+    0 6px 20px -8px color-mix(in oklab, var(--color-base-content) 12%, transparent);
+
+  /* The CTA panel pair. It never reads `--color-neutral` directly, which inverts to a light value
+     in dark mode. Light: the warm near-black house-ad with a paper button. */
+  --cairn-cta-bg: var(--color-neutral);
+  --cairn-cta-content: var(--color-neutral-content);
+  --cairn-cta-border: transparent;
+  --cairn-cta-btn-bg: var(--color-base-100);
+  --cairn-cta-btn-content: var(--color-base-content);
+}
+
+/* The dark custom-token values, applied two ways: as the system-scheme default (media-guarded, and
+   only when no explicit `data-theme` overrides it) and as the explicit toggle choice (the plain
+   `[data-theme='cairn-dark']` selector, unconditional). The declaration body is intentionally
+   identical in both blocks; DaisyUI's own compiled `@plugin "daisyui/theme"` output duplicates a
+   theme's declarations the same way, across a media-guarded selector and a plain `[data-theme]`
+   one (see node_modules/daisyui/theme/index.js), because plain CSS has no mixin to share a
+   declaration block across two different selector contexts. Keep both blocks in sync by hand. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    /* On-surface inks (dark) lift with the surface, keeping AA on the dark bases. */
+    --color-muted: oklch(70% 0.012 76);
+    --cairn-success-ink: oklch(78% 0.11 150);
+    --cairn-warning-ink: oklch(82% 0.12 76);
+    --cairn-error-ink: oklch(76% 0.14 27);
+    --cairn-info-ink: oklch(80% 0.1 235);
+
+    /* Elevation (dark): a defined border carries the card since a shadow barely shows. */
+    --color-card-border: color-mix(in oklab, var(--color-base-content) 16%, transparent);
+    --cairn-shadow: 0 1px 2px color-mix(in oklab, black 40%, transparent),
+      0 8px 24px -10px color-mix(in oklab, black 55%, transparent);
+
+    /* The CTA inverts intentionally: a recessed bordered panel with a solid primary button, so it
+       never becomes the brightest slab on a dark page. */
+    --cairn-cta-bg: var(--color-base-200);
+    --cairn-cta-content: var(--color-base-content);
+    --cairn-cta-border: var(--color-base-300);
+    --cairn-cta-btn-bg: var(--color-primary);
+    --cairn-cta-btn-content: var(--color-primary-content);
+  }
+}
+
+:root[data-theme='cairn-dark'] {
+  --color-muted: oklch(70% 0.012 76);
+  --cairn-success-ink: oklch(78% 0.11 150);
+  --cairn-warning-ink: oklch(82% 0.12 76);
+  --cairn-error-ink: oklch(76% 0.14 27);
+  --cairn-info-ink: oklch(80% 0.1 235);
+  --color-card-border: color-mix(in oklab, var(--color-base-content) 16%, transparent);
+  --cairn-shadow: 0 1px 2px color-mix(in oklab, black 40%, transparent),
+    0 8px 24px -10px color-mix(in oklab, black 55%, transparent);
+  --cairn-cta-bg: var(--color-base-200);
+  --cairn-cta-content: var(--color-base-content);
+  --cairn-cta-border: var(--color-base-300);
+  --cairn-cta-btn-bg: var(--color-primary);
+  --cairn-cta-btn-content: var(--color-primary-content);
+}
+
+@layer components {
+  /* The engine's build-time highlighter owns the .cairn-tok-* class contract (the engine names the
+     classes; the site colors them). Each rule binds one token class to a --cairn-code-* role
+     variable, so the syntax palette re-skins with the rest of the theme and no value is hard-coded.
+     The pre.shiki surround reads the same ramp. Task 5 refines the prose code-block treatment;
+     these rules make the highlighted tokens resolve to colors today. */
+  pre.shiki {
+    background-color: var(--cairn-code-bg);
+    color: var(--cairn-code-ink);
+    border: 1px solid var(--cairn-code-border);
+  }
+  .cairn-tok-keyword {
+    color: var(--cairn-code-keyword);
+  }
+  .cairn-tok-string {
+    color: var(--cairn-code-string);
+  }
+  .cairn-tok-comment {
+    color: var(--cairn-code-comment);
+  }
+  .cairn-tok-function {
+    color: var(--cairn-code-function);
+  }
+  .cairn-tok-number {
+    color: var(--cairn-code-number);
+  }
+  .cairn-tok-punct {
+    color: var(--cairn-code-punct);
+  }
+}

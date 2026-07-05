@@ -1,19 +1,15 @@
 import type { RequestHandler } from './$types';
 import { jsonFeedResponse } from '@glw907/cairn-cms/delivery';
-import { feedItems } from '$lib/content';
-import { SITE_TITLE, SITE_URL, SITE_DESCRIPTION, SITE_AUTHOR } from '$lib/config';
+import { ORIGIN, SITE_DESCRIPTION } from '$lib/content';
+import { siteConfig } from '$lib/cairn.config';
+import { buildFeedItems } from '$lib/feed';
 
 export const prerender = true;
 
 export const GET: RequestHandler = async () => {
+  const items = await buildFeedItems();
   return jsonFeedResponse(
-    {
-      title: SITE_TITLE,
-      description: SITE_DESCRIPTION,
-      siteUrl: SITE_URL,
-      feedUrl: SITE_URL + '/feed.json',
-      author: { name: SITE_AUTHOR },
-    },
-    await feedItems(),
+    { title: siteConfig.siteName, description: SITE_DESCRIPTION, siteUrl: ORIGIN, feedUrl: ORIGIN + '/feed.json' },
+    items,
   );
 };

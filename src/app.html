@@ -1,30 +1,11 @@
 <!doctype html>
-<html lang="en" data-theme="">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- The ?v=2 busts browsers' separate favicon caches (the rebrand left the
-         old crimson icon stuck in Firefox); bump it when the favicon changes. -->
-    <link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script>
-      (function() {
-        var saved = document.cookie.match(/(?:^|; )theme=([^;]*)/);
-        var theme = saved ? saved[1] : null;
-        if (!theme) {
-          theme = localStorage.getItem('theme');
-        }
-        if (!theme) {
-          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'ecxc-dark' : 'ecxc';
-        }
-        document.documentElement.setAttribute('data-theme', theme);
-      })();
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
-    <div style="display: contents">%sveltekit.body%</div>
+    <div>%sveltekit.body%</div>
   </body>
 </html>

@@ -93,6 +93,12 @@
    at the foot of this file, so they resolve in the documented cascade order. */
 @import './prose.css';
 
+/* ECXC's own site-declared components (passage, the footnote gloss, checklist, and the training
+   domain set): no Waymark equivalent, so they get their own sheet rather than a divergent edit to
+   prose.css above, which stays the untouched Waymark surface. Same import mechanism, same reason:
+   the (site) layout and the editor preview both need this parity. */
+@import './ecxc-components.css';
+
 /* themes: false drops DaisyUI's built-in light/dark themes so they do not claim :root; the two
    cairn themes below are the only ones, exactly as the admin sheet runs only its own. */
 @plugin "daisyui" {

@@ -21,6 +21,7 @@ const indexes = createSiteIndexes(cairn, siteConfig, { posts: postsRaw, pages: p
 
 export const site = indexes.site;
 export const posts = indexes.posts;
+export const pages = indexes.pages;
 
 export const ORIGIN = 'https://ecxc.ski';
 export const SITE_DESCRIPTION =

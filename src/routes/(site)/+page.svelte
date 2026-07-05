@@ -48,7 +48,11 @@
   <h1 class="m-0 mb-s font-display text-step-5 font-semibold leading-tight tracking-tight">
     {siteConfig.siteName}
   </h1>
-  <p class="m-0 max-w-[38rem] text-step-1 leading-snug text-muted">{siteConfig.description}</p>
+  <!-- The welcome copy is pages/home.md's rendered body, so the editor's usual save/publish flow
+       is what keeps this current, the same as any other content page. -->
+  <div class="prose max-w-[38rem] text-step-1 leading-snug text-muted">
+    {@html data.welcomeHtml}
+  </div>
 </section>
 
 <section class="listing" aria-label="Writing">

@@ -1,0 +1,330 @@
+/* src/lib/ecxc-components.css
+   Presentation for ECXC's own site-declared components (markdown/components.ts): `passage`,
+   `aside` (a footnote gloss), `checklist`, and the training domain set (`programs`/`program`,
+   `week`/`day`, `spectrum`/`zone`). Waymark's own alert/cta/faq/callout need no rules here; they
+   reuse Waymark's shapes verbatim and are already styled by prose.css.
+
+   Every rule below reads a Waymark ROLE token (`--color-primary`, `--color-base-*`,
+   `--spacing-*`, `--text-step-*`, `--font-display`, `--radius-*`), never an invented brand
+   token: the ecxc identity layer (a later pass) re-skins this whole sheet for free by rotating
+   `--color-primary`'s hue, the same re-skin recipe theme.css documents for the rest of the site.
+   Scoped under `.prose`, matching prose.css's own scoping (it beats DaisyUI's generic element
+   rules on specificity the same way). Imported from theme.css, after prose.css. */
+
+.prose {
+  /* ─── Passage: a titled prose block, no card chrome ────────────────────── */
+  & .ec-passage {
+    --flow-space: var(--spacing-m);
+  }
+  & .ec-passage .ec-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    margin-bottom: 0.3rem;
+  }
+  & .ec-passage .card-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step-0);
+    margin: 0;
+  }
+  & .ec-passage .ec-icon {
+    display: inline-flex;
+    color: var(--color-primary);
+  }
+  & .ec-passage-body > * {
+    margin: 0;
+  }
+  & .ec-passage-body > * + * {
+    margin-top: var(--spacing-2xs);
+  }
+
+  /* ─── Gloss aside: a quiet term-and-definition footnote target ─────────── */
+  & .ec-aside {
+    --flow-space: var(--spacing-m);
+    padding-left: var(--spacing-s);
+    border-left: 2px solid var(--color-card-border);
+  }
+  & .ec-aside-term {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.2rem;
+  }
+  /* The matching end of the footnote: a dagger on the gloss aside a link points to. */
+  & [id^='gloss-'] .ec-aside-term::before {
+    content: '\2020\0020';
+    color: var(--color-info);
+  }
+  & .ec-aside-def {
+    font-size: var(--text-step--1);
+    color: var(--color-muted);
+  }
+  & .ec-aside-def > * + * {
+    margin-top: var(--spacing-2xs);
+  }
+  /* The footnote marker itself: a glossed term links here as a plain markdown anchor
+     (`[†](#gloss-term)`), rendered as a small superscript dagger in the info colour. */
+  & a[href^='#gloss-'] {
+    font-size: 0.72em;
+    vertical-align: super;
+    line-height: 0;
+    margin-left: 0.1em;
+    font-weight: 650;
+    color: var(--color-info);
+    text-decoration: none;
+  }
+  & a[href^='#gloss-']:hover {
+    color: var(--color-primary);
+  }
+
+  /* ─── Checklist: a two-column gear list with a check-box marker ─────────── */
+  & .ec-checklist {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-m) 0;
+  }
+  & .ec-checklist-2col {
+    columns: 2;
+    column-gap: var(--spacing-l);
+  }
+  & .ec-checklist > li {
+    break-inside: avoid;
+    position: relative;
+    margin-block: 0.4rem;
+    padding-left: 1.6rem;
+    font-size: var(--text-step-0);
+    line-height: var(--leading-snug);
+  }
+  & .ec-checklist > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    width: 0.95em;
+    height: 0.95em;
+    border: 1.5px solid var(--color-muted);
+    border-radius: 3px;
+  }
+  @media (max-width: 34rem) {
+    & .ec-checklist-2col {
+      columns: 1;
+    }
+  }
+
+  /* ─── Program cards: a row of side-by-side clickable offerings ─────────── */
+  & .ec-programs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-m);
+    margin-block: var(--spacing-l);
+  }
+  @media (max-width: 36rem) {
+    & .ec-programs {
+      grid-template-columns: 1fr;
+    }
+  }
+  & .ec-program {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-m);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  & .ec-program:hover {
+    border-color: color-mix(in oklab, var(--color-primary) 45%, var(--color-card-border));
+    box-shadow: var(--cairn-shadow);
+  }
+  & .ec-program-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    margin-bottom: var(--spacing-2xs);
+  }
+  & .ec-program-head .ec-glyph {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--color-primary);
+  }
+  & .ec-program-name {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step-1);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.18s ease;
+  }
+  & .ec-program:hover .ec-program-name {
+    text-decoration-color: var(--color-primary);
+  }
+  & .ec-program-meta {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 var(--spacing-2xs);
+  }
+  & .ec-program-blurb {
+    flex: 1;
+    color: var(--color-muted);
+  }
+  & .ec-program-blurb > * {
+    margin: 0;
+  }
+  & .ec-program-go {
+    margin-top: var(--spacing-2xs);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step--1);
+    color: var(--color-primary);
+  }
+  & .ec-arr {
+    display: inline-block;
+    transition: transform 0.18s ease;
+  }
+  & a:hover .ec-arr {
+    transform: translateX(3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    & .ec-program,
+    & .ec-program-name,
+    & .ec-arr {
+      transition: none;
+    }
+  }
+
+  /* ─── Weekly schedule: a compact recessed rail ──────────────────────────── */
+  & .ec-week {
+    margin-block: var(--spacing-m);
+    background: var(--color-base-200);
+    border-radius: var(--radius-box);
+    padding-inline: var(--spacing-m);
+  }
+  & .ec-week-row {
+    display: grid;
+    grid-template-columns: 3.25rem auto 1fr;
+    align-items: baseline;
+    gap: var(--spacing-3xs) var(--spacing-s);
+    padding-block: var(--spacing-xs);
+  }
+  & .ec-week-row + .ec-week-row {
+    border-top: var(--border) solid var(--color-base-300);
+  }
+  & .ec-week-day {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-base-content);
+  }
+  & .ec-week-time {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step--1);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+  & .ec-week-focus {
+    color: var(--color-base-content);
+  }
+  & .ec-week-focus > * {
+    margin: 0;
+    font-size: var(--text-step--1);
+  }
+  & .ec-week-foot {
+    border-top: var(--border) solid var(--color-base-300);
+    padding-block: var(--spacing-xs) var(--spacing-s);
+  }
+  & .ec-week-foot > * {
+    margin: 0;
+    font-size: var(--text-step--1);
+    color: var(--color-muted);
+  }
+  & .ec-week-foot > :first-child {
+    font-family: var(--font-display);
+    font-size: var(--text-step-0);
+    color: var(--color-base-content);
+    margin-bottom: 0.3rem;
+  }
+  @media (max-width: 36rem) {
+    & .ec-week-row {
+      grid-template-columns: 3rem 1fr;
+    }
+    & .ec-week-time {
+      grid-column: 2;
+    }
+    & .ec-week-focus {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ─── Training-group spectrum: one pace continuum, not separate tiers ──── */
+  & .ec-spectrum {
+    margin-block: var(--spacing-m);
+    counter-reset: zone;
+  }
+  & .ec-spectrum-bar {
+    display: flex;
+    height: 0.5rem;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  /* A monochrome ramp on --color-primary alone (not a second brand hue), so the identity layer's
+     hue rotation re-skins this gradient with everything else. */
+  & .ec-spectrum-bar span:nth-child(1) {
+    background: color-mix(in oklab, var(--color-primary) 35%, var(--color-base-200));
+  }
+  & .ec-spectrum-bar span:nth-child(2) {
+    background: color-mix(in oklab, var(--color-primary) 65%, var(--color-base-200));
+  }
+  & .ec-spectrum-bar span:nth-child(3) {
+    background: var(--color-primary);
+  }
+  & .ec-spectrum-zones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-m);
+    margin-top: var(--spacing-s);
+  }
+  @media (max-width: 36rem) {
+    & .ec-spectrum-zones {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xs);
+    }
+  }
+  & .ec-zone {
+    counter-increment: zone;
+  }
+  & .ec-zone::before {
+    content: counter(zone, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: var(--text-step--1);
+    color: var(--color-muted);
+  }
+  & .ec-zone-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    margin: 0.1rem 0 0.2rem;
+  }
+  & .ec-zone-who {
+    font-size: var(--text-step--1);
+    color: var(--color-muted);
+  }
+  & .ec-zone-who > * {
+    margin: 0;
+  }
+}

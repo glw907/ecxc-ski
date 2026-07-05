@@ -1,13 +1,24 @@
 siteName: ECXC
 description: "East Community Cross Country: year-round training for high school skiers and runners in Anchorage, Alaska."
 author: ECXC
-url: https://ecxc.ski
 locale: en-US
 
-content:
-  posts:
-    permalink: /:year/:month/:slug
-    datePrefix: month
+# The curated tag vocabulary ({value,label}): value is the frozen frontmatter token every
+# post carries (formerly settings.postTags, the fixed options list on the tags field), label
+# is the editable display name the admin and any tag-filter UI show.
+vocabulary:
+  - value: training
+    label: Training
+  - value: racing
+    label: Racing
+  - value: results
+    label: Results
+  - value: events
+    label: Events
+  - value: camp
+    label: Camp
+  - value: announcements
+    label: Announcements
 
 menus:
   primary:
@@ -17,15 +28,3 @@ menus:
     - { label: Volunteers & Coaches, url: /volunteers }
     - { label: CrewLAB, url: /crewlab }
     - { label: Contact, url: /contact }
-
-email:
-  sender: noreply@ecxc.ski
-  senderName: ECXC Contact
-
-footer:
-  copyrightName: East Community Cross Country
-
-settings:
-  feedMaxItems: 20
-  homepageFeaturedCount: 1
-  postTags: [training, racing, results, events, camp, announcements]

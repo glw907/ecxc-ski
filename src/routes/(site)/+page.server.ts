@@ -6,14 +6,16 @@ export const load: PageServerLoad = async () => {
   const list = postList();
   const first = list[0];
   const home = pages.byId('home');
-  const welcomeHtml = home ? await cairn.render(home.body, { resolve: linkResolver }) : '';
+  const welcomeHtml = home
+    ? await cairn.rendering.render({ body: home.body, resolve: linkResolver })
+    : '';
   const featured = first
     ? {
         permalink: first.permalink,
         title: first.title,
         date: first.date,
         tags: first.tags,
-        html: await cairn.render(posts.byId(first.id)!.body, { resolve: linkResolver }),
+        html: await cairn.rendering.render({ body: posts.byId(first.id)!.body, resolve: linkResolver }),
       }
     : null;
   return { posts: list, featured, welcomeHtml };

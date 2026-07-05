@@ -12,7 +12,7 @@ import {
   type FeedItem,
 } from '@glw907/cairn-cms/delivery';
 import { cairn } from './cairn.config.js';
-import { SITE_URL, SITE_DESCRIPTION as DESC, FEED_MAX_ITEMS, siteConfig } from './config.js';
+import { SITE_DESCRIPTION as DESC, siteConfig } from './config.js';
 
 const postsRaw = import.meta.glob('/src/content/posts/*.md', {
   query: '?raw',
@@ -30,8 +30,11 @@ const indexes = createSiteIndexes(cairn, siteConfig, { posts: postsRaw, pages: p
 export const site = indexes.site;
 export const posts = indexes.posts;
 export const pages = indexes.pages;
-export const ORIGIN = SITE_URL;
+/** The canonical origin, never read from a request header (used by the sitemap, feeds, and SEO). */
+export const ORIGIN = 'https://ecxc.ski';
 export const SITE_DESCRIPTION = DESC;
+/** The feed's item cap; 0 would mean "all posts". Kept at the prior settings.feedMaxItems default. */
+const FEED_MAX_ITEMS = 20;
 
 /** A post as the home and archive lists render it: the engine summary plus the authored
  *  description (ContentSummary carries a derived excerpt, not the authored summary field). */
@@ -83,10 +86,10 @@ export function feedItems(): Promise<FeedItem[]> {
       const entry = posts.byId(p.id)!;
       return {
         title: p.title,
-        url: SITE_URL + p.permalink,
+        url: ORIGIN + p.permalink,
         date: p.date,
         summary: entry.frontmatter.description ?? '',
-        contentHtml: await cairn.render(entry.body, { resolve: linkResolver }),
+        contentHtml: await cairn.rendering.render({ body: entry.body, resolve: linkResolver }),
         tags: p.tags,
       };
     }),

@@ -1,15 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { cairn } from '$lib/cairn.config';
-import { POST_TAGS } from '$lib/config';
 
-// The per-field validators moved into the engine's defineFields/validate-once, so the old
-// validatePostFrontmatter/validatePageFrontmatter tests are gone. What survives is the one
-// site-specific contract the adapter still owns: the posts `tags` field carries the controlled
-// vocabulary. This guards that the field declaration stays wired to POST_TAGS.
-describe('posts schema', () => {
-  it('declares the tags field with the controlled vocabulary', () => {
-    const tagsField = cairn.content.posts?.schema.fields.find((f) => f.name === 'tags');
-    expect(tagsField?.type).toBe('tags');
-    if (tagsField?.type === 'tags') expect(tagsField.options).toEqual(POST_TAGS);
+// The per-field validators live on the concept's fieldset (defineConcept/fieldset/fields), the
+// Contract v2 adapter shape. What survives from the old defineFields-era test is the one
+// site-specific contract the adapter still owns: the posts `tags` field is a vocabulary-sourced
+// taxonomy field (site.config.yaml's `vocabulary` list supplies its options), and the dated
+// permalink policy the URL-inventory test depends on.
+describe('posts concept', () => {
+  it('declares the tags field as a creatable taxonomy multiselect', () => {
+    const tagsField = cairn.content.posts?.fields.fields.tags;
+    expect(tagsField?.type).toBe('multiselect');
+    if (tagsField?.type === 'multiselect') {
+      expect(tagsField.taxonomy).toBe(true);
+      expect(tagsField.creatable).toBe(true);
+    }
+  });
+
+  it('declares the month-granularity dated permalink', () => {
+    expect(cairn.content.posts?.permalink).toBe('/:year/:month/:slug');
+    expect(cairn.content.posts?.datePrefix).toBe('month');
   });
 });

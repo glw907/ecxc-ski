@@ -2,9 +2,9 @@ import * as v from 'valibot';
 import { invalid } from '@sveltejs/kit';
 import { form, getRequestEvent } from '$app/server';
 import { createMimeMessage } from 'mimetext';
-import { siteEmail } from './config';
 
-const SENDER = siteEmail.sender ?? 'noreply@ecxc.ski';
+const SENDER = 'noreply@ecxc.ski';
+const SENDER_NAME = 'ECXC Contact';
 
 async function verifyTurnstile(token: string, ip: string, secret: string): Promise<boolean> {
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -39,7 +39,7 @@ export const sendMessage = form(
     }
 
     const msg = createMimeMessage();
-    msg.setSender({ name: siteEmail.senderName ?? 'ECXC Contact', addr: SENDER });
+    msg.setSender({ name: SENDER_NAME, addr: SENDER });
     msg.setRecipient(contactEmail);
     msg.setSubject(`Contact from ${name}`);
     msg.addMessage({ contentType: 'text/plain', data: `From: ${name} <${email}>\n\n${message}` });

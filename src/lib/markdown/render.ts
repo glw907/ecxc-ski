@@ -1,16 +1,11 @@
-import { createRenderer } from '@glw907/cairn-cms';
-import { ecxcRegistry } from './components';
-import { ecSanitizeSchema } from './sanitize';
+// ECXC's render pipeline, composed from cairn-core. The registry is empty pending Task 2 of the
+// rebuild-from-Waymark plan (directive rationalization); see the header comment on cairn.config.ts
+// for why the pre-rebuild registry could not carry forward unmodified. `sanitizeSchema` extends the
+// engine's sanitize floor with the one author raw-HTML attribute ECXC's content still uses.
+import { createRenderer, defineRegistry } from '@glw907/cairn-cms';
+import { ecSanitizeSchema } from './sanitize.js';
 
-// The render pipeline now lives in cairn-core; this composes it from ECXC's
-// component registry. `stagger` makes the engine stamp a `data-rise` ordinal on each
-// top-level module, which the page CSS maps to the entrance-cascade delay. `sanitizeSchema`
-// extends the engine sanitize floor with the one author raw-HTML attribute ECXC needs.
-// The exported names are kept for back-compat: callers use renderMarkdown.
-const renderer = createRenderer(ecxcRegistry, { stagger: true, sanitizeSchema: ecSanitizeSchema });
+const renderer = createRenderer(defineRegistry({ components: [] }), { sanitizeSchema: ecSanitizeSchema });
 
-/** remark plugins (directive syntax → stamped EC directive nodes). */
-export const remarkEcPlugins = renderer.remarkPlugins;
-/** rehype plugins (raw passthrough, EC primitive dispatch, heading slugs). */
-export const rehypeEcPlugins = renderer.rehypePlugins;
+/** Render a post/page body to sanitized HTML. Pass opts.resolve to rewrite cairn: links. */
 export const renderMarkdown = renderer.renderMarkdown;

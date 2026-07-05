@@ -10,7 +10,7 @@ binding = "ASSETS"
 
 [[send_email]]
 name = "SEND_EMAIL"
-destination_address = "contact@ecnordic.ski"
+destination_address = "contact@ecxc.ski"
 
 # cairn-cms: unrestricted Email Sending binding for magic links (arbitrary recipients).
 # remote = true so `wrangler dev` sends real mail.

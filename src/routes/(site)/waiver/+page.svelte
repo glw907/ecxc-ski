@@ -1,7 +1,5 @@
 <svelte:head>
   <title>Waiver &amp; Release · ECXC</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 </svelte:head>
 
 <div class="waiver-shell">
@@ -282,24 +280,32 @@
 </div>
 
 <style>
-  /* ── Variables ───────────────────────────────────────── */
-  :root {
-    --w-red: #c0332c;
-    --w-red-light: #fdf1f0;
-    --w-blue: #1c4f99;
-    --w-ink: #1a1a1a;
-    --w-muted: #555;
-    --w-faint: #888;
-    --w-rule: #d4d4d4;
-    --w-field-bg: #f9f9f9;
-  }
-
-  /* ── Shell: screen view ─────────────────────────────── */
+  /* ── Palette ─────────────────────────────────────────────
+     A distinct print/legal-document treatment, kept apart from the site's live
+     light/dark theme: a physical waiver reads as paper regardless of the visitor's
+     colour-scheme preference, so these tokens stay fixed rather than following
+     --color-heading/--color-muted/etc into dark mode (which would put light ink
+     on this page's paper-white background). Same oklch discipline as the site
+     tokens, scoped to .waiver-shell rather than :root; each value is the oklch
+     equivalent of the hex the print mockup originally shipped with (backlog #12). */
   .waiver-shell {
-    font-family: 'Nunito Sans', sans-serif;
+    --waiver-accent: oklch(54% 0.179 28);
+    --waiver-accent-wash: oklch(97% 0.013 23);
+    --waiver-info: oklch(44% 0.133 258);
+    --waiver-info-wash: oklch(97% 0.015 270);
+    --waiver-info-border: oklch(86% 0.047 264);
+    --waiver-ink: oklch(22% 0 0);
+    --waiver-muted: oklch(45% 0 0);
+    --waiver-faint: oklch(63% 0 0);
+    --waiver-rule: oklch(87% 0 0);
+    --waiver-field-bg: oklch(98% 0 0);
+    --waiver-paper: oklch(100% 0 0);
+    --waiver-ground: oklch(93% 0 0);
+
+    font-family: var(--font-body);
     font-size: 9.5pt;
-    color: var(--w-ink);
-    background: #e8e8e8;
+    color: var(--waiver-ink);
+    background: var(--waiver-ground);
     padding: 2rem 1rem;
     margin: -2rem -1rem; /* bleed to layout edges */
     line-height: 1.45;
@@ -311,7 +317,7 @@
     min-height: 11in;
     padding: 0.65in 0.75in 0.6in;
     margin: 0 auto 1.5rem;
-    background: white;
+    background: var(--waiver-paper);
     box-shadow: var(--shadow-lift);
     position: relative;
     display: flex;
@@ -320,7 +326,7 @@
 
   @media print {
     .waiver-shell {
-      background: white;
+      background: var(--waiver-paper);
       padding: 0;
       margin: 0;
     }
@@ -339,7 +345,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    border-bottom: 3px solid var(--w-red);
+    border-bottom: 3px solid var(--waiver-accent);
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
   }
@@ -347,42 +353,42 @@
     display: flex;
     align-items: baseline;
     gap: 0.35rem;
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-display);
     font-size: 18pt;
     font-weight: 800;
     line-height: 1;
     margin-bottom: 2px;
   }
-  .ec { color: var(--w-red); }
-  .xc { color: var(--w-blue); font-size: 12pt; font-weight: 700; }
+  .ec { color: var(--waiver-accent); }
+  .xc { color: var(--waiver-info); font-size: 12pt; font-weight: 700; }
   .doc-subtitle {
     font-size: 7.5pt;
-    color: var(--w-muted);
+    color: var(--waiver-muted);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     font-weight: 600;
   }
   .doc-title {
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-display);
     font-size: 10.5pt;
     font-weight: 800;
-    color: var(--w-ink);
+    color: var(--waiver-ink);
     line-height: 1.2;
     text-align: right;
   }
   .doc-notice {
     margin-top: 5px;
     font-size: 7.5pt;
-    color: var(--w-muted);
+    color: var(--waiver-muted);
     max-width: 3.2in;
     line-height: 1.4;
     text-align: right;
   }
-  .doc-notice strong { color: var(--w-red); }
+  .doc-notice strong { color: var(--waiver-accent); }
   .name-repeat {
     display: inline-block;
     min-width: 2.5in;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--waiver-rule);
   }
 
   /* ── Section headers ────────────────────────────────── */
@@ -396,29 +402,29 @@
   .section-bar {
     width: 4px;
     border-radius: 2px;
-    background: var(--w-red);
+    background: var(--waiver-accent);
     align-self: stretch;
     min-height: 1rem;
     flex-shrink: 0;
   }
-  .blue-bar { background: var(--w-blue); }
+  .blue-bar { background: var(--waiver-info); }
   .section-title {
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-display);
     font-size: 8pt;
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--w-red);
+    color: var(--waiver-accent);
     white-space: nowrap;
   }
-  .blue-title { color: var(--w-blue); }
-  .section-rule { flex: 1; height: 1px; background: var(--w-rule); }
+  .blue-title { color: var(--waiver-info); }
+  .section-rule { flex: 1; height: 1px; background: var(--waiver-rule); }
   .optional-label {
     font-size: 7pt;
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
-    color: var(--w-muted);
+    color: var(--waiver-muted);
   }
 
   /* ── Body text ──────────────────────────────────────── */
@@ -430,8 +436,8 @@
   .body-text strong { font-weight: 700; }
 
   .not-affiliated {
-    background: var(--w-red-light);
-    border-left: 3px solid var(--w-red);
+    background: var(--waiver-accent-wash);
+    border-left: 3px solid var(--waiver-accent);
     padding: 0.4rem 0.6rem;
     border-radius: 0 3px 3px 0;
     margin-bottom: 0.5rem;
@@ -455,19 +461,19 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--w-faint);
+    color: var(--waiver-faint);
   }
   .field-line {
     border: none;
-    border-bottom: 1.5px solid var(--w-rule);
+    border-bottom: 1.5px solid var(--waiver-rule);
     height: 1.5rem;
     width: 100%;
     background: none;
   }
   .sig-line { height: 2rem; }
   .field-area {
-    border: 1.5px solid var(--w-rule);
-    background: var(--w-field-bg);
+    border: 1.5px solid var(--waiver-rule);
+    background: var(--waiver-field-bg);
     border-radius: 3px;
     width: 100%;
     padding: 4px 6px;
@@ -478,25 +484,25 @@
   .field-area-lg { min-height: 3.5rem; }
   .transport-note {
     font-size: 7.8pt;
-    color: var(--w-muted);
+    color: var(--waiver-muted);
     line-height: 1.45;
     padding-top: 2px;
   }
   .blank-lg {
     display: inline-block;
     min-width: 2.2in;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid var(--waiver-muted);
   }
 
   /* ── Activities ─────────────────────────────────────── */
   .activity-list { display: flex; flex-direction: column; gap: 0.3rem; margin: 0.3rem 0 0.45rem; }
   .activity-item { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 8.8pt; line-height: 1.45; }
   .activity-num {
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-display);
     font-weight: 800;
     font-size: 7.5pt;
-    color: white;
-    background: var(--w-red);
+    color: var(--waiver-paper);
+    background: var(--waiver-accent);
     border-radius: 50%;
     width: 15px;
     height: 15px;
@@ -506,7 +512,7 @@
     flex-shrink: 0;
     margin-top: 1px;
   }
-  .activity-num.blue { background: var(--w-blue); }
+  .activity-num.blue { background: var(--waiver-info); }
 
   /* ── Risk grid ──────────────────────────────────────── */
   .risk-grid {
@@ -516,8 +522,8 @@
     margin: 0.35rem 0 0.4rem;
   }
   .risk-item {
-    background: var(--w-field-bg);
-    border: 1px solid var(--w-rule);
+    background: var(--waiver-field-bg);
+    border: 1px solid var(--waiver-rule);
     border-radius: 4px;
     padding: 0.3rem 0.45rem;
     font-size: 8.3pt;
@@ -529,12 +535,12 @@
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--w-red);
+    color: var(--waiver-accent);
     margin-bottom: 2px;
   }
   .risk-full { grid-column: 1 / -1; }
-  .risk-all { grid-column: 1 / -1; background: #f0f4ff; border-color: #c0d0ef; }
-  .risk-all strong { color: var(--w-blue); }
+  .risk-all { grid-column: 1 / -1; background: var(--waiver-info-wash); border-color: var(--waiver-info-border); }
+  .risk-all strong { color: var(--waiver-info); }
 
   /* ── Initials ───────────────────────────────────────── */
   .initials-row {
@@ -544,17 +550,17 @@
     gap: 0.5rem;
     margin-top: 0.4rem;
     padding-top: 0.35rem;
-    border-top: 1px solid var(--w-rule);
+    border-top: 1px solid var(--waiver-rule);
   }
   .initials-label {
     font-size: 7.5pt;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--w-muted);
+    color: var(--waiver-muted);
   }
   .initials-box {
-    border: 1.5px solid var(--w-ink);
+    border: 1.5px solid var(--waiver-ink);
     border-radius: 3px;
     width: 2.2rem;
     height: 1.4rem;
@@ -562,8 +568,8 @@
 
   /* ── Legal box ──────────────────────────────────────── */
   .legal-limit {
-    background: #f0f4ff;
-    border: 1px solid #c0d0ef;
+    background: var(--waiver-info-wash);
+    border: 1px solid var(--waiver-info-border);
     border-radius: 3px;
     padding: 0.35rem 0.55rem;
     font-size: 8.3pt;
@@ -580,31 +586,31 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--w-red);
+    background: var(--waiver-accent);
     margin-top: 5px;
     flex-shrink: 0;
   }
 
   /* ── Checkboxes ─────────────────────────────────────── */
   .checkbox-row { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 8.8pt; line-height: 1.45; margin-bottom: 0.25rem; }
-  .checkbox-sq { width: 11px; height: 11px; border: 1.5px solid var(--w-ink); flex-shrink: 0; margin-top: 2px; border-radius: 1px; }
+  .checkbox-sq { width: 11px; height: 11px; border: 1.5px solid var(--waiver-ink); flex-shrink: 0; margin-top: 2px; border-radius: 1px; }
 
   /* ── Signatures ─────────────────────────────────────── */
   .sig-block { margin-top: 0.65rem; }
   .sig-row-3 { display: grid; grid-template-columns: 2fr 1.5fr 0.8fr; gap: 1rem; margin-bottom: 0.5rem; }
-  .caption { font-size: 7.5pt; color: var(--w-muted); font-style: italic; }
+  .caption { font-size: 7.5pt; color: var(--waiver-muted); font-style: italic; }
 
   /* ── Footer ─────────────────────────────────────────── */
   .doc-footer {
     margin-top: auto;
     padding-top: 0.5rem;
-    border-top: 1px solid var(--w-rule);
+    border-top: 1px solid var(--waiver-rule);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 7pt;
-    color: var(--w-faint);
-    font-family: 'Nunito', sans-serif;
+    color: var(--waiver-faint);
+    font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: 0.03em;
   }
@@ -616,10 +622,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-35deg);
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-display);
     font-size: 96pt;
     font-weight: 800;
-    color: rgba(192, 51, 44, 0.08);
+    color: color-mix(in oklab, var(--waiver-accent) 8%, transparent);
     letter-spacing: 0.15em;
     pointer-events: none;
     z-index: 10;
@@ -632,12 +638,12 @@
       content: 'DRAFT — Not for distribution. Print to PDF when finalized.';
       display: block;
       text-align: center;
-      font-family: 'Nunito', sans-serif;
+      font-family: var(--font-display);
       font-size: 0.78rem;
       font-weight: 700;
-      color: var(--w-red);
-      background: var(--w-red-light);
-      border: 1px solid rgba(192,51,44,0.25);
+      color: var(--waiver-accent);
+      background: var(--waiver-accent-wash);
+      border: 1px solid color-mix(in oklab, var(--waiver-accent) 25%, transparent);
       border-radius: 6px;
       padding: 0.5rem 1rem;
       margin-bottom: 1.25rem;

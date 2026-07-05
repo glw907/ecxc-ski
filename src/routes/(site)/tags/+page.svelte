@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>Tags · {siteConfig.siteName}</title>
+  <title>Tags — {siteConfig.siteName}</title>
   <meta name="description" content="Browse every post at ecxc.ski by tag." />
 </svelte:head>
 
@@ -16,7 +16,7 @@
   <ul class="tag-index">
     {#each data.tags as { tag, label, count } (tag)}
       <li>
-        <a href="/tags/{tag}/" class="tag-index__link">
+        <a href="/tags/{tag}" class="tag-index__link">
           <span>{label}</span>
           <span class="tag-index__count">{count}</span>
         </a>

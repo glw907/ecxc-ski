@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-  <title>Contact · {siteConfig.siteName}</title>
+  <title>Contact — {siteConfig.siteName}</title>
   <meta name="description" content="Get in touch with an ECXC coach." />
 </svelte:head>
 

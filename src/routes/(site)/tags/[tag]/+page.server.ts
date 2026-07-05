@@ -1,6 +1,7 @@
-// One tag's posts, a site-owned route (not a cairn concept entry). `trailingSlash: 'always'`
-// matches the permalink contract (`/tags/<tag>/`, trailing slash), which the sitemap and every
-// prerendered tag link (the tag index, each post's row) already target.
+// One tag's posts, a site-owned route (not a cairn concept entry). ecxc's permalink contract
+// carries no trailing slash (docs/architecture.md), unlike the 907 site this pattern was ported
+// from, so this route keeps the default `trailingSlash` rather than the borrowed `'always'`,
+// which would have 307-redirected every crawled `/tags/<tag>` URL away from its live permalink.
 import { error } from '@sveltejs/kit';
 import type { EntryGenerator, PageServerLoad } from './$types';
 import { extractVocabulary } from '@glw907/cairn-cms';
@@ -8,7 +9,6 @@ import { posts } from '$lib/content';
 import { siteConfig } from '$lib/cairn.config';
 
 export const prerender = true;
-export const trailingSlash = 'always';
 
 export const entries: EntryGenerator = () => posts.allTags().map(({ tag }) => ({ tag }));
 

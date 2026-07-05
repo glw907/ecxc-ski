@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.label} · {siteConfig.siteName}</title>
+  <title>{data.label} — {siteConfig.siteName}</title>
   <meta name="description" content={`Posts tagged "${data.label}" at ecxc.ski.`} />
 </svelte:head>
 

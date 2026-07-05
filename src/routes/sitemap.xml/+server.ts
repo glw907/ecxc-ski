@@ -16,7 +16,7 @@ export const GET: RequestHandler = () => {
     { loc: ORIGIN + '/tags' },
     { loc: ORIGIN + '/contact' },
     { loc: ORIGIN + '/waiver' },
-    ...posts.allTags().map(({ tag }) => ({ loc: `${ORIGIN}/tags/${tag}/` })),
+    ...posts.allTags().map(({ tag }) => ({ loc: `${ORIGIN}/tags/${tag}` })),
     ...site
       .all()
       .filter((s) => !(s.concept === 'pages' && s.id === 'home'))

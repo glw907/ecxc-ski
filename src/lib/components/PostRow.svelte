@@ -1,5 +1,5 @@
 <!-- @component
-One dated post row: the date, the linked title, and its tags, each tag linking to `/tags/<tag>/`.
+One dated post row: the date, the linked title, and its tags, each tag linking to `/tags/<tag>`.
 Shared by the `/archives` full listing and a `/tags/[tag]` detail page. -->
 <script lang="ts">
   import type { ContentSummary } from '@glw907/cairn-cms/delivery';
@@ -35,7 +35,7 @@ Shared by the `/archives` full listing and a `/tags/[tag]` detail page. -->
     {#if post.tags.length > 0}
       <p class="row__tags">
         {#each post.tags as tag (tag)}
-          <a href="/tags/{tag}/" class="row__tag">{labels[tag] ?? tag}</a>
+          <a href="/tags/{tag}" class="row__tag">{labels[tag] ?? tag}</a>
         {/each}
       </p>
     {/if}

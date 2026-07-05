@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-  <title>Archives · {siteConfig.siteName}</title>
+  <title>Archives — {siteConfig.siteName}</title>
   <meta name="description" content="Every post at ecxc.ski, newest first." />
 </svelte:head>
 

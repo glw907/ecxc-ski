@@ -2,7 +2,8 @@ import type { PageServerLoad } from './$types';
 import { extractVocabulary } from '@glw907/cairn-cms';
 import { buildLinkResolver } from '@glw907/cairn-cms/delivery';
 import { posts, pages, site } from '$lib/content';
-import { cairn, siteConfig } from '$lib/cairn.config';
+import { cairn, publicMediaResolver, siteConfig } from '$lib/cairn.config';
+import { deriveHeroImage } from '$lib/hero-image';
 
 export const prerender = true;
 
@@ -11,11 +12,14 @@ export const prerender = true;
 // the editable welcome copy instead of the generic siteConfig.description. /home itself 301s to
 // / (the redirect route), so this is the one place that entry's body actually renders. The home
 // reads its tag-filter options from the site's own committed vocabulary (the {value,label} list),
-// so the control labels the slugs editors curate rather than the raw frontmatter tokens.
+// so the control labels the slugs editors curate rather than the raw frontmatter tokens. The
+// masthead hero (Task 4) reads the same frontmatter `image` field the generic `[...path]` template
+// derives its own hero from; see $lib/hero-image.ts for why this route re-derives it by hand.
 export const load: PageServerLoad = async () => {
   const home = pages.byId('home');
   const welcomeHtml = home
     ? await cairn.rendering.render({ body: home.body, concept: 'pages', resolve: buildLinkResolver(site) })
     : '';
-  return { posts: posts.all(), vocabulary: extractVocabulary(siteConfig), welcomeHtml };
+  const heroImage = home ? deriveHeroImage(home.frontmatter, publicMediaResolver) : undefined;
+  return { posts: posts.all(), vocabulary: extractVocabulary(siteConfig), welcomeHtml, heroImage };
 };

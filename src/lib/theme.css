@@ -394,3 +394,9 @@
     color: var(--cairn-code-punct);
   }
 }
+
+/* ECXC's identity layer (Task 4 of the rebuild-from-Waymark plan), the cairn-theme pattern: one
+   import, positioned last so its unlayered overrides and its `!important` DaisyUI-role overrides
+   both win by source order over everything above. See ecxc-theme.css's own header comment for the
+   full recipe and the override technique. */
+@import './ecxc-theme.css';

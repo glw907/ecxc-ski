@@ -63,6 +63,10 @@ export const cairn = defineAdapter({
       routing: 'page',
       fields: fieldset({
         title: fields.text({ label: 'Title', required: true }),
+        // The media library's first real placement (Task 4 of the rebuild-from-Waymark plan): a
+        // structured hero the editor picks from the library. The [...path] template and the home
+        // masthead both derive their leading figure from this same `{ src, alt, caption }` shape.
+        image: fields.image({ label: 'Hero image', seo: true }),
       }),
     }),
   },

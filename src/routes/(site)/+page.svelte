@@ -48,6 +48,18 @@
   <h1 class="m-0 mb-s font-display text-step-5 font-semibold leading-tight tracking-tight">
     {siteConfig.siteName}
   </h1>
+  {#if data.heroImage}
+    <!-- The masthead hero: pages/home.md's frontmatter `image` field, the media library's first
+         real placement (Task 4 of the rebuild-from-Waymark plan). Same figure shape as the
+         [...path] template's hero, so it inherits the same `.site-main figure` treatment. -->
+    <figure class="hero">
+      <img src={data.heroImage.url} alt={data.heroImage.alt} />
+      {#if data.heroImage.caption}
+        <figcaption>{data.heroImage.caption}</figcaption>
+      {/if}
+    </figure>
+  {/if}
+
   <!-- The welcome copy is pages/home.md's rendered body, so the editor's usual save/publish flow
        is what keeps this current, the same as any other content page. -->
   <div class="prose max-w-[38rem] text-step-1 leading-snug text-muted">

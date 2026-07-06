@@ -1,120 +1,49 @@
+<!-- @component The public chrome for ecxc.ski: an owned, token-driven header, main, and footer in a
+     (site) route group. The group is URL-transparent, so these pages keep their paths, and the chrome
+     never wraps /admin, which lives outside the group. The chrome is built from `SiteHeader` and
+     `SiteFooter`, copy-in components a site owner edits, styled on the public theme (`theme.css`,
+     DaisyUI/Tailwind on the cairn token layer); the admin self-styles independently with its own scoped
+     sheet. Both stylesheets link by their ?url-resolved URL rather than a static import, so the editor's
+     preview frame can link the same assets (the header comment in site.css explains why a static
+     import would break that). -->
 <script lang="ts">
-  // app.css is referenced only through ?url imports (here and in the adapter's preview knob),
-  // never statically. A static import would fold the sheet into this layout's CSS chunk, whose
-  // basename differs between the client and server builds, so the server-resolved URL the
-  // editor's preview frame links would 404. As a ?url asset both builds emit app.<hash>.css
-  // under one content hash, and the URL holds.
-  import appCss from '../../app.css?url';
-  import Nav from '$lib/components/Nav.svelte';
-  import SearchModal from '$lib/components/SearchModal.svelte';
-  import Icon from '$lib/components/Icon.svelte';
-  import { SITE_TITLE, siteFooter } from '$lib/config';
-  import type { Snippet } from 'svelte';
-
-  let { children }: { children: Snippet } = $props();
-  let searchOpen = $state(false);
+  import themeCss from '$lib/theme.css?url';
+  import siteCss from '$lib/site.css?url';
+  import SiteHeader from '$lib/components/SiteHeader.svelte';
+  import SiteFooter from '$lib/components/SiteFooter.svelte';
+  let { children } = $props();
 </script>
 
 <svelte:head>
-  <link rel="stylesheet" href={appCss} />
-  <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/feed.xml" />
-  <link rel="alternate" type="application/feed+json" title={SITE_TITLE} href="/feed.json" />
+  <link rel="stylesheet" href={themeCss} />
+  <link rel="stylesheet" href={siteCss} />
 </svelte:head>
 
-<Nav onSearchOpen={() => { searchOpen = true; }} />
-<SearchModal bind:open={searchOpen} />
+<div class="flex min-h-dvh flex-col bg-base-100 font-body text-base-content">
+  <a
+    href="#main"
+    class="skip-link absolute left-s top-[-3rem] z-50 rounded-field bg-primary px-[0.9rem] py-[0.5rem] font-semibold text-primary-content no-underline focus:top-s"
+  >
+    Skip to content
+  </a>
 
-<main class="container mx-auto px-4 max-w-5xl py-8">
-  {@render children()}
-</main>
+  <SiteHeader />
 
-<!-- Spruce band bookending the header: same surface, fireweed accent on hover. -->
-<footer class="site-footer mt-8 py-8 text-center">
-  <div class="footer-links">
-    <a href="/feed.xml" aria-label="RSS feed" class="footer-icon-link">
-      <Icon label="RSS feed">
-        {#snippet children()}
-          <path d="M4 11a9 9 0 0 1 9 9"/>
-          <path d="M4 4a16 16 0 0 1 16 16"/>
-          <circle cx="5" cy="19" r="1" fill="currentColor" stroke="none"/>
-        {/snippet}
-      </Icon>
-      <span class="footer-label">rss</span>
-    </a>
-    <a href="/feed.json" aria-label="JSON feed" class="footer-icon-link">
-      <Icon label="JSON feed">
-        {#snippet children()}
-          <polyline points="16 18 22 12 16 6"/>
-          <polyline points="8 6 2 12 8 18"/>
-        {/snippet}
-      </Icon>
-      <span class="footer-label">json</span>
-    </a>
-    <a href="/contact" aria-label="Contact" class="footer-icon-link">
-      <Icon label="Contact">
-        {#snippet children()}
-          <rect width="20" height="16" x="2" y="4" rx="2"/>
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-        {/snippet}
-      </Icon>
-      <span class="footer-label">email</span>
-    </a>
-    <a href="/archives" aria-label="Archives" class="footer-icon-link">
-      <Icon label="Archives">
-        {#snippet children()}
-          <path d="M3 7h18v13H3z"/>
-          <path d="M3 7l2-3h14l2 3"/>
-          <line x1="10" y1="12" x2="14" y2="12"/>
-        {/snippet}
-      </Icon>
-      <span class="footer-label">archives</span>
-    </a>
-  </div>
-  <p class="footer-name">© {new Date().getFullYear()} {siteFooter.copyrightName ?? 'East Community Cross Country'}</p>
-</footer>
+  <!-- `tabindex="-1"` makes the skip-link target programmatically focusable, so activating "Skip to
+       content" moves keyboard focus here, not only the scroll position (WCAG 2.4.1; Firefox and Safari
+       move focus to a non-interactive target only when it is focusable). The focus is programmatic, so
+       the ring is suppressed below; real controls keep their `:focus-visible` rings. -->
+  <main id="main" tabindex="-1" class="site-main flex-1">
+    {@render children()}
+  </main>
+
+  <SiteFooter />
+</div>
 
 <style>
-  .site-footer {
-    background: var(--color-header);
-    border-top: 2px solid var(--color-fireweed);
-  }
-
-  .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-block-end: 1.5rem;
-  }
-
-  .footer-icon-link :global(svg) {
-    width: 18px;
-    height: 18px;
-  }
-
-  .footer-icon-link {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--color-header-ink);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .footer-label {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: lowercase;
-  }
-
-  .footer-icon-link:hover {
-    color: var(--color-fireweed);
-  }
-
-  .footer-name {
-    font-size: 0.75rem;
-    color: var(--color-header-ink);
-    margin: 0;
+  /* The skip-link target is focused programmatically, never tabbed to, so it shows no focus ring. This
+     does not touch `:focus-visible` on real controls (links, buttons), which keep their rings. */
+  main:focus {
+    outline: none;
   }
 </style>

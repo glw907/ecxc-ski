@@ -1,0 +1,218 @@
+/* ============================================================================
+   ecxc.ski's identity layer: the opt-in delta over neutral Waymark (theme.css), following the
+   cairn-theme pattern (@glw907/cairn-cms's examples/cairn-theme, docs/guides/make-waymark-your-own.md).
+   Task 4 of the rebuild-from-Waymark plan's redo amendment: the whole ECXC identity, the fireweed/
+   spruce/black-spruce oklch trio and the self-hosted faces, reached through the token seam alone, with
+   no chrome edit and no engine change. Import directly after theme.css:
+
+     @import './theme.css';
+     @import './ecxc-theme.css';
+
+   Every value below overrides a token theme.css already defines and every chrome and prose surface
+   already reads (SiteHeader, prose.css, site.css), so nothing here needs a markup change to take
+   effect. The two DaisyUI theme NAMES stay `cairn`/`cairn-dark` (unchanged, not renamed to `ecxc`):
+   the inherited toggle (SiteHeader.svelte) sets `data-theme` between those two literal values, so
+   recoloring the tokens those names carry, rather than declaring new theme names, is what lets the
+   toggle stay untouched.
+
+   THE OVERRIDE TECHNIQUE (mirrors examples/cairn-theme/cairn.css exactly; read its own header
+   comment for the full reasoning):
+     - The faces (`--font-*`) and the on-surface tokens theme.css declares in a plain `:root` or its
+       own `@theme` block (`--color-muted`, the `--cairn-*-ink` set) are UNLAYERED custom properties.
+       An unlayered declaration always beats a Tailwind-`@theme`-layered one regardless of source
+       order or specificity, and among two unlayered declarations of equal specificity the later one
+       in source order wins; importing this file after theme.css is enough, so these need no
+       `!important`.
+     - The DaisyUI `@plugin "daisyui/theme"` blocks (the base ladder, primary/secondary/accent/
+       neutral, the four status fills) compile to a plain, unlayered rule too, so specificity and
+       source order both matter here the same way. `!important` makes the override unconditional
+       regardless of exactly how a future DaisyUI version compiles that rule, an implementation
+       detail this file should not have to track.
+     - Dark values apply two ways, matching DaisyUI's own compiled `cairn-dark` output: a
+       `prefers-color-scheme: dark` media query guarded by `:not([data-theme])` (the system default,
+       live, until an explicit choice exists) and an unconditional `[data-theme='cairn-dark']` rule
+       (the toggle's explicit choice). Both carry the same declarations; plain CSS has no mixin to
+       share a block across two different selector contexts, so they are kept in sync by hand.
+
+   THE STATUS-INK SEAM (theme.css's own step 6): retuning a status fill above is only half of that
+   status. The callout/alert titles and the code highlighter's string/function/number colors read a
+   separate on-surface ink token, `--cairn-<status>-ink`, a darker (light) or lighter (dark) cut of
+   the SAME hue as its fill, tuned for legibility as small text rather than as a background wash. Every
+   status hue retuned below carries its matching ink pair.
+
+   WHAT THIS FILE DOES NOT TOUCH: the geometry tokens (`--radius-*`, `--size-*`, `--border`, `--depth`,
+   `--noise`) stay Waymark's own "modest, stone-grade" defaults; ECXC's identity is a color-and-type
+   identity, not a shape one, and retuning corner radii was never part of the brief. The `--cairn-cta-*`
+   pair, the code-highlight ramp, and `--color-card-border`/`--cairn-shadow` all read the role tokens
+   below through `var()`, so they re-skin for free with no separate override.
+   ============================================================================ */
+
+/* The self-hosted faces. Alegreya Sans and iA Writer Mono S ship as plain woff2 files (static/fonts/),
+   carried from the site's pre-rebuild identity; Nunito, the display face, self-hosts via Fontsource
+   instead (no matching static asset survived the fresh scaffold), matching the cairn-theme example's
+   own font-swap recipe. All three imports precede every other rule, the same requirement theme.css's
+   own font imports document. */
+@import '@fontsource-variable/nunito/index.css';
+
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('/fonts/AlegreyaSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('/fonts/AlegreyaSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('/fonts/AlegreyaSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* The real italic face, so emphasis (`<em>`), blockquotes, and descriptions get the designed italic
+   instead of a synthetic browser slant. */
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('/fonts/AlegreyaSans-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Mono S';
+  src: url('/fonts/iAWriterMonoS-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Mono S';
+  src: url('/fonts/iAWriterMonoS-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Unlayered: beats theme.css's `@theme`-declared `--font-*` regardless of source order. */
+:root {
+  --font-display: 'Nunito Variable', system-ui, sans-serif;
+  --font-body: 'Alegreya Sans', system-ui, sans-serif;
+  --font-mono: 'iA Writer Mono S', ui-monospace, monospace;
+}
+
+/* The light theme (default, unconditional). Overrides the `cairn` DaisyUI theme block's role tokens.
+   `!important` per the technique note above. */
+:root {
+  /* Warm paper under warm-red ink, the pre-rebuild identity's ladder. */
+  --color-base-100: oklch(99% 0.003 60) !important;
+  --color-base-200: oklch(95% 0.006 60) !important;
+  --color-base-300: oklch(90% 0.008 60) !important;
+  --color-base-content: oklch(16% 0.02 15) !important;
+
+  /* Brand anchors: fireweed + black spruce. Fireweed is naturally lighter than spruce, so spruce
+     carries structural weight and fireweed is the flash on top of it; primary is the deep fireweed
+     cut that holds contrast with white text. */
+  --color-primary: oklch(52% 0.21 357) !important; /* deep fireweed: the program & the one action */
+  --color-primary-content: oklch(99% 0.003 357) !important;
+  --color-secondary: oklch(25% 0.035 175) !important; /* black spruce: people, community, wayfinding */
+  --color-secondary-content: oklch(96% 0.008 175) !important;
+  --color-accent: oklch(48% 0.1 168) !important; /* mid spruce: highlights & interactive accents */
+  --color-accent-content: oklch(98% 0.008 168) !important;
+  --color-neutral: oklch(28% 0.025 175) !important; /* spruce-slate: the CTA panel's structural dark */
+  --color-neutral-content: oklch(92% 0.006 175) !important;
+
+  /* Status fills, hue-shifted off the brand pair so they read as distinct signals. */
+  --color-info: oklch(58% 0.16 245) !important; /* azure: information */
+  --color-info-content: oklch(99% 0.003 245) !important;
+  --color-success: oklch(52% 0.14 147) !important; /* pine, hue-separated from spruce: free / go */
+  --color-success-content: oklch(99% 0.003 147) !important;
+  --color-warning: oklch(74% 0.17 72) !important; /* amber: caution */
+  --color-warning-content: oklch(20% 0.015 72) !important;
+  --color-error: oklch(55% 0.23 30) !important; /* vermilion: error / destructive */
+  --color-error-content: oklch(99% 0.003 30) !important;
+}
+
+/* Light Tier-2 overrides: unlayered custom properties (`--color-muted` lives in theme.css's `@theme`
+   block, the `--cairn-*-ink` set in its plain `:root`), so no `!important` is needed. */
+:root {
+  --color-muted: oklch(52% 0.01 20);
+
+  /* On-surface inks: a darker cut of each status hue above, legible as small text on the near-white
+     paper (theme.css's step-6 seam; see the header comment). */
+  --cairn-info-ink: oklch(48% 0.12 245);
+  --cairn-success-ink: oklch(45% 0.11 147);
+  --cairn-warning-ink: oklch(50% 0.13 72);
+  --cairn-error-ink: oklch(48% 0.16 30);
+}
+
+/* Dark values, applied two ways (see the technique note above): the system-scheme default, and the
+   toggle's explicit choice. The declaration bodies are intentionally identical. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-base-100: oklch(16% 0.015 175) !important;
+    --color-base-200: oklch(20% 0.018 175) !important;
+    --color-base-300: oklch(25% 0.02 175) !important;
+    --color-base-content: oklch(92% 0.006 25) !important;
+
+    --color-primary: oklch(70% 0.18 357) !important; /* fireweed: brighter for a dark surface */
+    --color-primary-content: oklch(14% 0.012 357) !important;
+    --color-secondary: oklch(72% 0.07 170) !important; /* spruce, lightened */
+    --color-secondary-content: oklch(14% 0.01 170) !important;
+    --color-accent: oklch(72% 0.07 170) !important;
+    --color-accent-content: oklch(14% 0.01 170) !important;
+    --color-neutral: oklch(24% 0.018 175) !important;
+    --color-neutral-content: oklch(82% 0.008 25) !important;
+
+    --color-info: oklch(68% 0.15 245) !important;
+    --color-info-content: oklch(13% 0.012 245) !important;
+    --color-success: oklch(66% 0.14 147) !important;
+    --color-success-content: oklch(13% 0.01 147) !important;
+    --color-warning: oklch(80% 0.17 72) !important;
+    --color-warning-content: oklch(18% 0.015 72) !important;
+    --color-error: oklch(68% 0.22 30) !important;
+    --color-error-content: oklch(13% 0.01 30) !important;
+
+    --color-muted: oklch(60% 0.008 25);
+    --cairn-info-ink: oklch(80% 0.1 245);
+    --cairn-success-ink: oklch(78% 0.11 147);
+    --cairn-warning-ink: oklch(84% 0.14 72);
+    --cairn-error-ink: oklch(78% 0.15 30);
+  }
+}
+
+:root[data-theme='cairn-dark'] {
+  --color-base-100: oklch(16% 0.015 175) !important;
+  --color-base-200: oklch(20% 0.018 175) !important;
+  --color-base-300: oklch(25% 0.02 175) !important;
+  --color-base-content: oklch(92% 0.006 25) !important;
+
+  --color-primary: oklch(70% 0.18 357) !important;
+  --color-primary-content: oklch(14% 0.012 357) !important;
+  --color-secondary: oklch(72% 0.07 170) !important;
+  --color-secondary-content: oklch(14% 0.01 170) !important;
+  --color-accent: oklch(72% 0.07 170) !important;
+  --color-accent-content: oklch(14% 0.01 170) !important;
+  --color-neutral: oklch(24% 0.018 175) !important;
+  --color-neutral-content: oklch(82% 0.008 25) !important;
+
+  --color-info: oklch(68% 0.15 245) !important;
+  --color-info-content: oklch(13% 0.012 245) !important;
+  --color-success: oklch(66% 0.14 147) !important;
+  --color-success-content: oklch(13% 0.01 147) !important;
+  --color-warning: oklch(80% 0.17 72) !important;
+  --color-warning-content: oklch(18% 0.015 72) !important;
+  --color-error: oklch(68% 0.22 30) !important;
+  --color-error-content: oklch(13% 0.01 30) !important;
+
+  --color-muted: oklch(60% 0.008 25);
+  --cairn-info-ink: oklch(80% 0.1 245);
+  --cairn-success-ink: oklch(78% 0.11 147);
+  --cairn-warning-ink: oklch(84% 0.14 72);
+  --cairn-error-ink: oklch(78% 0.15 30);
+}

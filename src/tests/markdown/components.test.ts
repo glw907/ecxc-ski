@@ -1,75 +1,87 @@
 import { describe, it, expect } from 'vitest';
-import { renderMarkdown } from '$lib/markdown/render';
-import { ecxcRegistry } from '$lib/markdown/components';
+import { renderMarkdown } from '$lib/render';
 
-describe('ecxcRegistry', () => {
-	it('registers the primitives in document order', () => {
-		expect(ecxcRegistry.names).toEqual([
-			'card', 'grid', 'alert', 'cta', 'split', 'panel', 'passage', 'aside', 'section',
-			'programs', 'program', 'week', 'day', 'spectrum', 'zone', 'gallery',
-			'checklist', 'faq',
-		]);
-	});
+// The registry declared in markdown/components.ts. `alert`/`cta`/`faq`/`callout` reuse Waymark's
+// own showcase shapes verbatim (so they render through prose.css's existing rules); `passage`,
+// `aside`, `checklist`, and the training domain set have no Waymark equivalent and are this
+// site's own components, styled by ecxc-components.css.
+describe('the ecxc registry', () => {
+  it('renders an alert with its role class and the default caution icon', async () => {
+    const out = await renderMarkdown(':::alert[Heads up]{role="caution"}\nWatch out.\n:::\n');
+    expect(out).toContain('class="alert alert-caution"');
+    expect(out).toContain('Heads up');
+    expect(out).toContain('Watch out.');
+  });
 
-	// The custom ec-figure component was dropped in the cairn 0.57.0 cutover because cairn reserves the
-	// `figure` directive name (its built-in remarkFigure owns it). No ecxc content uses `:::figure`, and
-	// the engine's figure behavior is covered by cairn's own suite, so the site no longer tests it.
+  it('renders a cta with the primary variant class, and newTab adding target/rel', async () => {
+    const out = await renderMarkdown(':::cta{label="Join" url="https://example.com/join" newTab="true"}\n:::\n');
+    expect(out).toContain('class="cta-link cta-primary"');
+    expect(out).toContain('href="https://example.com/join"');
+    expect(out).toContain('target="_blank"');
+    expect(out).toContain('rel="noopener noreferrer"');
+    expect(out).toContain('Join');
+  });
 
-	it('wraps a :::gallery body in an ec-gallery container', async () => {
-		const html = await renderMarkdown(':::gallery[Camp]\n![One](/a.webp)\n![Two](/b.webp)\n:::\n');
-		expect(html).toContain('<div class="ec-gallery"');
-		expect(html).toContain('/a.webp');
-		expect(html).toContain('/b.webp');
-	});
+  it('accepts a relative or cairn: cta url, which fields.url cannot express', async () => {
+    const out = await renderMarkdown(':::cta{label="Sign up" url="/crewlab"}\n:::\n');
+    expect(out).toContain('href="/crewlab"');
+  });
 
-	it('builds a :::card into a section.card.ec-card with an ec-head + card-title', async () => {
-		const html = await renderMarkdown(':::card[Title]{icon="flag"}\nBody\n:::\n');
-		expect(html).toContain('<section class="card ec-card');
-		expect(html).toContain('ec-head');
-		expect(html).toContain('card-title');
-	});
+  it('renders one faq per question, as a native disclosure', async () => {
+    const out = await renderMarkdown(
+      ':::faq{question="Does this cost anything?"}\nNo.\n:::\n\n:::faq{question="Second?"}\nYes.\n:::\n',
+    );
+    expect(out).toContain('<details class="faq"');
+    expect(out).toContain('Does this cost anything?');
+    expect(out).toContain('Second?');
+  });
 
-	it('builds an :::aside into a semantic aside.ec-aside with the body', async () => {
-		const html = await renderMarkdown(':::aside[Spenst]{icon="info"}\nExplosive, plyometric work.\n:::\n');
-		expect(html).toContain('<aside class="ec-aside"');
-		expect(html).toContain('Explosive, plyometric work.');
-	});
+  it('renders a callout with its points list', async () => {
+    const out = await renderMarkdown(
+      '::::callout[Title]{tone="note"}\nIntro.\n\n:::points\n- First point\n- Second point\n:::\n::::\n',
+    );
+    expect(out).toContain('class="callout callout-note"');
+    expect(out).toContain('Intro.');
+    expect(out).toContain('<ul class="callout-points">');
+    expect(out).toContain('First point');
+    expect(out).toContain('Second point');
+  });
 
-	it('builds a titleless :::aside without an h2', async () => {
-		const html = await renderMarkdown(':::aside\nA quick note.\n:::\n');
-		expect(html).toContain('<aside class="ec-aside"');
-		expect(html).not.toContain('<h2');
-	});
+  it('renders a passage with no card chrome', async () => {
+    const out = await renderMarkdown(':::passage[Title]{icon="compass"}\nBody copy.\n:::\n');
+    expect(out).toContain('class="ec-passage"');
+    expect(out).toContain('Body copy.');
+  });
 
-	it('gives every component a group, an icon, and a preview', () => {
-		for (const def of ecxcRegistry.defs) {
-			expect(def.group, `${def.name} group`).toBeTruthy();
-			expect(def.icon, `${def.name} icon`).toBeTruthy();
-			expect(def.preview, `${def.name} preview`).toBeTruthy();
-		}
-	});
+  it('renders an aside with its anchor id, for a footnote dagger to target', async () => {
+    const out = await renderMarkdown(':::aside[Term]{id="gloss-term"}\nA definition.\n:::\n');
+    expect(out).toContain('class="ec-aside" id="gloss-term"');
+    expect(out).toContain('class="ec-aside-term"');
+  });
 
-	it('hides exactly the four nested-only components from the catalog', () => {
-		const hidden = ecxcRegistry.defs.filter((d) => d.hidden).map((d) => d.name);
-		expect(hidden.sort()).toEqual(['day', 'panel', 'program', 'zone']);
-	});
+  it('renders a checklist, tagging the two-column modifier from cols', async () => {
+    const out = await renderMarkdown(':::checklist{cols="2"}\n- Item one\n- Item two\n:::\n');
+    expect(out).toContain('class="ec-checklist ec-checklist-2col"');
+  });
 
-	it('only references declared attributes and slots in every preview', () => {
-		for (const def of ecxcRegistry.defs) {
-			const declaredAttrs = new Set((def.attributes ?? []).map((a) => a.key));
-			for (const key of Object.keys(def.preview?.attributes ?? {})) {
-				expect(declaredAttrs.has(key), `${def.name} preview attr ${key}`).toBe(true);
-			}
-			const declaredSlots = new Set((def.slots ?? []).map((s) => s.name));
-			for (const name of Object.keys(def.preview?.slots ?? {})) {
-				expect(declaredSlots.has(name), `${def.name} preview slot ${name}`).toBe(true);
-			}
-		}
-	});
+  it('renders nested program cards inside a programs row', async () => {
+    const out = await renderMarkdown('::::programs\n:::program[Summer]{icon="path" href="#summer"}\nBlurb.\n:::\n::::\n');
+    expect(out).toContain('class="ec-programs"');
+    expect(out).toContain('class="ec-program"');
+    expect(out).toContain('href="#summer"');
+  });
 
-	it('validates the program href pattern', () => {
-		const program = ecxcRegistry.get('program');
-		const href = program?.attributes?.find((a) => a.key === 'href');
-		expect(href?.pattern?.source).toBe('^(#|/|cairn:|https?://)');
-	});
+  it('renders nested schedule days inside a week rail', async () => {
+    const out = await renderMarkdown('::::week\n:::day[Mon]{kind="group" time="10:30"}\nFocus.\n:::\n::::\n');
+    expect(out).toContain('class="ec-week"');
+    expect(out).toContain('class="ec-week-row ec-week-group"');
+    expect(out).toContain('10:30');
+  });
+
+  it('renders nested zones inside a training-group spectrum', async () => {
+    const out = await renderMarkdown('::::spectrum\n:::zone[Foundation]\nWho it is for.\n:::\n::::\n');
+    expect(out).toContain('class="ec-spectrum"');
+    expect(out).toContain('class="ec-zone"');
+    expect(out).toContain('Foundation');
+  });
 });

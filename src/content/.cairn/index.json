@@ -31,7 +31,10 @@
       "permalink": "/home",
       "summary": "East Community Cross Country is a free summer training group for Anchorage high school runners and Nordic skiers, coached by volunteers. We train Monday, Wednesday, and Friday mornings, June 1 to…",
       "draft": false,
-      "links": []
+      "links": [],
+      "mediaRefs": [
+        "eadc978e4f4f3a35"
+      ]
     },
     {
       "id": "training",
@@ -52,7 +55,7 @@
       "concept": "pages",
       "title": "Volunteers & Coaches",
       "permalink": "/volunteers",
-      "summary": "Everybody that makes ECXC happen is a volunteer. The coaches and helpers are parents, former racers, and local athletes, and we can always use more of them! We all deeply believe that every althete…",
+      "summary": "Everybody that makes ECXC happen is a volunteer. The coaches and helpers are parents, former racers, and local athletes, and we can always use more of them! We all deeply believe that every athlete…",
       "draft": false,
       "links": []
     },
@@ -69,6 +72,9 @@
           "concept": "pages",
           "id": "crewlab"
         }
+      ],
+      "tags": [
+        "announcements"
       ]
     }
   ]

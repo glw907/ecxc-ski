@@ -16,7 +16,7 @@ const config = {
     // site's own non-admin form POSTs, so this is not a net loss. (BACKLOG #29.)
     csrf: { checkOrigin: false },
     experimental: {
-      // Pass 9 spike: opt into experimental remote functions for the contact form.
+      // The contact form posts through a remote function (contact.remote.ts).
       remoteFunctions: true
     },
     prerender: {

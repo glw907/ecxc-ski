@@ -18,13 +18,16 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260405.1",
+    "@fontsource-variable/figtree": "^5.2.10",
+    "@fontsource-variable/source-code-pro": "^5.2.5",
+    "@fontsource-variable/source-sans-3": "^5.2.5",
     "@sveltejs/adapter-cloudflare": "^7.2.8",
     "@sveltejs/kit": "^2.12",
     "@sveltejs/vite-plugin-svelte": "^7",
     "@tailwindcss/vite": "^4",
-    "@types/hast": "^3.0.4",
     "@types/node": "^24.13.0",
     "daisyui": "^5",
+    "pagefind": "^1.5.2",
     "svelte": "^5.56.3",
     "svelte-check": "^4",
     "tailwindcss": "^4",
@@ -34,13 +37,15 @@
     "wrangler": "^4.93.1"
   },
   "dependencies": {
-    "@glw907/cairn-cms": "^0.62.2",
-    "gray-matter": "^4",
-    "hast-util-sanitize": "^5.0.2",
-    "hast-util-to-html": "^9.0.5",
-    "hastscript": "^9.0.1",
-    "mimetext": "^3",
-    "valibot": "^1.4.0"
+    "@fontsource-variable/nunito": "^5.2.7",
+    "@glw907/cairn-cms": "^0.80.0",
+    "hast-util-to-string": "^3.0.1",
+    "mimetext": "^3.0.28",
+    "rehype-parse": "^9.0.1",
+    "rehype-stringify": "^10.0.1",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0",
+    "valibot": "^1.4.2"
   },
   "type": "module"
 }

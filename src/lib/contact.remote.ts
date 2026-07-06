@@ -1,10 +1,18 @@
+// ECXC's contact form action, a SvelteKit remote function (svelte.config.js opts into
+// `experimental.remoteFunctions`). Two independent bindings, both named `[[send_email]]` in
+// wrangler.toml but shaped differently: SEND_EMAIL carries a fixed `destination_address` (the
+// older Email Routing send-to-verified-destination mechanism), so it needs a hand-built MIME
+// message via `mimetext` plus the ambient `cloudflare:email` module's `EmailMessage` class,
+// unlike cairn's own unrestricted EMAIL binding (a plain `{ to, from, subject, html, text }`
+// object). CONTACT_EMAIL is a Worker secret, set by name only (`wrangler secret put
+// CONTACT_EMAIL`), not a committed var.
 import * as v from 'valibot';
 import { invalid } from '@sveltejs/kit';
 import { form, getRequestEvent } from '$app/server';
 import { createMimeMessage } from 'mimetext';
-import { siteEmail } from './config';
 
-const SENDER = siteEmail.sender ?? 'noreply@ecxc.ski';
+const SENDER = 'noreply@ecxc.ski';
+const SENDER_NAME = 'ECXC Contact';
 
 async function verifyTurnstile(token: string, ip: string, secret: string): Promise<boolean> {
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -12,7 +20,7 @@ async function verifyTurnstile(token: string, ip: string, secret: string): Promi
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ secret, response: token, remoteip: ip }),
   });
-  const { success } = await res.json() as { success: boolean };
+  const { success } = (await res.json()) as { success: boolean };
   return success;
 }
 
@@ -39,7 +47,7 @@ export const sendMessage = form(
     }
 
     const msg = createMimeMessage();
-    msg.setSender({ name: siteEmail.senderName ?? 'ECXC Contact', addr: SENDER });
+    msg.setSender({ name: SENDER_NAME, addr: SENDER });
     msg.setRecipient(contactEmail);
     msg.setSubject(`Contact from ${name}`);
     msg.addMessage({ contentType: 'text/plain', data: `From: ${name} <${email}>\n\n${message}` });

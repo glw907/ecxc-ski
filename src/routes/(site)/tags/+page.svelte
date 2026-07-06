@@ -1,72 +1,53 @@
+<!-- @component ECXC's tag index: every tag in use, each linking to its own posts. -->
 <script lang="ts">
   import type { PageData } from './$types';
-  import { tagUrl } from '$lib/utils';
-  import { SITE_TITLE } from '$lib/config';
-  import { riseStyle } from '$lib/motion';
+  import { siteConfig } from '$lib/cairn.config';
 
   let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
-  <title>Tags — {SITE_TITLE}</title>
-  <meta name="description" content="Browse posts by tag." />
+  <title>Tags — {siteConfig.siteName}</title>
+  <meta name="description" content="Browse every post at ecxc.ski by tag." />
 </svelte:head>
 
-<div class="tags-page">
-  <h1 class="page-title">Tags</h1>
-  <ul class="tags-list" aria-label="All tags" style={riseStyle(0)}>
-    {#each data.tags as { tag, count }}
+<section class="pb-xl pt-l">
+  <h1 class="m-0 mb-l font-display text-step-5 font-semibold leading-tight tracking-tight">Tags</h1>
+  <ul class="tag-index">
+    {#each data.tags as { tag, label, count } (tag)}
       <li>
-        <a href={tagUrl(tag)} class="tag-entry">
-          <span class="tag-name">{tag}</span>
-          <span class="tag-count">{count}</span>
+        <a href="/tags/{tag}" class="tag-index__link">
+          <span>{label}</span>
+          <span class="tag-index__count">{count}</span>
         </a>
       </li>
     {/each}
   </ul>
-</div>
+</section>
 
 <style>
-  .tags-page {
-    animation: page-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .tags-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .tag-index {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 1.25rem;
-    animation: module-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: var(--rise, 0s);
+    gap: var(--spacing-2xs) var(--spacing-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-
-  .tag-entry {
-    font-family: var(--font-display);
-    font-size: 0.92rem;
-    font-weight: 400;
-    color: var(--color-tag);
+  .tag-index__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    font-size: var(--text-step-1);
+    color: var(--color-base-content);
     text-decoration: none;
-    transition: color 0.15s ease;
   }
-
-  .tag-entry:hover {
-    color: var(--color-heading);
+  .tag-index__link:hover {
+    color: var(--color-primary);
   }
-
-  .tag-count {
-    font-size: 0.65em;
-    font-weight: 400;
+  .tag-index__count {
+    font-size: var(--text-step--1);
     color: var(--color-muted);
-    vertical-align: super;
-    margin-inline-start: 0.1em;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tags-page,
-    .tags-list {
-      animation: none;
-    }
+    font-variant-numeric: tabular-nums;
   }
 </style>

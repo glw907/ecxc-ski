@@ -16,15 +16,15 @@ export default defineConfig({
       manifestPath: '/src/content/.cairn/index.json',
     }),
   ],
+  // The contact form's SEND_EMAIL path (contact.remote.ts) imports the ambient
+  // `cloudflare:email` module, which exists only inside the Workers runtime; keep it external
+  // so Rolldown doesn't try to resolve it at build time.
   ssr: {
-    external: ['cloudflare:email']
+    external: ['cloudflare:email'],
   },
   build: {
     rollupOptions: {
-      // Pagefind's UI bundle is generated after the build by `npx pagefind`,
-      // so it doesn't exist at bundle time. Keep the runtime import external
-      // (Vite 8's Rolldown bundler resolves it eagerly otherwise).
-      external: ['cloudflare:email', '/pagefind/pagefind-ui.js']
-    }
-  }
+      external: ['cloudflare:email'],
+    },
+  },
 });

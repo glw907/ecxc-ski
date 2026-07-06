@@ -220,10 +220,22 @@
    restructure, Task 4 of cairn-cms's plan). chassis/prose.css's rules all sit in `@layer
    components`; every rule below is plain, unlayered CSS, which the cascade always ranks above any
    layered declaration regardless of specificity or source order (the same mechanism the font and
-   color overrides above rely on), so these need no `!important` and no ordering care. */
+   color overrides above rely on), so these need no `!important` and no ordering care.
 
-/* The old body-link idiom: the fireweed accent, not the chassis default's inherited color. */
-.prose a {
+   Because an unlayered rule beats a layered one on layer alone, `.prose a` must never reach a
+   component anchor that already carries its own color pairing (the `.cta-link` button, whose
+   layered `.cta-primary` rule sets a background AND a matching content color; `.ec-program`,
+   whose layered rule sets `color: inherit` against a card ground). No amount of specificity on
+   those layered rules can win that fight, so the exclusion has to live here, on the unlayered
+   side: `:not([class])` scopes the override to bare markdown links, the only anchors this file
+   ever intended to recolor. Every component anchor carries a class to be styled at all, so this
+   holds for a future component too, with no name to add here and no fight to lose. This regressed
+   the CrewLAB CTA buttons on /about, /training, and /crewlab (fireweed label text on a fireweed
+   button face) the moment the restructure lifted this rule out of prose.css's layer. */
+
+/* The old body-link idiom: the fireweed accent, not the chassis default's inherited color. Scoped
+   to classless anchors so it never outranks a component anchor's own layered color pairing. */
+.prose a:not([class]) {
   color: var(--color-primary);
 }
 

@@ -11,7 +11,7 @@ export default defineConfig({
     // cairn-manifest regenerate bin. It fails the build outside the prerender lifecycle, so a stale
     // manifest fails red regardless of the inherited prerender.handleHttpError: 'warn' policy.
     cairnManifest({
-      configModule: '/src/lib/cairn.config.ts',
+      configModule: '/src/theme/cairn.config.ts',
       content: { posts: '/src/content/posts/*.md', pages: '/src/content/pages/*.md' },
       manifestPath: '/src/content/.cairn/index.json',
     }),

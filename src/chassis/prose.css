@@ -56,11 +56,14 @@
        the rare token that cannot fit otherwise; ordinary prose never notices it. */
     overflow-wrap: anywhere;
   }
-  /* `:where(p)` contributes zero specificity, so this reset ties with (rather than
-     outranks) the owl selector below; declaring it first lets the owl selector's later
-     source position win the tie and set margin-top on a paragraph that follows another
-     paragraph or a non-heading block. A bare `.prose p` selector outranks the owl
-     selector on specificity and silently collapses that spacing sitewide. */
+  /* The browser-default paragraph margin, reset before the owl selector below supplies the real
+     flow rhythm. Wrapped in :where() so this reset carries zero specificity from the `p` type
+     selector: an unwrapped `.prose p` is (0,1,1), which always outranks `.prose > * + *`'s (0,1,0)
+     regardless of source order, so every paragraph's margin-top stayed 0 no matter what the owl
+     selector tried to set, collapsing the flow rhythm between two paragraphs, after a blockquote,
+     or after a code block or table (anywhere the following element is a bare `<p>` with no
+     heading-specific override to out-rank the reset the same way `.prose h2 + *` does). Tied at
+     (0,1,0) with the owl rule below, source order decides, so this reset must stay ABOVE it. */
   .prose :where(p) {
     margin-block: 0;
   }
@@ -119,7 +122,6 @@
   }
   .prose a {
     font-weight: 500;
-    color: var(--color-primary);
   }
   /* The reading-surface focus ring, matching the chrome and the styleguide (2px primary, 2px offset).
      A tinted callout ground shares the primary hue, so the same-hue ring can wash out against it; a
@@ -422,46 +424,14 @@
   .prose .callout-body > * + * {
     margin-top: var(--spacing-2xs);
   }
-  /* The points list reads as a 2-up grid of cards, not a plain bullet list, matching the
-     pre-rebuild site's own `.ec-grid` recipe (ported onto the current tokens): two columns,
-     each point a bordered cell with its leading bold term promoted to a small display-face
-     label. An odd count's last cell spans the full row rather than leaving an orphan. */
   .prose .callout-points {
-    margin: var(--spacing-s) 0 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-s);
-    list-style: none;
-    padding: 0;
+    margin: 0.5rem 0 0;
   }
   /* The points slot is optional (a callout with no points still renders the ul); an empty list keeps
      its top margin and reads as a phantom gap below the body text. Zero it when there is nothing in
      the list. */
   .prose .callout-points:empty {
     margin: 0;
-  }
-  .prose .callout-points > li {
-    margin: 0;
-    background: var(--color-base-100);
-    border: var(--border) solid var(--color-card-border);
-    border-radius: var(--radius-box);
-    padding: var(--spacing-xs) var(--spacing-s);
-    font-size: var(--text-step--1);
-    line-height: var(--leading-snug);
-  }
-  .prose .callout-points > li > strong:first-child {
-    display: block;
-    font-family: var(--font-display);
-    font-weight: 650;
-    margin-bottom: 0.2rem;
-  }
-  .prose .callout-points > li:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-  @media (max-width: 36rem) {
-    .prose .callout-points {
-      grid-template-columns: 1fr;
-    }
   }
 
   /* Alert: the second directive, built from the cairn render helpers (a section

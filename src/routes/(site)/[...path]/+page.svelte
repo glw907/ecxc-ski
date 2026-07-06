@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { CairnHead } from '@glw907/cairn-cms/delivery/head';
-  import { siteConfig } from '$lib/cairn.config';
+  import { siteConfig } from '$theme/cairn.config';
 
   let { data }: { data: PageData } = $props();
 

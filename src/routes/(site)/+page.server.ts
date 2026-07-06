@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { buildLinkResolver } from '@glw907/cairn-cms/delivery';
-import { posts, pages, site } from '$lib/content';
-import { cairn, publicMediaResolver } from '$lib/cairn.config';
-import { deriveHeroImage } from '$lib/hero-image';
+import { posts, pages, site } from '$chassis/content';
+import { cairn, publicMediaResolver } from '$theme/cairn.config';
+import { deriveHeroImage } from '$theme/hero-image';
 
 // ECXC's home is a content entry (pages/home.md, permalink /home), not the archive front page
 // Waymark ships by default: the site is mostly static pages, not a blog, so the masthead reads

@@ -1,7 +1,7 @@
 import type { PageServerLoad, EntryGenerator } from './$types';
 import { createPublicRoutes } from '@glw907/cairn-cms/delivery';
-import { site, ORIGIN, SITE_DESCRIPTION } from '$lib/content';
-import { cairn, publicMediaResolver, mediaEnabled, siteConfig } from '$lib/cairn.config';
+import { site, ORIGIN, SITE_DESCRIPTION } from '$chassis/content';
+import { cairn, publicMediaResolver, mediaEnabled, siteConfig } from '$theme/cairn.config';
 
 export const prerender = true;
 

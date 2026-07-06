@@ -36,6 +36,43 @@ Geoff's go**; the rebuild is fully gated and verified locally but not pushed or 
 
 ## History
 
+- **Chassis restructure (2026-07-05), deploy HELD.** Task 4 of
+  `../cairn-cms/docs/superpowers/plans/2026-07-05-chassis-restructure.md`. Split `src/lib` into
+  `src/chassis/` (the genre-free plumbing: `content.ts`, `feed.ts`, `cairn.server.ts`, `render.ts`'s
+  `makeIconRenderer` icon wiring, `theme-toggle.ts`, `tokens.css`, `prose.css`, `composition.css`,
+  verbatim from cairn-cms's showcase, or adopting its exact shape) and `src/theme/` (ecxc's own
+  adapter config, chrome components, `theme.css`/`ecxc-theme.css`/`ecxc-components.css` values, the
+  directive registry), with `$chassis`/`$theme` SvelteKit aliases mirroring the showcase's own.
+  `markdown/components.ts` now calls the chassis's `makeIconRenderer` instead of hand-wiring
+  `iconSpan`/`glyph`, a zero-behavior-change adoption (ecxc's own icon set was already doing the
+  identical wiring by hand). `SiteHeader.svelte`'s theme toggle now calls the shared
+  `$chassis/theme-toggle` mechanism instead of carrying its own copy. Only `dev-gate.ts` is omitted
+  from the chassis copy (no dev backend here, per `hooks.server.ts`'s own comment); see
+  `src/chassis/README.md` for the full boundary and every override seam.
+
+  **Folded in, the three sanctioned fixes from the fidelity trial.** (1) The training-groups
+  spectrum bar: `.ec-spectrum-bar span` had no `flex` value, so each empty segment's flex-basis
+  resolved to its own zero-width content and the bar rendered three invisible slivers; added
+  `flex: 1` in `ecxc-components.css`. (2) The FAQ answers now render inline, not behind a
+  `<details>`/`<summary>` disclosure: `markdown/components.ts`'s `faq` build() emits a plain
+  `<div class="faq">` with an always-visible `<p class="faq-question">` and
+  `<div class="faq-answer">`, and `ecxc-theme.css` overrides chassis/prose.css's pointer-cursor
+  default on the question (no longer a toggle). The now-unused `chevron-down` glyph was dropped from
+  `markdown/icons.ts`. (3) The archives page regained its tag-filter chip row (each tag a pill with
+  its post count, linking into `/tags/[tag]`, reading the same `posts.allTags()` the `/tags` index
+  already calls) and its in-page RSS/JSON/Email feed links, both in
+  `(site)/archives/+page.server.ts`/`+page.svelte`. The four re-expression items (heading voice,
+  section-header anatomy, CTA cards, blue alerts) were deliberately left untouched; they await
+  Geoff's sanction-or-restore ruling.
+
+  **Verified.** A git-worktree pixel diff against the pre-restructure commit, across home, about,
+  crewlab, volunteers, waiver, tags, a tag detail, and a post, shows only sub-pixel font-hinting
+  noise (well under 2% of pixels differing, all text-shaped, no layout or color shift): the
+  restructure itself changed nothing visible. The three restored fixes were verified against their
+  own reference crops (the spectrum bar, the inline FAQ, and the archives chips/feed-links) at
+  desktop and a 390px mobile check. `npm run check` (0/0), `npm test` (19/19, exit 0), and
+  `npm run build` all pass.
+
 - **Rebuild from Waymark (2026-07-05), deploy HELD.** Plan:
   `docs/superpowers/plans/2026-07-05-rebuild-from-waymark.md`. Five tasks: (1) retired the
   0.62.2-era app wholesale for a fresh Waymark scaffold on the v2 adapter idiom
@@ -221,6 +258,7 @@ which cannot express the design outranks a mechanical gap.
 | Drafting system | Coach voice system + site rewrite | ✓ Done |
 | cairn 0.50–0.62.2 | Single-mount admin + component-picker system + media + editor/help | ✓ Done |
 | Rebuild from Waymark | Fresh scaffold on cairn ^0.80.0, ecxc-theme.css, media library | ✓ Done (2026-07-05), deploy HELD |
+| Chassis restructure | `src/lib` → `src/chassis`/`src/theme` + the spectrum bar/inline FAQ/archives-chips fixes | ✓ Done (2026-07-05), deploy HELD |
 
 ### Pre-publish checklist (gate before announcing)
 

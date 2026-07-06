@@ -3,17 +3,15 @@
    cairn-theme pattern (@glw907/cairn-cms's examples/cairn-theme, docs/guides/make-waymark-your-own.md).
    Task 4 of the rebuild-from-Waymark plan's redo amendment: the whole ECXC identity, the fireweed/
    spruce/black-spruce oklch trio and the self-hosted faces, reached through the token seam alone, with
-   no chrome edit and no engine change. Import directly after theme.css:
-
-     @import './theme.css';
-     @import './ecxc-theme.css';
+   no chrome edit and no engine change. Imported from theme.css, right after the chassis import and the
+   font imports (see that file's own comment for the exact chain).
 
    Every value below overrides a token theme.css already defines and every chrome and prose surface
-   already reads (SiteHeader, prose.css, site.css), so nothing here needs a markup change to take
-   effect. The two DaisyUI theme NAMES stay `cairn`/`cairn-dark` (unchanged, not renamed to `ecxc`):
-   the inherited toggle (SiteHeader.svelte) sets `data-theme` between those two literal values, so
-   recoloring the tokens those names carry, rather than declaring new theme names, is what lets the
-   toggle stay untouched.
+   already reads (SiteHeader, chassis/prose.css, site.css), so nothing here needs a markup change to
+   take effect. The two DaisyUI theme NAMES stay `cairn`/`cairn-dark` (unchanged, not renamed to
+   `ecxc`): the inherited toggle (SiteHeader.svelte) sets `data-theme` between those two literal
+   values, so recoloring the tokens those names carry, rather than declaring new theme names, is what
+   lets the toggle stay untouched.
 
    THE OVERRIDE TECHNIQUE (mirrors examples/cairn-theme/cairn.css exactly; read its own header
    comment for the full reasoning):
@@ -21,8 +19,9 @@
        own `@theme` block (`--color-muted`, the `--cairn-*-ink` set) are UNLAYERED custom properties.
        An unlayered declaration always beats a Tailwind-`@theme`-layered one regardless of source
        order or specificity, and among two unlayered declarations of equal specificity the later one
-       in source order wins; importing this file after theme.css is enough, so these need no
-       `!important`.
+       in source order wins; importing this file after theme.css's own `@theme`/`:root` blocks would
+       be enough on its own, but chaining the import earlier (right after the chassis import) still
+       wins on layer alone, so no ordering care is needed either way.
      - The DaisyUI `@plugin "daisyui/theme"` blocks (the base ladder, primary/secondary/accent/
        neutral, the four status fills) compile to a plain, unlayered rule too, so specificity and
        source order both matter here the same way. `!important` makes the override unconditional
@@ -215,4 +214,64 @@
   --cairn-success-ink: oklch(78% 0.11 147);
   --cairn-warning-ink: oklch(84% 0.14 72);
   --cairn-error-ink: oklch(78% 0.15 30);
+}
+
+/* The old reading-surface idioms, restored over chassis/prose.css's generic look (the chassis
+   restructure, Task 4 of cairn-cms's plan). chassis/prose.css's rules all sit in `@layer
+   components`; every rule below is plain, unlayered CSS, which the cascade always ranks above any
+   layered declaration regardless of specificity or source order (the same mechanism the font and
+   color overrides above rely on), so these need no `!important` and no ordering care. */
+
+/* The old body-link idiom: the fireweed accent, not the chassis default's inherited color. */
+.prose a {
+  color: var(--color-primary);
+}
+
+/* The callout points list reads as a 2-up grid of cards, not a plain bullet list, matching the
+   pre-rebuild site's own `.ec-grid` recipe (ported onto the current tokens): two columns, each
+   point a bordered cell with its leading bold term promoted to a small display-face label. An odd
+   count's last cell spans the full row rather than leaving an orphan. */
+.prose .callout-points {
+  margin: var(--spacing-s) 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-s);
+  list-style: none;
+  padding: 0;
+}
+/* The points slot is optional (a callout with no points still renders the ul); an empty list keeps
+   its top margin and reads as a phantom gap below the body text. Zero it when there is nothing in
+   the list. */
+.prose .callout-points:empty {
+  margin: 0;
+}
+.prose .callout-points > li {
+  margin: 0;
+  background: var(--color-base-100);
+  border: var(--border) solid var(--color-card-border);
+  border-radius: var(--radius-box);
+  padding: var(--spacing-xs) var(--spacing-s);
+  font-size: var(--text-step--1);
+  line-height: var(--leading-snug);
+}
+.prose .callout-points > li > strong:first-child {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 650;
+  margin-bottom: 0.2rem;
+}
+.prose .callout-points > li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+@media (max-width: 36rem) {
+  .prose .callout-points {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The FAQ answers sit inline, not behind a `<details>` disclosure (Task 4's restore;
+   theme/markdown/components.ts's own comment has the full reasoning): the question no longer
+   toggles anything, so the chassis default's pointer cursor is misleading affordance here. */
+.prose .faq-question {
+  cursor: default;
 }

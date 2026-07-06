@@ -1,15 +1,16 @@
-/* src/lib/ecxc-components.css
+/* src/theme/ecxc-components.css
    Presentation for ECXC's own site-declared components (markdown/components.ts): `passage`,
    `aside` (a footnote gloss), `checklist`, and the training domain set (`programs`/`program`,
    `week`/`day`, `spectrum`/`zone`). Waymark's own alert/cta/faq/callout need no rules here; they
-   reuse Waymark's shapes verbatim and are already styled by prose.css.
+   reuse Waymark's shapes verbatim (or, for faq, a near-verbatim inline variant; see
+   ecxc-theme.css's own override) and are already styled by chassis/prose.css.
 
    Every rule below reads a Waymark ROLE token (`--color-primary`, `--color-base-*`,
    `--spacing-*`, `--text-step-*`, `--font-display`, `--radius-*`), never an invented brand
-   token: the ecxc identity layer (a later pass) re-skins this whole sheet for free by rotating
+   token: the ecxc identity layer (ecxc-theme.css) re-skins this whole sheet for free by rotating
    `--color-primary`'s hue, the same re-skin recipe theme.css documents for the rest of the site.
    Scoped under `.prose`, matching prose.css's own scoping (it beats DaisyUI's generic element
-   rules on specificity the same way). Imported from theme.css, after prose.css. */
+   rules on specificity the same way). Imported from theme.css, after ecxc-theme.css. */
 
 .prose {
   /* ─── Passage: a titled prose block in the club's card chrome ───────────
@@ -349,6 +350,13 @@
     height: 0.5rem;
     border-radius: 999px;
     overflow: hidden;
+  }
+  /* Each segment claims an equal share of the bar; with no explicit grow factor a bare, empty
+     `<span>` has nothing to size itself from (its flex-basis resolves to its own zero-width
+     content), so the bar rendered with three invisible, zero-width segments (Task 4's restore,
+     the meter-bar loss the fidelity trial found). */
+  & .ec-spectrum-bar span {
+    flex: 1;
   }
   /* A monochrome ramp on --color-primary alone (not a second brand hue), so the identity layer's
      hue rotation re-skins this gradient with everything else. */

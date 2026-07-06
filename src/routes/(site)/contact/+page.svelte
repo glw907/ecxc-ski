@@ -1,7 +1,7 @@
 <!-- @component ECXC's contact page: a short intro plus the contact form. -->
 <script lang="ts">
-  import { siteConfig } from '$lib/cairn.config';
-  import ContactForm from '$lib/components/ContactForm.svelte';
+  import { siteConfig } from '$theme/cairn.config';
+  import ContactForm from '$theme/components/ContactForm.svelte';
 </script>
 
 <svelte:head>

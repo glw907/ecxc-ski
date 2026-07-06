@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { sitemapResponse, type SitemapUrl } from '@glw907/cairn-cms/delivery';
-import { site, posts, ORIGIN } from '$lib/content';
+import { site, posts, ORIGIN } from '$chassis/content';
 
 export const prerender = true;
 

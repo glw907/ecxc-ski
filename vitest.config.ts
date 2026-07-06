@@ -9,7 +9,8 @@ export default defineConfig({
   plugins: [svelte()],
   resolve: {
     alias: {
-      '$lib': resolve(__dirname, 'src/lib'),
+      $chassis: resolve(__dirname, 'src/chassis'),
+      $theme: resolve(__dirname, 'src/theme'),
     },
   },
   test: {

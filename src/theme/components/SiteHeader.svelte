@@ -9,16 +9,17 @@ part of the light/dark base ladder: the header reads the same dark band in both 
 declared as local constants on `.site-header` rather than added to the shared token file. The
 current route's nav link gets `aria-current="page"` and the fireweed accent.
 
-The theme toggle (Task 4 of the rebuild-from-Waymark plan) is Waymark's own inherited mechanism: it
-sets `data-theme` on `<html>` between `cairn` (light) and `cairn-dark`, and persists the choice to a
-`cairn-site-theme` cookie so it survives a reload; the inline script in `app.html` reads that same
-cookie before first paint. The two theme NAMES stay `cairn`/`cairn-dark` regardless of this header's
-own dark band, which never changes with the toggle. -->
+The theme toggle now consumes the chassis's shared mechanism (`$chassis/theme-toggle`) rather than
+carrying its own copy: it sets `data-theme` on `<html>` between `cairn` (light) and `cairn-dark`,
+and persists the choice to a `cairn-site-theme` cookie so it survives a reload; the inline script in
+`app.html` reads that same cookie before first paint. The two theme NAMES stay `cairn`/`cairn-dark`
+regardless of this header's own dark band, which never changes with the toggle. -->
 <script lang="ts">
   import { page } from '$app/state';
   import { browser } from '$app/environment';
   import { extractMenu } from '@glw907/cairn-cms';
-  import { siteConfig } from '$lib/cairn.config';
+  import { resolveTheme, toggleTheme as chassisToggleTheme, type ThemeToggleConfig } from '$chassis/theme-toggle.js';
+  import { siteConfig } from '$theme/cairn.config';
   import SearchModal from './SearchModal.svelte';
 
   const nav = extractMenu(siteConfig, 'primary', 2);
@@ -44,26 +45,17 @@ own dark band, which never changes with the toggle. -->
   /** The two explicit theme choices; theme.css defines both as named DaisyUI themes. */
   type Theme = 'cairn' | 'cairn-dark';
 
-  /**
-   * Resolves the theme the button should show: `<html>`'s live `data-theme` if the visitor (or the
-   * head script) already set one, otherwise the current system scheme, so the icon is correct on
-   * first paint even before any explicit choice exists. Never called during SSR (`browser` guards
-   * every call site), so `document`/`window` are always safe to read here.
-   */
-  function resolveTheme(): Theme {
-    const attr = document.documentElement.getAttribute('data-theme');
-    if (attr === 'cairn' || attr === 'cairn-dark') return attr;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'cairn-dark' : 'cairn';
-  }
+  /** ecxc's own names and cookie, fed to the chassis toggle mechanism below. */
+  const themeConfig: ThemeToggleConfig<Theme> = { light: 'cairn', dark: 'cairn-dark', cookieName: 'cairn-site-theme' };
 
-  let theme = $state<Theme>(browser ? resolveTheme() : 'cairn');
+  // The icon is correct on first paint even before any explicit choice exists (resolveTheme reads
+  // `<html>`'s live data-theme, set by the head script, or falls back to the system scheme). Never
+  // called during SSR (`browser` guards every call site), so `document`/`window` are always safe.
+  let theme = $state<Theme>(browser ? resolveTheme(themeConfig) : 'cairn');
 
-  /** Flips the explicit theme, writes it to `<html>` and the persistence cookie. */
+  /** Flips the explicit theme via the chassis mechanism, which also persists the choice. */
   function toggleTheme(): void {
-    const next: Theme = theme === 'cairn-dark' ? 'cairn' : 'cairn-dark';
-    document.documentElement.setAttribute('data-theme', next);
-    document.cookie = `cairn-site-theme=${next}; path=/; max-age=31536000; samesite=lax`;
-    theme = next;
+    theme = chassisToggleTheme(themeConfig, theme);
   }
 </script>
 

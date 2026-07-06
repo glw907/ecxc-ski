@@ -16,7 +16,7 @@ carries no injection risk beyond what the crawled pages themselves already rende
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { siteConfig } from '$lib/cairn.config';
+  import { siteConfig } from '$theme/cairn.config';
 
   /** The single result shape this component reads from Pagefind's `data()` promise. */
   interface PagefindResult {

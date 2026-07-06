@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { renderMarkdown } from '$lib/render';
+import { renderMarkdown } from '$theme/render';
 
-// The registry declared in markdown/components.ts. `alert`/`cta`/`faq`/`callout` reuse Waymark's
-// own showcase shapes verbatim (so they render through prose.css's existing rules); `passage`,
-// `aside`, `checklist`, and the training domain set have no Waymark equivalent and are this
-// site's own components, styled by ecxc-components.css.
+// The registry declared in markdown/components.ts. `alert`/`cta`/`callout` reuse Waymark's own
+// showcase shapes verbatim (so they render through chassis/prose.css's existing rules); `faq`
+// reuses Waymark's question/answer shape but drops the `<details>` disclosure, so the answer
+// always shows inline (Task 4 of the chassis-restructure plan restores the pre-rebuild site's
+// presentation); `passage`, `aside`, `checklist`, and the training domain set have no Waymark
+// equivalent and are this site's own components, styled by ecxc-components.css.
 describe('the ecxc registry', () => {
   it('renders an alert with its role class and the default caution icon', async () => {
     const out = await renderMarkdown(':::alert[Heads up]{role="caution"}\nWatch out.\n:::\n');
@@ -27,13 +29,18 @@ describe('the ecxc registry', () => {
     expect(out).toContain('href="/crewlab"');
   });
 
-  it('renders one faq per question, as a native disclosure', async () => {
+  it('renders one faq per question, with the answer always shown inline (no accordion)', async () => {
     const out = await renderMarkdown(
       ':::faq{question="Does this cost anything?"}\nNo.\n:::\n\n:::faq{question="Second?"}\nYes.\n:::\n',
     );
-    expect(out).toContain('<details class="faq"');
+    expect(out).not.toContain('<details');
+    expect(out).toContain('class="faq"');
+    expect(out).toContain('class="faq-question"');
     expect(out).toContain('Does this cost anything?');
+    expect(out).toContain('class="faq-answer"');
+    expect(out).toContain('No.');
     expect(out).toContain('Second?');
+    expect(out).toContain('Yes.');
   });
 
   it('renders a callout with its points list', async () => {

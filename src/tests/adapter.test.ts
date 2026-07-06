@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { extractVocabulary } from '@glw907/cairn-cms';
-import { cairn, siteConfig } from '$lib/cairn.config';
+import { cairn, siteConfig } from '$theme/cairn.config';
 
 // The adapter's own shape, pinned so a later pass cannot silently drift the URL contract or the
 // curated tag vocabulary while rationalizing the site's directive registry (Task 2's job).

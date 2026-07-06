@@ -4,7 +4,7 @@
 // prerender lifecycle, so a stale manifest fails the build red regardless of the prerender
 // handleHttpError policy).
 import { createSiteIndexes } from '@glw907/cairn-cms/delivery';
-import { cairn, siteConfig } from './cairn.config.js';
+import { cairn, siteConfig } from '$theme/cairn.config.js';
 
 const postsRaw = import.meta.glob('/src/content/posts/*.md', {
   query: '?raw',

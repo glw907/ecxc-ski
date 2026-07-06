@@ -1,10 +1,6 @@
 // ecxc.ski's cairn adapter (v2 idiom), rebuilt fresh on the Waymark scaffold. The site-specific
 // half of the CMS: which repo to commit to, the editable concepts and their fieldset, the render
 // the editor preview mirrors, and the GitHub App identity.
-//
-// The component registry stays empty for now (defineRegistry({ components: [] }) in render.ts).
-// A later pass rationalizes the site's directive vocabulary (alert/cta/faq plus a small
-// ecxc-declared domain set) through defineComponent; this task is scaffold and config only.
 import { defineAdapter, defineConcept, fieldset, fields, githubApp, parseSiteConfig } from '@glw907/cairn-cms';
 import { normalizeAssets, makeMediaResolver, readCommittedManifest } from '@glw907/cairn-cms/media';
 import { renderMarkdown, registry } from './render.js';
@@ -79,17 +75,16 @@ export const cairn = defineAdapter({
     installationId: '135372268',
   }),
   email: { from: 'noreply@ecxc.ski' },
-  // Media on: the R2 bucket binding (wrangler.toml) the upload, storage, delivery, and resolver
-  // paths read. Cloudflare Images transforms stay off (the default), so the site serves
-  // full-size bytes until the zone opts in.
+  // The media R2 binding. The fake R2 double rides platform.env in dev; a real site binds it in
+  // wrangler.jsonc and mounts the /media delivery route.
   media: { bucketBinding: 'MEDIA_BUCKET' },
   rendering: {
     // The entry-aware render: the editor preview and every public page call this one function.
     // The default media resolver backs the public build; the preview path injects its own. After
-    // the engine's own renderMarkdown, wrapScrollableTables (the showcase's own post-processing
+    // the engine's own renderMarkdown, wrapScrollableTables (this theme's own post-processing
     // rehype step, since createRenderer keeps its internal plugin ordering closed) wraps every
     // bare markdown table in a scrollable, labeled region, so a table never blows out a narrow
-    // viewport (prose.css's .table-scroll class already expects this wrapper).
+    // viewport (chassis/prose.css's .table-scroll class already expects this wrapper).
     render: async ({ body, resolve, resolveMedia }) => {
       const html = await renderMarkdown(body, { resolve, resolveMedia: resolveMedia ?? publicMediaResolver });
       return wrapScrollableTables(html);
@@ -98,7 +93,7 @@ export const cairn = defineAdapter({
   },
   editor: {
     // The header menu, managed from /admin/nav and committed to the site-config YAML.
-    nav: { configPath: 'src/lib/site.config.yaml', menuName: 'primary', label: 'Navigation', maxDepth: 2 },
+    nav: { configPath: 'src/theme/site.config.yaml', menuName: 'primary', label: 'Navigation', maxDepth: 2 },
     // The preview knob: the (site) layout renders entries inside <main class="site-main">
     // (site.css), so the frame links the same theme/site sheets and reproduces that container.
     preview: { stylesheets: [themeCss, siteCss], containerClass: 'site-main' },

@@ -1,11 +1,15 @@
 // ECXC's component registry (Contract v2 idiom, rebuilt on the fresh Waymark scaffold). Under the
 // redo amendment ("ecxc is the test of Waymark's design flexibility"), the site's identity is
-// reached through the seams, not a rebuilt engine: `alert`, `cta`, `faq`, and `callout` reuse
-// Waymark's own showcase shapes verbatim (same class names, same DOM structure), so they render
-// through prose.css's existing rules with zero new CSS. `passage`, `aside` (a footnote gloss),
-// `checklist`, and the training-specific domain set (`programs`/`program`, `week`/`day`,
-// `spectrum`/`zone`) have no Waymark equivalent and are declared as this site's own components,
-// styled by `ecxc-components.css` on the same token layer.
+// reached through the seams, not a rebuilt engine: `alert`, `cta`, and `callout` reuse Waymark's
+// own showcase shapes verbatim (same class names, same DOM structure), so they render through
+// chassis/prose.css's existing rules with zero new CSS. `faq` reuses Waymark's question/answer
+// shape but drops the `<details>` disclosure (Task 4 of the chassis-restructure plan restores the
+// pre-rebuild site's inline answers): both the question and the answer always show, so
+// ecxc-theme.css's own override strips the chassis default's pointer cursor instead of adding a
+// disclosure marker. `passage`, `aside` (a footnote gloss), `checklist`, and the training-specific
+// domain set (`programs`/`program`, `week`/`day`, `spectrum`/`zone`) have no Waymark equivalent and
+// are declared as this site's own components, styled by `ecxc-components.css` on the same token
+// layer.
 //
 // Two deliberate widenings from the pure Waymark shape, both real content needs rather than
 // oversights (component-friction findings for the morning report):
@@ -18,11 +22,14 @@
 import { h } from 'hastscript';
 import type { Element, ElementContent } from 'hast';
 import { defineRegistry, defineComponent, fields, glyph, type ComponentDef } from '@glw907/cairn-cms';
-import { cardShell, headRow, iconSpan, isElement, strAttr, type ComponentContext, type MakeIcon } from '@glw907/cairn-cms/render';
+import { cardShell, headRow, isElement, strAttr, type ComponentContext, type MakeIcon } from '@glw907/cairn-cms/render';
+import { makeIconRenderer } from '$chassis/render.js';
 import { ICON_PATHS } from './icons.js';
 
 const ecGlyph = (name: string): Element => glyph(name, ICON_PATHS);
-const makeIcon: MakeIcon = (name, role) => iconSpan(ecGlyph(name), role);
+// The chassis wires the icon set into the render helpers; this theme owns only the glyph data
+// (ICON_PATHS) and where each build() function calls makeIcon.
+const makeIcon: MakeIcon = makeIconRenderer(ICON_PATHS);
 
 // A path attribute a program or a cta can point at: an in-page anchor, a site path, a cairn:
 // reference, or a full URL. See the header comment for why this replaces `fields.url` here.
@@ -92,21 +99,22 @@ const cta = defineComponent({
   preview: { attributes: { label: 'Sign up', url: '/contact', variant: 'primary' } },
 });
 
-// ─── FAQ: Waymark's shape, unchanged ────────────────────────────────────────
+// ─── FAQ: the question and its answer sit inline, no accordion ─────────────
+// Task 4 of the chassis-restructure plan restores the pre-rebuild site's own FAQ presentation:
+// every answer always shows, rather than behind a `<details>`/`<summary>` disclosure the Waymark
+// shape used. The question stays a plain, always-visible label; ecxc-theme.css's own override
+// strips the chassis default's pointer cursor to match (see that file's header comment).
 const faq = defineComponent({
   name: 'faq',
   label: 'FAQ question',
-  description: 'One question and its answer, on a native disclosure widget.',
+  description: 'One question and its answer, always shown inline.',
   use: 'Answer a question a reader is likely to have without lengthening the main flow.',
   group: 'Structure',
   icon: 'question',
   build: (ctx) => {
     const question = strAttr(ctx, 'question') ?? '';
-    return h('details', { className: ['faq'] }, [
-      h('summary', { className: ['faq-question'] }, [
-        h('span', { className: ['faq-question-text'] }, [question]),
-        h('span', { className: ['faq-marker'] }, [makeIcon('chevron-down')]),
-      ]),
+    return h('div', { className: ['faq'] }, [
+      h('p', { className: ['faq-question'] }, [question]),
       h('div', { className: ['faq-answer'] }, ctx.slot('body')),
     ]);
   },

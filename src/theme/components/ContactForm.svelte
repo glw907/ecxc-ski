@@ -6,7 +6,7 @@ by design (it ships inside the served HTML, unlike the paired secret key, which 
 secret), so it is a plain literal here, the same site key the pre-rebuild site already registered
 with Cloudflare, not an env read. -->
 <script lang="ts">
-  import { sendMessage } from '$lib/contact.remote';
+  import { sendMessage } from '$theme/contact.remote';
 
   const { name, email, message } = sendMessage.fields;
 </script>

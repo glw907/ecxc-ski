@@ -1,7 +1,7 @@
 <!-- @component ECXC's tag index: every tag in use, each linking to its own posts. -->
 <script lang="ts">
   import type { PageData } from './$types';
-  import { siteConfig } from '$lib/cairn.config';
+  import { siteConfig } from '$theme/cairn.config';
 
   let { data }: { data: PageData } = $props();
 </script>

@@ -4,7 +4,7 @@
      newest post's full body and lists everything older as compact cards. -->
 <script lang="ts">
   import type { PageData } from './$types';
-  import { siteConfig } from '$lib/cairn.config';
+  import { siteConfig } from '$theme/cairn.config';
 
   let { data }: { data: PageData } = $props();
 

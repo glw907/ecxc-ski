@@ -10,6 +10,16 @@ const config = {
     // wrangler dev still honors it, but without this the CI prerender (no Cloudflare auth) fails
     // with "Failed to start the remote proxy session".
     adapter: adapter({ platformProxy: { remoteBindings: false } }),
+    // $chassis resolves the genre-free layer (src/chassis/): the plumbing and composition
+    // primitives the theme mounts onto. $theme resolves ecxc's own theme content (src/theme/): the
+    // chrome, the adapter config, the token values (see src/chassis/README.md for the boundary
+    // rule). $lib is unused; the site keeps no src/lib.
+    alias: {
+      $chassis: 'src/chassis',
+      '$chassis/*': 'src/chassis/*',
+      $theme: 'src/theme',
+      '$theme/*': 'src/theme/*'
+    },
     // cairn-cms 0.35 owns admin CSRF through a double-submit token that tolerates a missing Origin,
     // so the JS-free magic-link login works from a privacy browser that omits the header. That needs
     // SvelteKit's global Origin check off; cairn's guard restores the strict Origin check for the

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { deriveHeroImage } from '$lib/hero-image';
+import { deriveHeroImage } from '$theme/hero-image';
 
 // The home masthead's hero projection (Task 4 of the rebuild-from-Waymark plan): a small pure
 // function, so it is worth pinning directly rather than only through the built page's rendered

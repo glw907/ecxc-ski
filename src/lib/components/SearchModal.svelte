@@ -1,191 +1,278 @@
-<!-- @component
-Site-owned Pagefind search: a trigger button plus a DaisyUI `<dialog>` modal, styled on the same
-Waymark token layer as the rest of the chrome (no Pagefind default CSS ships). `npm run build:search`
-(`vite build && npx pagefind --site .svelte-kit/cloudflare`) crawls the prerendered (site) pages after
-a normal build and writes the index and the runtime module to `/pagefind/` inside that same output
-directory, so it deploys alongside the rest of the static assets with no extra wiring. This component
-never imports that module at build time (it does not exist until `build:search` has run); it is
-fetched at runtime, lazily, on first open, with `@vite-ignore` telling Vite not to try to resolve it
-ahead of time. A plain `npm run dev` or `npm run build` (without the search step) has no
-`/pagefind/pagefind.js` to fetch, so the modal reports that plainly instead of throwing.
-
-Opens from the header's search button, or Cmd/Ctrl+K from anywhere on the page. The result excerpt
-comes from Pagefind's own generated HTML (a `<mark>` around the matched terms, built from the
-indexed page content at crawl time, not from live user input), so rendering it with `{@html}` here
-carries no injection risk beyond what the crawled pages themselves already render.
--->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { siteConfig } from '$lib/cairn.config';
 
-  /** The single result shape this component reads from Pagefind's `data()` promise. */
-  interface PagefindResult {
-    url: string;
-    excerpt: string;
-    meta: { title?: string };
+  let { open = $bindable(false) }: { open: boolean } = $props();
+
+  let initialized = false;
+
+  // Only the options used at this call site (Pagefind UI accepts more).
+  interface PagefindUIOptions {
+    element: string;
+    showSubResults?: boolean;
+    placeholder?: string;
   }
-
-  /** The subset of Pagefind's runtime module this component calls. */
-  interface PagefindModule {
-    init: () => Promise<void>;
-    search: (query: string) => Promise<{ results: { data: () => Promise<PagefindResult> }[] }>;
-  }
-
-  let dialogEl = $state<HTMLDialogElement>();
-  let query = $state('');
-  let results = $state<PagefindResult[]>([]);
-  let searched = $state(false);
-  let loadError = $state('');
-  let pagefind: PagefindModule | null = null;
-  let debounceHandle: ReturnType<typeof setTimeout> | undefined;
-
-  /**
-   * Loads the runtime module on first use only, caching the result for the rest of the session. A
-   * missing module (no `build:search` run yet) is the expected dev-environment case, not a bug, so
-   * it resolves to a friendly message rather than an unhandled rejection.
-   */
-  async function ensurePagefind(): Promise<PagefindModule | null> {
-    if (pagefind) return pagefind;
-    try {
-      // A runtime-only path (a build:search artifact, never a module Vite or TypeScript can resolve
-      // ahead of time): the path sits in a variable, not a string literal in the import() call, so
-      // TypeScript treats the result as Promise<any> instead of trying to resolve a module
-      // declaration for it. @vite-ignore tells Vite the same thing at the bundler level.
-      const pagefindPath = '/pagefind/pagefind.js';
-      const mod = (await import(/* @vite-ignore */ pagefindPath)) as PagefindModule;
-      await mod.init();
-      pagefind = mod;
-      return pagefind;
-    } catch {
-      loadError = 'Search is not built into this preview yet. Run `npm run build:search`.';
-      return null;
-    }
-  }
-
-  async function runSearch(value: string) {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      results = [];
-      searched = false;
-      return;
-    }
-    const mod = await ensurePagefind();
-    if (!mod) return;
-    const { results: hits } = await mod.search(trimmed);
-    results = await Promise.all(hits.slice(0, 8).map((hit) => hit.data()));
-    searched = true;
-  }
-
-  function onInput() {
-    clearTimeout(debounceHandle);
-    debounceHandle = setTimeout(() => runSearch(query), 150);
-  }
-
-  function open() {
-    if (dialogEl?.open) return; // showModal throws on an already-open dialog
-    loadError = '';
-    dialogEl?.showModal();
-    void ensurePagefind();
-  }
-
-  function onClose() {
-    query = '';
-    results = [];
-    searched = false;
+  interface PagefindUIModule {
+    PagefindUI: new (options: PagefindUIOptions) => unknown;
   }
 
   onMount(() => {
-    function onKeydown(e: KeyboardEvent) {
-      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+    function handleGlobalKeydown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        open();
+        open = !open;
       }
     }
-    document.addEventListener('keydown', onKeydown);
-    return () => document.removeEventListener('keydown', onKeydown);
+    document.addEventListener('keydown', handleGlobalKeydown);
+    return () => document.removeEventListener('keydown', handleGlobalKeydown);
+  });
+
+  async function initPagefind() {
+    if (initialized) return;
+
+    if (!document.querySelector('link[href*="pagefind-ui.css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/pagefind/pagefind-ui.css';
+      document.head.appendChild(link);
+    }
+
+    try {
+      // pagefind UI bundle is generated post-build by `npx pagefind`; no module exists at compile time.
+      // TypeScript resolves string-literal import paths at compile time (TS2307, "cannot find
+      // module"); a variable path defeats that check, and the cast below supplies the real type.
+      const pagefindUrl: string = '/pagefind/pagefind-ui.js';
+      const { PagefindUI } = (await import(/* @vite-ignore */ pagefindUrl)) as unknown as PagefindUIModule;
+      new PagefindUI({
+        element: '#pagefind-search',
+        showSubResults: true,
+        placeholder: 'Search posts\u2026',
+      });
+      initialized = true;
+    } catch {
+      // dev mode; pagefind not built yet
+    }
+  }
+
+  function close() {
+    open = false;
+  }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') close();
+  }
+
+  $effect(() => {
+    if (open) {
+      initPagefind();
+      setTimeout(() => {
+        document.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.focus();
+      }, 60);
+    }
   });
 </script>
 
-<button
-  type="button"
-  onclick={open}
-  aria-label="Search"
-  class="search-trigger inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-field text-muted hover:text-base-content"
->
-  <svg
-    class="h-5 w-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    aria-hidden="true"
+{#if open}
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+  <div
+    class="search-overlay"
+    role="presentation"
+    onclick={(e) => { if (e.target === e.currentTarget) close(); }}
+    onkeydown={handleKeydown}
   >
-    <circle cx="11" cy="11" r="7" />
-    <path d="M21 21l-4.35-4.35" />
-  </svg>
-</button>
-
-<dialog bind:this={dialogEl} class="modal" aria-label="Search" onclose={onClose}>
-  <div class="modal-box max-w-lg self-start p-0 sm:mt-[12vh]">
-    <div class="flex items-center gap-2 border-b border-card-border px-m">
-      <svg
-        class="h-4 w-4 shrink-0 text-muted"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        aria-hidden="true"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <path d="M21 21l-4.35-4.35" />
-      </svg>
-      <input
-        bind:value={query}
-        oninput={onInput}
-        type="text"
-        aria-label="Search {siteConfig.siteName}"
-        placeholder="Search {siteConfig.siteName}…"
-        class="w-full bg-transparent py-3.5 text-sm outline-hidden placeholder:text-muted"
-      />
+    <div class="search-panel">
+      <button onclick={close} class="search-close" aria-label="Close search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M18 6 6 18"/>
+          <path d="m6 6 12 12"/>
+        </svg>
+      </button>
+      <div id="pagefind-search"></div>
     </div>
-
-    {#if loadError}
-      <p class="px-m py-6 text-center text-sm text-muted">{loadError}</p>
-    {:else if results.length}
-      <ul class="max-h-[60vh] overflow-y-auto p-2">
-        {#each results as result (result.url)}
-          <li>
-            <a
-              href={result.url}
-              onclick={() => dialogEl?.close()}
-              class="block rounded-field px-m py-s no-underline hover:bg-base-200"
-            >
-              <p class="font-display font-semibold text-base-content">{result.meta.title ?? result.url}</p>
-              <p class="text-step--1 text-muted">{@html result.excerpt}</p>
-            </a>
-          </li>
-        {/each}
-      </ul>
-    {:else if searched}
-      <p class="px-m py-6 text-center text-sm text-muted">No matches for "{query}".</p>
-    {/if}
   </div>
-  <form method="dialog" class="modal-backdrop"><button tabindex="-1" aria-label="Close">close</button></form>
-</dialog>
+{/if}
 
 <style>
-  .search-trigger {
-    transition: color 0.15s;
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 5rem 1rem 2rem;
+    background: oklch(20% 0.012 175 / 0.25);
+    backdrop-filter: blur(4px);
+    animation: fade-in 0.3s ease;
   }
-  .search-trigger:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .search-trigger {
-      transition: none;
-    }
+
+  .search-panel {
+    position: relative;
+    width: 100%;
+    max-width: 34rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    background: var(--color-base-100, #fff);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 1.75rem 2rem 1.5rem;
+    box-shadow: var(--shadow-float);
+  }
+
+  .search-close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--color-faint);
+    transition: color 0.2s ease;
+  }
+  .search-close:hover {
+    color: var(--color-body);
+  }
+
+  .search-panel::-webkit-scrollbar { width: 5px; }
+  .search-panel::-webkit-scrollbar-track { background: transparent; }
+  .search-panel::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 3px;
   }
 </style>
+
+<svelte:head>
+  {#if open}
+    {@html `<style id="pagefind-overrides">
+      #pagefind-search {
+        --pagefind-ui-scale: 0.75;
+        --pagefind-ui-primary: var(--color-heading);
+        --pagefind-ui-text: var(--color-body);
+        --pagefind-ui-background: var(--color-base-100, #fff);
+        --pagefind-ui-border: var(--color-border);
+        --pagefind-ui-tag: var(--color-surface);
+        --pagefind-ui-border-width: 1px;
+        --pagefind-ui-border-radius: 4px;
+        --pagefind-ui-image-border-radius: 3px;
+        --pagefind-ui-font: var(--font-body);
+      }
+
+      /* Hide pagefind's built-in search icon */
+      .pagefind-ui__form::before {
+        display: none !important;
+      }
+
+      .pagefind-ui__search-input {
+        font-family: var(--font-body) !important;
+        font-size: 1.05rem !important;
+        font-weight: 400 !important;
+        height: auto !important;
+        padding: 0.55rem 2.5rem 0.55rem 0.85rem !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: 5px !important;
+        background: var(--color-surface) !important;
+        transition: border-color 0.2s ease !important;
+      }
+      .pagefind-ui__search-input::placeholder {
+        opacity: 0.35 !important;
+      }
+      .pagefind-ui__search-input:focus {
+        border-color: var(--color-muted) !important;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      .pagefind-ui__search-clear {
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        right: 0.25rem !important;
+        height: auto !important;
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.7rem !important;
+        color: var(--color-faint) !important;
+        background: transparent !important;
+      }
+
+      .pagefind-ui__message {
+        font-family: var(--font-display) !important;
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        color: var(--color-muted) !important;
+        padding: 0.75rem 0 0.25rem !important;
+        height: auto !important;
+      }
+
+      .pagefind-ui__results-area {
+        margin-top: 0 !important;
+      }
+
+      .pagefind-ui__result {
+        padding: 0.7rem 0 !important;
+        border-top: 1px solid var(--color-border-subtle) !important;
+      }
+      .pagefind-ui__result:last-of-type {
+        border-bottom: none !important;
+      }
+
+      .pagefind-ui__result-title {
+        font-family: var(--font-display) !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.01em !important;
+      }
+      .pagefind-ui__result-link {
+        color: var(--color-heading) !important;
+        text-decoration: none !important;
+      }
+      .pagefind-ui__result-link:hover {
+        color: var(--color-link) !important;
+      }
+
+      .pagefind-ui__result-excerpt {
+        font-family: var(--font-body) !important;
+        font-size: 0.82rem !important;
+        line-height: 1.5 !important;
+        color: var(--color-muted) !important;
+      }
+
+      .pagefind-ui mark {
+        background: var(--color-highlight) !important;
+        color: inherit !important;
+        border-radius: 2px;
+        padding: 0.05em 0.12em;
+      }
+
+      .pagefind-ui__button {
+        font-family: var(--font-display) !important;
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        height: auto !important;
+        padding: 0.5rem 0.75rem !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: 4px !important;
+        background: var(--color-surface) !important;
+        color: var(--color-muted) !important;
+        transition: color 0.15s ease, border-color 0.15s ease !important;
+      }
+      .pagefind-ui__button:hover {
+        color: var(--color-heading) !important;
+        border-color: var(--color-muted) !important;
+      }
+    </style>`}
+  {/if}
+</svelte:head>

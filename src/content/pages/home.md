@@ -1,8 +1,5 @@
 ---
 title: "Home"
-image:
-  src: "media:ec-xc-hero.eadc978e4f4f3a35"
-  alt: "Two young cross-country skiers pole hard up a snowy hill side by side during a race."
 ---
 East Community Cross Country is a free summer training group for Anchorage high school runners and Nordic skiers, coached by volunteers. We train Monday, Wednesday, and Friday mornings, June 1 to August 19, mostly running and strength with mountain bikes and roller skis mixed in. Mondays we're at East High; the rest of the week moves around the city's trailheads.
 

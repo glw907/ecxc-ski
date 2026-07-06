@@ -1,25 +1,20 @@
 import type { PageServerLoad } from './$types';
-import { extractVocabulary } from '@glw907/cairn-cms';
-import { buildLinkResolver } from '@glw907/cairn-cms/delivery';
-import { posts, pages, site } from '$lib/content';
-import { cairn, publicMediaResolver, siteConfig } from '$lib/cairn.config';
-import { deriveHeroImage } from '$lib/hero-image';
+import { postList, posts, pages, linkResolver } from '$lib/content';
+import { cairn } from '$lib/cairn.config';
 
-export const prerender = true;
-
-// ECXC's home is a content entry (pages/home.md, permalink /home), not the archive front page
-// Waymark ships by default: the site is mostly static pages, not a blog, so the masthead reads
-// the editable welcome copy instead of the generic siteConfig.description. /home itself 301s to
-// / (the redirect route), so this is the one place that entry's body actually renders. The home
-// reads its tag-filter options from the site's own committed vocabulary (the {value,label} list),
-// so the control labels the slugs editors curate rather than the raw frontmatter tokens. The
-// masthead hero (Task 4) reads the same frontmatter `image` field the generic `[...path]` template
-// derives its own hero from; see $lib/hero-image.ts for why this route re-derives it by hand.
 export const load: PageServerLoad = async () => {
+  const list = postList();
+  const first = list[0];
   const home = pages.byId('home');
-  const welcomeHtml = home
-    ? await cairn.rendering.render({ body: home.body, concept: 'pages', resolve: buildLinkResolver(site) })
-    : '';
-  const heroImage = home ? deriveHeroImage(home.frontmatter, publicMediaResolver) : undefined;
-  return { posts: posts.all(), vocabulary: extractVocabulary(siteConfig), welcomeHtml, heroImage };
+  const welcomeHtml = home ? await cairn.render(home.body, { resolve: linkResolver }) : '';
+  const featured = first
+    ? {
+        permalink: first.permalink,
+        title: first.title,
+        date: first.date,
+        tags: first.tags,
+        html: await cairn.render(posts.byId(first.id)!.body, { resolve: linkResolver }),
+      }
+    : null;
+  return { posts: list, featured, welcomeHtml };
 };

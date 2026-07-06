@@ -1,26 +1,22 @@
 import type { RequestHandler } from './$types';
 import { sitemapResponse, type SitemapUrl } from '@glw907/cairn-cms/delivery';
-import { site, posts, ORIGIN } from '$lib/content';
+import { site, posts } from '$lib/content';
+import { SITE_URL } from '$lib/config';
 
 export const prerender = true;
 
-// The concept entries (`site.all()`) plus this site's bespoke routes: /archives, /tags, /contact,
-// and /waiver. None of those four are concept entries, so the site resolver cannot see them; they
-// are added here by hand, same as one page per live tag. `pages/home` is EXCLUDED from `site.all()`
-// below: its own permalink (/home) is now a redirect target (backlog #17), not a canonical URL, so
-// the real home (`/`) is listed once, above, instead.
 export const GET: RequestHandler = () => {
   const urls: SitemapUrl[] = [
-    { loc: ORIGIN + '/' },
-    { loc: ORIGIN + '/archives' },
-    { loc: ORIGIN + '/tags' },
-    { loc: ORIGIN + '/contact' },
-    { loc: ORIGIN + '/waiver' },
-    ...posts.allTags().map(({ tag }) => ({ loc: `${ORIGIN}/tags/${tag}` })),
-    ...site
-      .all()
-      .filter((s) => !(s.concept === 'pages' && s.id === 'home'))
-      .map((s) => ({ loc: ORIGIN + s.permalink, ...(s.date ? { lastmod: s.date } : {}) })),
+    { loc: SITE_URL + '/' },
+    { loc: SITE_URL + '/tags' },
+    { loc: SITE_URL + '/contact' },
+    { loc: SITE_URL + '/waiver' },
+    // Content: posts carry a date (the lastmod), pages do not.
+    ...site.all().map((s) =>
+      s.date ? { loc: SITE_URL + s.permalink, lastmod: s.date } : { loc: SITE_URL + s.permalink },
+    ),
+    ...posts.allTags().map(({ tag }) => ({ loc: `${SITE_URL}/tags/${tag}` })),
   ];
+
   return sitemapResponse(urls);
 };

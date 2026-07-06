@@ -1,27 +1,35 @@
 import type { PageServerLoad, EntryGenerator } from './$types';
 import { createPublicRoutes } from '@glw907/cairn-cms/delivery';
 import { site, ORIGIN, SITE_DESCRIPTION } from '$lib/content';
-import { cairn, publicMediaResolver, mediaEnabled, siteConfig } from '$lib/cairn.config';
+import { cairn, publicMediaResolver } from '$lib/cairn.config';
 
 export const prerender = true;
 
 const routes = createPublicRoutes({
   site,
-  render: cairn.rendering.render,
+  render: cairn.render,
   origin: ORIGIN,
-  siteName: siteConfig.siteName,
+  siteName: cairn.siteName,
   description: SITE_DESCRIPTION,
   feeds: { rss: ORIGIN + '/feed.xml', json: ORIGIN + '/feed.json' },
-  // The same resolver the body render path uses, so the read path resolves a frontmatter `image`
-  // hero into the `heroImage` projection the template and the SEO head read.
+  // The same resolver the render path uses, so a frontmatter hero (once adopted) resolves at
+  // delivery. Body media: references resolve through cairn.render above.
   resolveMedia: publicMediaResolver,
-  // Arms the engine's media.resolver_absent diagnostic: with media on, dropping resolveMedia above
-  // logs a warning instead of silently shipping a broken hero image.
-  assetsEnabled: mediaEnabled,
 });
 
 export const entries: EntryGenerator = () => routes.entries();
 
 export const load: PageServerLoad = async ({ url }) => {
-  return routes.entryLoad({ url });
+  const data = await routes.entryLoad({ url });
+  // EntryData carries no concept; a dated entry is a post, an undated one a page.
+  const concept = data.entry.date ? 'posts' : 'pages';
+  return {
+    concept,
+    slug: data.entry.slug,
+    title: data.entry.title,
+    date: data.entry.date ?? '',
+    tags: data.entry.tags,
+    html: data.html,
+    seo: data.seo,
+  };
 };

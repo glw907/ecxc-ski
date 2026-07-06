@@ -1,20 +1,45 @@
-<!-- @component ECXC's contact page: a short intro plus the contact form. -->
 <script lang="ts">
-  import { siteConfig } from '$lib/cairn.config';
+  import { SITE_TITLE } from '$lib/config';
   import ContactForm from '$lib/components/ContactForm.svelte';
+  import { riseStyle } from '$lib/motion';
 </script>
 
 <svelte:head>
-  <title>Contact — {siteConfig.siteName}</title>
-  <meta name="description" content="Get in touch with an ECXC coach." />
+  <title>Contact — {SITE_TITLE}</title>
 </svelte:head>
 
-<section class="pb-xl pt-l">
-  <h1 class="m-0 mb-s font-display text-step-5 font-semibold leading-tight tracking-tight">Contact</h1>
-  <p class="m-0 mb-l max-w-measure-wide text-step-0 leading-snug text-muted">
-    Questions about joining, donations, or volunteering? Send them here and a coach will get back
-    to you. The liability waiver works a little differently: you sign it in CrewLAB, so if your
-    question is about the waiver, you'll find what you need there.
+<div class="contact-page">
+  <h1 class="page-title">Contact</h1>
+  <p class="contact-intro">
+    Questions about joining, donations, or volunteering? Send them here and a
+    coach will get back to you. The liability waiver works a little
+    differently. You sign it in CrewLAB, so if your question is about the waiver,
+    you will find what you need there.
   </p>
-  <ContactForm />
-</section>
+  <div class="contact-module" style={riseStyle(0)}>
+    <ContactForm />
+  </div>
+</div>
+
+<style>
+  .contact-page {
+    animation: page-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .contact-intro {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-body);
+    max-width: 42rem;
+    margin-block: 0 1.5rem;
+  }
+  .contact-module {
+    animation: module-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--rise, 0s);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contact-page,
+    .contact-module {
+      animation: none;
+    }
+  }
+</style>

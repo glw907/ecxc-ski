@@ -1,22 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="">
   <head>
     <meta charset="utf-8" />
+    <!-- The ?v=2 busts browsers' separate favicon caches (the rebrand left the
+         old crimson icon stuck in Firefox); bump it when the favicon changes. -->
+    <link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script>
-      // The no-flash theme read (Task 4 of the rebuild-from-Waymark plan, inherited verbatim from
-      // Waymark: examples/showcase/src/app.html). Runs synchronously before the first paint, so a
-      // returning visitor's explicit choice (SiteHeader.svelte's toggle) never flashes the system
-      // default first. No cookie leaves `data-theme` unset, and theme.css's own prefers-color-scheme
-      // block picks the system scheme with no JS involved at all.
-      (function () {
-        var match = document.cookie.match(/(?:^|; )cairn-site-theme=(cairn-dark|cairn)(?:;|$)/);
-        if (match) document.documentElement.setAttribute('data-theme', match[1]);
+      (function() {
+        var saved = document.cookie.match(/(?:^|; )theme=([^;]*)/);
+        var theme = saved ? saved[1] : null;
+        if (!theme) {
+          theme = localStorage.getItem('theme');
+        }
+        if (!theme) {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'ecxc-dark' : 'ecxc';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
-    <div>%sveltekit.body%</div>
+    <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>

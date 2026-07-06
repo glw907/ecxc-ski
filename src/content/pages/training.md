@@ -16,9 +16,7 @@ Four days at a lake, two workouts a day, swimming and a sauna in between. Regist
 :::
 ::::
 
-## Summer training
-
-*Jun 1–Aug 19 · 3 mornings a week*
+:::::section[Summer training]{icon="person-simple-run" meta="Jun 1–Aug 19 · 3 mornings a week"}
 
 We meet Monday, Wednesday, and Friday, except camp week, July 21 to 24, when there is no practice. Practice starts at 10:30, and the group leaves the lot at 10:30, so give yourself time to get there.
 
@@ -48,17 +46,17 @@ Spenst is explosive jumping work, short powerful bounds and hops, the spring a s
 
 Monday is always East High. Wednesday and Friday move around: Hillside out of the Hilltop lot, Kincaid, Bartlett, or one of the Chugach front range trailheads. Check CrewLAB before you drive, because the spot sometimes changes the night before.
 
-:::passage[Carpooling]{icon="car"}
+::::card[Carpooling]{icon="car"}
 If practice is at a trailhead, a carpool leaves East High at 10:00 and comes back to East afterward. Anyone in the lot by 10:00 gets a ride. Pick up at East or at the trailhead, whichever is on your way.
-:::
+::::
 
 ### The work
 
 Mostly you'll run. Trails, roads, and mountains, every week, because running is the cheapest fitness there is and it carries straight over to skiing. Strength happens outside too, bounding and plyometric work on the hills, core on the grass; there's no gym in this program. The bikes and roller skis mostly come out on your independent days.
 
-:::alert[Helmets required]{role="caution"}
+::::alert[Helmets required]{role="caution"}
 A helmet comes to every roller-ski and mountain-bike session. No helmet, no wheels. We hold to that every time.
-:::
+::::
 
 ### Training groups
 
@@ -88,12 +86,12 @@ Anyone entering 9th grade through 12th, plus graduates home from college for the
 
 ### What to bring
 
-:::checklist
+::::checklist
 - Water and snacks.
 - Trail running shoes.
 - A helmet on bike and roller-ski days.
 - Layers. An Anchorage morning can do sun, wind, and rain before noon.
-:::
+::::
 
 We keep loaner roller skis and poles and can usually scare up other gear. Ask a coach.
 
@@ -101,16 +99,17 @@ We keep loaner roller skis and poles and can usually scare up other gear. Ask a 
 
 Sign the waiver in CrewLAB before you come, then just show up: East High at 10:30 on a Monday, or by 10:00 if it's a carpool day. Bring trail shoes, water, and layers. You'll be running on day one, not roller-skiing, so don't buy anything. Find any adult, say you're new, and they'll get you into the right group.
 
+:::cta[Sign up for summer training]{icon="flag"}
 Sign-up and the liability waiver are both in [CrewLAB](cairn:pages/crewlab), and the waiver has to be on file before your first practice.
 
-:::cta{label="Sign up for summer training" url="https://crewlab.app.link/5g7vhhYEn3b" newTab="true"}
-:::
+<a href="https://crewlab.app.link/5g7vhhYEn3b" class="download-link" target="_blank" rel="noopener">Sign up for summer training <span class="ec-arr">→</span></a>
 
 If you'd rather ask a person something first, the [contact form](/contact) goes to a coach.
+:::
 
-## Talkeetna camp
+:::::
 
-*Jul 21–24 · 4 days, 3 nights*
+:::::section[Talkeetna camp]{icon="tent" meta="Jul 21–24 · 4 days, 3 nights" role="secondary"}
 
 Camp is July 21 to 24, up at a lake near Talkeetna. We train twice a day, the kids get the lake and the sauna in between, and the team cooks dinner together. Fair warning on the cabins: they're dry, meaning outhouses and no showers for four days, and the lake is the bath. Amy Purevsuren runs camp, it's free like everything else, and it registers separately in CrewLAB even if your athlete has been with us all summer.
 
@@ -122,7 +121,7 @@ Camp registration and consent are their own forms in CrewLAB, separate from summ
 
 ### What to pack
 
-:::checklist{cols="2"}
+::::checklist{cols="2"}
 - Sleeping bag and a pillow.
 - Training clothes for cool and warm weather.
 - Rain gear. It is Talkeetna.
@@ -137,34 +136,25 @@ Camp registration and consent are their own forms in CrewLAB, separate from summ
 - Daily medications.
 - Food for special diets (optional).
 - Personal snacks (optional).
-:::
+::::
 
+:::cta[Register for camp]{icon="tent"}
 Register and sign the camp consent in [CrewLAB](cairn:pages/crewlab); both are separate from summer-training sign-up. The waiver has to be on file before camp too.
 
 Questions? The [contact form](/contact) works for camp too.
-
-## Frequently Asked Questions
-
-:::faq{question="What does it cost?"}
-Nothing. Training and camp are both free, and donating or not changes nothing.
 :::
 
-:::faq{question="Do I need skiing experience?"}
-No. Summer is dryland: running, strength, bikes, roller skis. Runners do fine here without ever having skied.
-:::
+:::::
 
-:::faq{question="Who can join?"}
-Anyone entering 9th through 12th grade, plus graduates home from college. Not junior high yet.
-:::
+:::::section[Frequently Asked Questions]{icon="question"}
 
-:::faq{question="Do I have to do both programs?"}
-No. They sign up separately. Do one or both.
-:::
+::::faq
+- **What does it cost?** Nothing. Training and camp are both free, and donating or not changes nothing.
+- **Do I need skiing experience?** No. Summer is dryland: running, strength, bikes, roller skis. Runners do fine here without ever having skied.
+- **Who can join?** Anyone entering 9th through 12th grade, plus graduates home from college. Not junior high yet.
+- **Do I have to do both programs?** No. They sign up separately. Do one or both.
+- **What if I miss a session?** Come to the next one. The week's plan is in CrewLAB if you want to make it up on your own.
+- **Do I need my own gear?** Trail shoes and water, plus a helmet on bike and roller-ski days. Roller skis and poles we can lend. Ask.
+::::
 
-:::faq{question="What if I miss a session?"}
-Come to the next one. The week's plan is in CrewLAB if you want to make it up on your own.
-:::
-
-:::faq{question="Do I need my own gear?"}
-Trail shoes and water, plus a helmet on bike and roller-ski days. Roller skis and poles we can lend. Ask.
-:::
+:::::

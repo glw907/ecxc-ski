@@ -1,7 +1,16 @@
-// The engine's auth guard owns /admin gating: the magic-link session cookie, CSRF, and the
-// admin-route dispatch. This site has no registry-only dev-backend hook (@glw907/cairn-cms-dev is
-// a monorepo-only devDependency, unpublished by design); a local admin smoke test seeds a D1
-// session row directly instead (see the admin smoke-test process in the CMS repo's memory).
+import type { Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
 import { createAuthGuard } from '@glw907/cairn-cms/sveltekit';
 
-export const handle = createAuthGuard();
+// Inject the reader's saved theme into the SSR'd <html data-theme> so the first paint matches
+// their choice with no flash. This is site behavior the engine guard knows nothing about, so it
+// runs first in the sequence; createAuthGuard() then owns the /admin session gate and allowlist.
+const theme: Handle = ({ event, resolve }) => {
+  const value = event.cookies.get('theme') ?? '';
+  return resolve(event, {
+    transformPageChunk: ({ html }) =>
+      html.replace('data-theme=""', `data-theme="${value}"`),
+  });
+};
+
+export const handle = sequence(theme, createAuthGuard());

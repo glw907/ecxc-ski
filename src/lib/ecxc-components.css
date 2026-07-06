@@ -32,6 +32,14 @@
     display: inline-flex;
     color: var(--color-primary);
   }
+  /* The bare `.ec-glyph` SVG carries only a `viewBox`, no `width`/`height` attribute, so with no
+     sizing rule at all it falls back to the browser's intrinsic replaced-element box (300x150px):
+     a passage heading's icon rendered as a giant, page-breaking glyph until this rule constrains
+     it to the same scale the program-card head icon already uses. */
+  & .ec-passage .ec-head .ec-glyph {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
   & .ec-passage-body > * {
     margin: 0;
   }

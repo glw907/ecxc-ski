@@ -1,41 +1,36 @@
-<!-- @component ecxc's home: a masthead over a composed front page, the newest post given a lead
-     treatment above the archive index. Token-backed throughout: DaisyUI role utilities and cairn
-     token arbitrary-value utilities for the markup, a scoped `<style>` only for the lead card, the
-     index grid, and the hairlines a utility cannot express. -->
+<!-- @component ecxc's home: the pre-rebuild site's own structural device (structural-device
+     catalogue, rebuild-waymark-2). A hero grid pairs the welcome photo, its overlapping intro
+     panel, and a recent-posts sidebar card; below it, a News & Updates section leads with the
+     newest post's full body and lists everything older as compact cards. -->
 <script lang="ts">
   import type { PageData } from './$types';
   import { siteConfig } from '$lib/cairn.config';
 
   let { data }: { data: PageData } = $props();
 
-  /** The home list, newest first. The canonical `date` is the dated-concept index's normalized
-   *  top-level field; an undated post sorts to the end. */
-  const entries = $derived([...data.posts].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')));
+  // The pre-rebuild site's own default: the newest post gets the full-body lead treatment; every
+  // post past this count renders as a compact "Earlier" card instead.
+  const FEATURED_COUNT = 1;
 
-  // The archive grows past this count before the tag filter earns its place; below it a narrowing
-  // control adds chrome with nothing to narrow. Do not lower this to make a smaller archive show it.
-  const TAG_FILTER_MIN_ENTRIES = 12;
+  const featured = $derived(data.posts[0]);
+  const recent = $derived(data.posts.slice(0, 5));
+  const older = $derived(data.posts.slice(FEATURED_COUNT));
 
-  let selected = $state('');
-
-  const filtered = $derived(selected ? entries.filter((p) => p.tags?.includes(selected)) : entries);
-
-  const inUse = $derived(new Set(entries.flatMap((p) => p.tags ?? [])));
-  const tagOptions = $derived(data.vocabulary.filter((entry) => inUse.has(entry.value)));
-
-  const featured = $derived(selected === '' ? filtered[0] : undefined);
-  const rest = $derived(selected === '' ? filtered.slice(1) : filtered);
-
-  const dateFmt = new Intl.DateTimeFormat('en-US', {
+  const shortDateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  const longDateFmt = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
     day: 'numeric',
-    month: 'short',
     year: 'numeric',
     timeZone: 'UTC',
   });
 
-  /** Render an ISO `YYYY-MM-DD` date as a short tabular label, e.g. "15 Jan 2026". */
-  function formatDate(iso: string): string {
-    return dateFmt.format(new Date(iso));
+  /** Render an ISO `YYYY-MM-DD` date as "May 14". */
+  function formatShort(iso: string): string {
+    return shortDateFmt.format(new Date(iso));
+  }
+  /** Render an ISO `YYYY-MM-DD` date as "May 14, 2026". */
+  function formatLong(iso: string): string {
+    return longDateFmt.format(new Date(iso));
   }
 </script>
 
@@ -44,244 +39,476 @@
   <meta name="description" content={siteConfig.description} />
 </svelte:head>
 
-<section class="mx-auto max-w-measure pb-xl pt-l">
-  <h1 class="m-0 mb-s font-display text-step-5 font-semibold leading-tight tracking-tight">
-    {siteConfig.siteName}
-  </h1>
-  {#if data.heroImage}
-    <!-- The masthead hero: pages/home.md's frontmatter `image` field, the media library's first
-         real placement (Task 4 of the rebuild-from-Waymark plan). Same figure shape as the
-         [...path] template's hero, so it inherits the same `.site-main figure` treatment. -->
-    <figure class="hero">
-      <img src={data.heroImage.url} alt={data.heroImage.alt} />
-      {#if data.heroImage.caption}
-        <figcaption>{data.heroImage.caption}</figcaption>
+<!-- The pre-rebuild site's home ran at a uniform 64rem container (matching the header/footer band),
+     wider than the 44rem reading measure `.site-main` caps every other page at. Breaking out here
+     reuses site.css's own wide-figure technique (a relative + translateX(-50%) recenter) rather
+     than widening the shared reading column for every page. -->
+<div class="home-wide">
+  <div class="hero-grid">
+    <!-- Welcome hero: photo with the intro panel overlapping it, so the opening reads as a
+         designed moment rather than a story card. -->
+    <div class="welcome-hero">
+      {#if data.heroImage}
+        <div class="welcome-photo">
+          <img src={data.heroImage.url} alt={data.heroImage.alt} />
+        </div>
       {/if}
-    </figure>
-  {/if}
-
-  <!-- The welcome copy is pages/home.md's rendered body, so the editor's usual save/publish flow
-       is what keeps this current, the same as any other content page. -->
-  <div class="prose max-w-[38rem] text-step-1 leading-snug text-muted">
-    {@html data.welcomeHtml}
-  </div>
-</section>
-
-<section class="listing" aria-label="Writing">
-  {#if featured}
-    <article class="lead" data-cairn-post>
-      <p class="m-0 mb-2xs text-step--1 font-semibold uppercase tracking-eyebrow text-muted">Latest</p>
-      {#if featured.date}
-        <div class="lead__date">{formatDate(featured.date)}</div>
-      {/if}
-      <h2 class="lead__title">
-        <a href={featured.permalink}>{featured.title}</a>
-      </h2>
-      {#if featured.fields.description}
-        <p class="lead__excerpt">{featured.fields.description}</p>
-      {/if}
-      <a href={featured.permalink} class="lead__link">
-        Read the post<span aria-hidden="true"> &rarr;</span>
-      </a>
-    </article>
-  {/if}
-
-  <div class="index">
-    <div class="index__head">
-      <p class="m-0 text-step--1 font-semibold uppercase tracking-eyebrow text-muted">Archive</p>
-      <span class="index__count">{rest.length} {rest.length === 1 ? 'entry' : 'entries'}</span>
+      <div class="welcome-panel">
+        <h2 class="welcome-heading">
+          Welcome to East Community Cross&nbsp;Country <span class="welcome-abbr">(ECXC)</span>
+        </h2>
+        <div class="welcome-blurb">{@html data.welcomeHtml}</div>
+        <a href="/about" class="welcome-link">Learn more <span class="arrow">&rarr;</span></a>
+      </div>
     </div>
 
-    {#if entries.length > TAG_FILTER_MIN_ENTRIES && tagOptions.length > 0}
-      <div class="tag-filter" role="group" aria-label="Filter by tag">
-        <button
-          type="button"
-          class="tag-filter__option"
-          aria-pressed={selected === ''}
-          onclick={() => (selected = '')}
-        >
-          All
-        </button>
-        {#each tagOptions as option (option.value)}
-          <button
-            type="button"
-            class="tag-filter__option"
-            aria-pressed={selected === option.value}
-            onclick={() => (selected = option.value)}
-          >
-            {option.label}
-          </button>
-        {/each}
-      </div>
-    {/if}
-
-    {#each rest as post (post.id)}
-      <article class="entry" class:entry--undated={!post.date} data-cairn-post>
-        {#if post.date}
-          <div class="entry__date">{formatDate(post.date)}</div>
-        {/if}
-        <div>
-          <h2 class="entry__title">
-            <a href={post.permalink}>{post.title}</a>
-          </h2>
-          {#if post.fields.description}
-            <p class="entry__excerpt">{post.fields.description}</p>
-          {/if}
-        </div>
-      </article>
-    {/each}
+    <!-- Recent posts sidebar -->
+    <div class="recent-card">
+      <h2 class="section-label">Recent Posts</h2>
+      {#if recent.length > 0}
+        <ul class="recent-list">
+          {#each recent as post (post.id)}
+            <li class="recent-row">
+              <a href={post.permalink} class="recent-title">{post.title}</a>
+              {#if post.fields.description}
+                <p class="recent-teaser">{post.fields.description}</p>
+              {/if}
+              <div class="recent-foot">
+                {#if post.date}
+                  <time class="recent-date" datetime={post.date}>{formatShort(post.date)}</time>
+                {/if}
+                <a href={post.permalink} class="recent-readmore" aria-label="Read more: {post.title}">
+                  read more <span class="arrow">&rarr;</span>
+                </a>
+              </div>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="no-posts">No posts yet.</p>
+      {/if}
+      <a href="/archives" class="recent-more">see all posts <span class="arrow">&rarr;</span></a>
+    </div>
   </div>
-</section>
+
+  {#if featured}
+    <h2 class="section-label news-label">News &amp; Updates</h2>
+    <section class="news-section">
+      <article class="featured-post">
+        {#if featured.date}
+          <time class="post-date" datetime={featured.date}>{formatLong(featured.date)}</time>
+        {/if}
+        <h3 class="featured-title"><a href={featured.permalink}>{featured.title}</a></h3>
+        <div class="post-body">{@html data.featuredHtml}</div>
+        {#if featured.tags.length > 0}
+          <ul class="post-tags" aria-label="Tags">
+            {#each featured.tags as tag (tag)}
+              <li><a href="/tags/{tag}" class="post-tag">{tag}</a></li>
+            {/each}
+          </ul>
+        {/if}
+      </article>
+
+      {#if older.length > 0}
+        <h3 class="older-heading">Earlier</h3>
+        <ol class="post-list" aria-label="Earlier posts">
+          {#each older as post (post.id)}
+            <li class="post-entry">
+              <div class="post-meta">
+                {#if post.date}
+                  <time class="post-date" datetime={post.date}>{formatLong(post.date)}</time>
+                {/if}
+                {#if post.tags.length > 0}
+                  <ul class="post-tags post-tags-inline" aria-label="Tags">
+                    {#each post.tags as tag (tag)}
+                      <li><a href="/tags/{tag}" class="post-tag">{tag}</a></li>
+                    {/each}
+                  </ul>
+                {/if}
+              </div>
+              <h3 class="post-title"><a href={post.permalink}>{post.title}</a></h3>
+              {#if post.fields.description}
+                <p class="post-description">{post.fields.description}</p>
+              {/if}
+            </li>
+          {/each}
+        </ol>
+      {/if}
+    </section>
+  {/if}
+</div>
 
 <style>
-  .listing {
-    border-top: var(--border) solid var(--color-base-300);
-    padding-top: var(--spacing-s);
-    margin-bottom: var(--spacing-2xl);
+  .home-wide {
+    width: min(64rem, 100vw - 3rem);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  .lead {
-    padding-bottom: var(--spacing-l);
-    margin-bottom: var(--spacing-l);
-    border-bottom: var(--border) solid var(--color-card-border);
-  }
-  .lead__date {
-    margin-bottom: var(--spacing-3xs);
-    font-size: var(--text-step--1);
+  /* ─── Shared label ──────────────────────────────────────── */
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
     color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.01em;
+    margin: 0 0 0.9rem;
   }
-  .lead__title {
-    margin: 0 0 var(--spacing-2xs);
+
+  /* ─── Hero grid ─────────────────────────────────────────── */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1rem;
+    margin-block: 2rem 1.75rem;
+    align-items: stretch;
+  }
+
+  /* ─── Welcome hero ──────────────────────────────────────── */
+  .welcome-hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .welcome-photo {
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--color-base-200);
+  }
+  .welcome-photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Anchored left rather than centered: the asymmetric overlap gives the composition direction
+     and leaves the photo visible on the right. */
+  .welcome-panel {
+    --shadow-float: 0 10px 24px -16px oklch(0% 0 0 / 0.35);
+    position: relative;
+    margin: -2.75rem 4.5rem 0 1rem;
+    padding: 1.4rem 1.5rem 1.5rem;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-card-border);
+    border-top: 3px solid var(--color-primary);
+    border-radius: 12px;
+    box-shadow: var(--shadow-float);
+  }
+  .welcome-hero:has(> .welcome-panel:only-child) .welcome-panel {
+    margin-top: 0;
+  }
+
+  .welcome-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.6vw, 1.65rem);
+    font-weight: 800;
+    line-height: 1.18;
+    color: var(--color-base-content);
+    text-wrap: balance;
+    margin: 0 0 0.75rem;
+  }
+  .welcome-abbr {
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+
+  .welcome-blurb {
+    margin: 0 0 1.1rem;
+  }
+  .welcome-blurb :global(p) {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: color-mix(in oklab, var(--color-base-content) 88%, transparent);
+    margin: 0 0 0.7rem;
+  }
+  .welcome-blurb :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .welcome-link {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s ease;
+  }
+  .welcome-link:hover {
+    opacity: 0.75;
+  }
+
+  /* ─── Recent posts card ─────────────────────────────────── */
+  .recent-card {
+    background: color-mix(in oklab, var(--color-accent) 4%, var(--color-base-100));
+    border: 1px solid var(--color-card-border);
+    border-top: 3px solid var(--color-accent);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem 1.5rem;
+    box-shadow: 0 1px 4px oklch(0% 0 0 / 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+  .recent-card .section-label {
+    color: var(--color-accent);
+  }
+
+  .recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .recent-row {
+    flex: 1 1 auto;
+    max-block-size: 7.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    padding-block: 0.65rem;
+    border-bottom: 1px solid var(--color-card-border);
+  }
+  .recent-row:last-child {
+    border-bottom: none;
+  }
+
+  .recent-title {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-base-content);
+    line-height: 1.25;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .recent-title:hover {
+    color: var(--color-primary);
+  }
+
+  .recent-teaser {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--color-muted);
+    margin: 0.15rem 0 0.25rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .recent-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-block-start: 0.1rem;
+  }
+  .recent-date {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    line-height: 1.3;
+  }
+  .recent-readmore,
+  .recent-more {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: var(--text-step-4);
-    line-height: var(--leading-tight);
-    letter-spacing: var(--tracking-tight);
-  }
-  .lead__title a {
-    color: inherit;
+    color: var(--color-accent);
     text-decoration: none;
+    transition: opacity 0.15s ease;
   }
-  .lead__title a:hover {
-    color: var(--color-primary);
+  .recent-readmore {
+    font-size: 0.7rem;
   }
-  .lead__excerpt {
-    margin: 0 0 var(--spacing-s);
-    max-width: 38rem;
-    font-size: var(--text-step-1);
-    line-height: var(--leading-snug);
+  .no-posts {
+    font-size: 0.85rem;
+    font-style: italic;
     color: var(--color-muted);
+    margin: 0 0 0.9rem;
   }
-  .lead__link {
-    display: inline-flex;
-    align-items: center;
-    font-weight: 600;
-    color: var(--color-primary);
-    text-decoration: none;
+  .recent-more {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
   }
-  .lead__link:hover {
-    text-decoration: underline;
-  }
-  .lead__link:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-    border-radius: 2px;
+  .recent-readmore:hover,
+  .recent-more:hover {
+    opacity: 0.75;
   }
 
-  .index__head {
+  /* ─── Arrow nudge, the shared hover cue ─────────────────── */
+  .arrow {
+    display: inline-block;
+    transition: transform 0.18s ease;
+  }
+  a:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  /* ─── News section ──────────────────────────────────────── */
+  .news-label {
+    margin-block-start: 2rem;
+  }
+  .news-section {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: var(--spacing-xs);
-  }
-  .index__count {
-    font-size: var(--text-step--1);
-    color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .tag-filter {
-    --tag-filter-radius: 999px;
+  .featured-post {
+    background: var(--color-base-100);
+    border: 1px solid var(--color-card-border);
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 1px 4px oklch(0% 0 0 / 0.05);
+  }
+  .post-date {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-block-end: 0.65rem;
+  }
+  .featured-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 700;
+    line-height: 1.18;
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.02em;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-card-border);
+  }
+  .featured-title a {
+    color: var(--color-base-content);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .featured-title a:hover {
+    color: var(--color-primary);
+  }
+
+  /* The featured card's body is the raw rendered HTML of the newest post (not `.prose`, which
+     would bring the article's full display-face treatment into a compact home card), so it needs
+     its own minimal paragraph rhythm; Tailwind's preflight otherwise zeroes every `<p>` margin. */
+  .post-body :global(p) {
+    margin: 0;
+    line-height: 1.6;
+    color: color-mix(in oklab, var(--color-base-content) 88%, transparent);
+  }
+  .post-body :global(p + p) {
+    margin-top: 1em;
+  }
+
+  .post-tags {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-2xs);
-    padding: var(--spacing-s) 0;
+    gap: 0.5rem;
   }
-  .tag-filter__option {
-    font-size: var(--text-step--1);
-    line-height: var(--leading-snug);
-    padding: 0.25rem 0.7rem;
-    border: var(--border) solid var(--color-card-border);
-    border-radius: var(--tag-filter-radius);
-    background: transparent;
-    color: var(--color-muted);
-    cursor: pointer;
+  .post-tags-inline {
+    margin-block-start: 0;
+    gap: 0.1rem 0.5rem;
   }
-  .tag-filter__option:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-  .tag-filter__option:hover {
-    color: var(--color-base-content);
-  }
-  .tag-filter__option[aria-pressed='true'] {
-    border-color: var(--color-primary);
-    color: var(--color-primary-content);
-    background: var(--color-primary);
-  }
-
-  .entry {
-    display: grid;
-    grid-template-columns: 7.5rem 1fr;
-    gap: var(--spacing-m);
-    align-items: start;
-    padding: var(--spacing-m) 0;
-    border-bottom: var(--border) solid var(--color-card-border);
-  }
-  .entry--undated {
-    grid-template-columns: 1fr;
-  }
-
-  .entry__date {
-    padding-top: 0.5rem;
-    font-size: var(--text-step--1);
-    color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.01em;
-  }
-
-  .entry__title {
-    margin: 0 0 0.35rem;
+  .post-tag {
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: var(--text-step-2);
-    line-height: var(--leading-snug);
-    letter-spacing: var(--tracking-tight);
-  }
-  .entry__title a {
-    color: inherit;
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding: 0.2em 0.55em;
+    border: 1px solid var(--color-card-border);
+    border-radius: 2px;
+    line-height: 1.6;
     text-decoration: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
   }
-  .entry__title a:hover {
+  .post-tag:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .older-heading {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0.5rem 0 0;
+  }
+
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .post-entry {
+    background: var(--color-base-100);
+    border: 1px solid var(--color-card-border);
+    border-radius: 10px;
+    padding: 1.1rem 1.5rem;
+    box-shadow: 0 1px 4px oklch(0% 0 0 / 0.05);
+    transition: box-shadow 0.15s ease;
+  }
+  .post-entry:hover {
+    box-shadow: 0 2px 10px -4px oklch(0% 0 0 / 0.1);
+  }
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 3vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0.3rem 0 0;
+    letter-spacing: -0.01em;
+  }
+  .post-title a {
+    color: var(--color-base-content);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .post-title a:hover {
     color: var(--color-primary);
   }
-
-  .entry__excerpt {
-    margin: 0;
-    font-size: var(--text-step-0);
-    line-height: var(--leading-snug);
+  .post-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .post-description {
+    font-size: 0.88rem;
+    font-style: italic;
+    line-height: 1.55;
     color: var(--color-muted);
+    margin: 0.35rem 0 0;
   }
 
-  @media (max-width: 34rem) {
-    .entry {
+  /* ─── Mobile: stack cards, shrink the panel overlap ─────── */
+  @media (max-width: 600px) {
+    .hero-grid {
       grid-template-columns: 1fr;
-      gap: 0.4rem;
+      margin-block-start: 1.1rem;
     }
-    .entry__date {
-      padding-top: 0;
+    .welcome-panel {
+      margin: -1.5rem 1.5rem 0 0.5rem;
+      padding: 1.1rem 1.1rem 1.25rem;
     }
   }
 </style>

@@ -42,7 +42,7 @@
   {#if isPost && data.entry.date}
     <p class="post-date">{formatDate(data.entry.date)}</p>
   {/if}
-  <h1>{data.entry.title}</h1>
+  <h1 class:page-title={!isPost}>{data.entry.title}</h1>
   {@html data.html}
   {#if isPost && data.entry.tags.length > 0}
     <ul class="post-tags" aria-label="Tags">
@@ -54,6 +54,24 @@
 </article>
 
 <style>
+  /* A static page's title carries a short accent bar underneath, the pre-rebuild site's own
+     `.page-title::after` device (main branch, same file). A post skips it: its date eyebrow
+     already marks the heading, so `isPost` withholds the `page-title` class above. */
+  :global(.page-title) {
+    position: relative;
+    padding-block-end: var(--spacing-2xs);
+  }
+  :global(.page-title)::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: 2.5rem;
+    block-size: 3px;
+    border-radius: var(--radius-field);
+    background: var(--color-primary);
+  }
+
   .post-date {
     font-family: var(--font-display);
     font-size: var(--text-step--1);

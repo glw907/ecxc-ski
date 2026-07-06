@@ -2,7 +2,7 @@
 title: Volunteers & Coaches
 ---
 
-Everybody that makes ECXC happen is a volunteer. The coaches and helpers are parents, former racers, and local athletes, and we can always use more of them! We all deeply believe that every althete deserver a chance to train, 
+Everybody that makes ECXC happen is a volunteer. The coaches and helpers are parents, former racers, and local athletes, and we can always use more of them! We all deeply believe that every athlete deserves a chance to train.
 
 Here's who's running things this summer, and how to pitch in.
 

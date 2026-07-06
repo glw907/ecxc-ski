@@ -19,7 +19,7 @@
   <link rel="stylesheet" href={siteCss} />
 </svelte:head>
 
-<div class="min-h-screen bg-base-100 font-body text-base-content">
+<div class="flex min-h-dvh flex-col bg-base-100 font-body text-base-content">
   <a
     href="#main"
     class="skip-link absolute left-s top-[-3rem] z-50 rounded-field bg-primary px-[0.9rem] py-[0.5rem] font-semibold text-primary-content no-underline focus:top-s"
@@ -33,7 +33,7 @@
        content" moves keyboard focus here, not only the scroll position (WCAG 2.4.1; Firefox and Safari
        move focus to a non-interactive target only when it is focusable). The focus is programmatic, so
        the ring is suppressed below; real controls keep their `:focus-visible` rings. -->
-  <main id="main" tabindex="-1" class="site-main">
+  <main id="main" tabindex="-1" class="site-main flex-1">
     {@render children()}
   </main>
 

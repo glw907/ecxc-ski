@@ -410,6 +410,10 @@
   .post-body :global(p + p) {
     margin-top: 1em;
   }
+  .post-body :global(a) {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
 
   .post-tags {
     list-style: none;

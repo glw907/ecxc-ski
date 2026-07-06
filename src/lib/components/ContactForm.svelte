@@ -47,3 +47,18 @@ with Cloudflare, not an env read. -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   {/if}
 </section>
+
+<style>
+  /* DaisyUI's default fieldset-legend is a plain small label; the site's own eyebrow device
+     (uppercase, tracked, muted, on the display face, used elsewhere for post dates and program
+     meta) is what the pre-rebuild form used for its field labels, so restate it here rather than
+     leave the DaisyUI default. */
+  .contact-form :global(.fieldset-legend) {
+    font-family: var(--font-display);
+    font-size: var(--text-step--1);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+</style>

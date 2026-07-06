@@ -12,9 +12,22 @@
    rules on specificity the same way). Imported from theme.css, after prose.css. */
 
 .prose {
-  /* ─── Passage: a titled prose block, no card chrome ────────────────────── */
+  /* ─── Passage: a titled prose block in the club's card chrome ───────────
+     The pre-rebuild site split this into two directives, a bordered `card`
+     and a chromeless `passage`; the rebuilt engine's single `passage`
+     component collapsed them, and the collapse dropped the border along the
+     way. The reference renders (about, crewlab, volunteers, training) card
+     every titled passage uniformly, so this rule restores that one
+     resting-card treatment (bg-base-100, the card hairline, the box radius,
+     the same elevation the program cards already use) rather than
+     reintroducing a second flat variant the engine has no attribute for. */
   & .ec-passage {
     --flow-space: var(--spacing-m);
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-m);
+    box-shadow: var(--cairn-shadow);
   }
   & .ec-passage .ec-head {
     display: flex;

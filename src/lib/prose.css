@@ -422,14 +422,46 @@
   .prose .callout-body > * + * {
     margin-top: var(--spacing-2xs);
   }
+  /* The points list reads as a 2-up grid of cards, not a plain bullet list, matching the
+     pre-rebuild site's own `.ec-grid` recipe (ported onto the current tokens): two columns,
+     each point a bordered cell with its leading bold term promoted to a small display-face
+     label. An odd count's last cell spans the full row rather than leaving an orphan. */
   .prose .callout-points {
-    margin: 0.5rem 0 0;
+    margin: var(--spacing-s) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-s);
+    list-style: none;
+    padding: 0;
   }
   /* The points slot is optional (a callout with no points still renders the ul); an empty list keeps
      its top margin and reads as a phantom gap below the body text. Zero it when there is nothing in
      the list. */
   .prose .callout-points:empty {
     margin: 0;
+  }
+  .prose .callout-points > li {
+    margin: 0;
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-xs) var(--spacing-s);
+    font-size: var(--text-step--1);
+    line-height: var(--leading-snug);
+  }
+  .prose .callout-points > li > strong:first-child {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 650;
+    margin-bottom: 0.2rem;
+  }
+  .prose .callout-points > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 36rem) {
+    .prose .callout-points {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Alert: the second directive, built from the cairn render helpers (a section

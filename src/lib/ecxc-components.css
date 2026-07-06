@@ -28,17 +28,19 @@
     font-size: var(--text-step-0);
     margin: 0;
   }
-  & .ec-passage .ec-icon {
-    display: inline-flex;
-    color: var(--color-primary);
-  }
   /* The bare `.ec-glyph` SVG carries only a `viewBox`, no `width`/`height` attribute, so with no
      sizing rule at all it falls back to the browser's intrinsic replaced-element box (300x150px):
      a passage heading's icon rendered as a giant, page-breaking glyph until this rule constrains
-     it to the same scale the program-card head icon already uses. */
+     it to the same scale the program-card head icon already uses. `buildPassage` passes the glyph
+     to `headRow` bare (no `iconSpan` wrapper), so the selector targets `.ec-glyph` directly rather
+     than a `.ec-icon` wrapper that is never in the DOM here; the pre-rebuild site's own device wore
+     the same "working green" (`--color-accent`, the mid-spruce token) for every ambient icon, and
+     reserved fireweed (`--color-primary`) for actions, so this icon follows suit rather than the
+     primary a first pass gave it. */
   & .ec-passage .ec-head .ec-glyph {
     width: 1.4rem;
     height: 1.4rem;
+    color: var(--color-accent);
   }
   & .ec-passage-body > * {
     margin: 0;
@@ -158,10 +160,13 @@
     gap: var(--spacing-2xs);
     margin-bottom: var(--spacing-2xs);
   }
+  /* The card's own glyph wears the "working green" (`--color-accent`), the same ambient-icon
+     convention as the passage head above; the card's link/CTA line below stays fireweed
+     (`--color-primary`), since the pre-rebuild site reserved that hue for actions alone. */
   & .ec-program-head .ec-glyph {
     width: 1.4rem;
     height: 1.4rem;
-    color: var(--color-primary);
+    color: var(--color-accent);
   }
   & .ec-program-name {
     font-family: var(--font-display);
@@ -277,6 +282,47 @@
     }
     & .ec-week-focus {
       grid-column: 1 / -1;
+    }
+  }
+
+  /* ─── FAQ pointer: a quiet info-tinted callout on the one lede paragraph
+     that points a reader at the page's own FAQ anchor (main branch's own
+     `.post-body p:has(> a[href="#frequently-asked-questions"])` device,
+     ported onto the current `.prose` scope and class-independent selector
+     so it still fires from the editor's preview frame, which carries no
+     per-page class). Keyed on the href, not a directive, since the source
+     markdown is a plain paragraph with a plain anchor link. */
+  & p:has(> a[href='#frequently-asked-questions']) {
+    margin-block: 0.9rem 1.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-box);
+    background: color-mix(in oklab, var(--color-info) 7%, var(--color-base-100));
+    font-size: 0.98rem;
+  }
+  & a[href='#frequently-asked-questions'] {
+    font-weight: 700;
+    color: var(--color-info);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--color-info) 45%, transparent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.15s ease;
+  }
+  & a[href='#frequently-asked-questions']:hover {
+    text-decoration-color: var(--color-info);
+  }
+  & a[href='#frequently-asked-questions']::after {
+    content: ' \2193'; /* the FAQ sits at the foot of the page */
+    display: inline-block;
+    font-weight: 700;
+    transition: transform 0.18s ease;
+  }
+  & a[href='#frequently-asked-questions']:hover::after {
+    transform: translateY(2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    & a[href='#frequently-asked-questions']::after {
+      transition: none;
     }
   }
 

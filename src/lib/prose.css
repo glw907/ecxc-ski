@@ -56,11 +56,16 @@
        the rare token that cannot fit otherwise; ordinary prose never notices it. */
     overflow-wrap: anywhere;
   }
+  /* `:where(p)` contributes zero specificity, so this reset ties with (rather than
+     outranks) the owl selector below; declaring it first lets the owl selector's later
+     source position win the tie and set margin-top on a paragraph that follows another
+     paragraph or a non-heading block. A bare `.prose p` selector outranks the owl
+     selector on specificity and silently collapses that spacing sitewide. */
+  .prose :where(p) {
+    margin-block: 0;
+  }
   .prose > * + * {
     margin-top: var(--flow-space);
-  }
-  .prose p {
-    margin-block: 0;
   }
 
   /* The article title on the display face: large space below it is unnecessary

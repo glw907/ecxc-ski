@@ -13,14 +13,15 @@ Shared by the `/archives` full listing and a `/tags/[tag]` detail page. -->
     labels: Record<string, string>;
   } = $props();
 
+  // No `year` field: every row already sits under a year heading (PostList groups by year), so
+  // repeating it here would be redundant.
   const dateFmt = new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'short',
-    year: 'numeric',
     timeZone: 'UTC',
   });
 
-  /** Render an ISO `YYYY-MM-DD` date as a short tabular label, e.g. "15 Jan 2026". */
+  /** Render an ISO `YYYY-MM-DD` date as a short label, e.g. "May 14". */
   function formatDate(iso: string): string {
     return dateFmt.format(new Date(iso));
   }

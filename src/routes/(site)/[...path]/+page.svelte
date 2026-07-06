@@ -53,7 +53,27 @@
   {/if}
 </article>
 
+{#if isPost}
+  <a href="/" class="back-link">← Home</a>
+{/if}
+
 <style>
+  /* The pre-rebuild site's own post-detail back-link (main branch, same route), sitting
+     outside the `.prose` column since it is chrome, not reading content. A static page
+     carries none: its own nav breadcrumb equivalent is the top nav itself. */
+  .back-link {
+    display: inline-block;
+    margin-top: var(--spacing-l);
+    font-size: var(--text-step--1);
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .back-link:hover {
+    color: var(--color-base-content);
+  }
+
   /* A static page's title carries a short accent bar underneath, the pre-rebuild site's own
      `.page-title::after` device (main branch, same file). A post skips it: its date eyebrow
      already marks the heading, so `isPost` withholds the `page-title` class above. */

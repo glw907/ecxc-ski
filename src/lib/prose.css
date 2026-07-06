@@ -114,6 +114,7 @@
   }
   .prose a {
     font-weight: 500;
+    color: var(--color-primary);
   }
   /* The reading-surface focus ring, matching the chrome and the styleguide (2px primary, 2px offset).
      A tinted callout ground shares the primary hue, so the same-hue ring can wash out against it; a

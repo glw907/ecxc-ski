@@ -1,42 +1,76 @@
 # ecxc.ski: Project Status
 
-## Current state (2026-07-05)
+## Current state (2026-07-06)
 
-Rebuilt from scratch on the Waymark starter template and `@glw907/cairn-cms ^0.80.0` (the
-rebuild-from-Waymark plan, five tasks, on branch `rebuild-waymark-2`). Fresh scaffold, DaisyUI v5
-public chrome, an `ecxc-theme.css` identity layer (fireweed/spruce/black-spruce) over neutral
-Waymark, and every permalink the live sitemap lists reproduced exactly except two sanctioned
-redirect improvements and `/archives` joining the sitemap. **The production deploy is HELD for
-Geoff's go**; the rebuild is fully gated and verified locally but not pushed or deployed.
+Rebuilt from scratch on the Waymark starter template and `@glw907/cairn-cms ^0.80.0`, then
+**deployed to production** (the pre-rebuild 0.62.2-era app is retired; `https://ecxc.ski` now
+serves the rebuild). The same day, three further waves shipped and deployed straight to `main`:
+a CTA-label contrast fix, a site-wide one-vocabulary hover system, and a design pass that
+re-expresses headings, sections, CTAs, alerts, checklists, and cards against six locked picks
+(see History below for each). Every wave is gated green and confirmed live: the sitemap's 11
+URLs all 200, and the three design-pass picks (the de-carded About flow, the framed CTA panel,
+the corrected checklist scale) hold on the deployed site at 1440.
 
 > **Architecture note.** cairn-cms is an embedded magic-link CMS library published as
 > `@glw907/cairn-cms`; this site is a standalone repo consuming it via its own adapter. The
 > engine's rolling status is `../cairn-cms/docs/STATUS.md`.
 
-### Next starter prompt (the held deploy)
+### Next up
 
-> **Goal.** Deploy the rebuild to production, replacing the 0.62.2-era app.
->
-> **Settled (do not re-brainstorm).** Every gate below is green locally: `npm run check` (0/0),
-> `npm test` (19/19, exit 0), `npm run build`, the permalink crawl diff (11 sitemap URLs plus the
-> two sanctioned redirects), and the 320/1440/2560 responsive spot-check (beats the live site at
-> 320px on all three sampled pages). The wrangler bindings (custom domain, `AUTH_DB`, `EMAIL`,
-> `MEDIA_BUCKET`, `ASSETS`, the contact-form `SEND_EMAIL`) carry over unchanged.
->
-> **Geoff's steps, in order.** (1) Review the rebuild branch and this pass's findings below. (2)
-> Push and deploy. (3) Run the full authed `/admin` checklist against the deployed
-> `https://ecxc.ski` Worker (the local smoke could only prove the D1 session mechanism past the
-> guard; the content-list view itself hangs in this sandbox on the GitHub App round trip, a
-> workerd-specific limitation, not a credentials problem). (4) A real magic-link login in a
-> browser. (5) Decide whether to publish the held cairn-cms window alongside or separately from
-> this site's own deploy. (6) Old `cairn-ecnordic-auth` D1 decommission, per the pre-publish
-> checklist below (unaffected by this rebuild; still open).
+The rebuild's own pre-publish checklist (below) is still open: a real magic-link login and the
+full authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the
+D1 session mechanism past the guard, not the GitHub App round trip), the waiver's attorney
+review, the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The
+`note`-tier alert (`alert-structural`/`alert-caution` both have a live content instance;
+`alert-note` does not) has no content to exercise it yet; add one the next time a page needs an
+informational, no-tint alert.
 
 ---
 
 ## History
 
-- **Chassis restructure (2026-07-05), deploy HELD.** Task 4 of
+- **CTA fix, hover system, and design pass (2026-07-06), all deployed.** Three waves landed and
+  pushed the same day, each its own gated commit, bringing the rebuild's remaining visual debt
+  down before Geoff's design review.
+
+  **CTA fix** (`617429b`). The unlayered body-link rule (`ecxc-theme.css`'s own documented
+  unlayered-override block) was painting every in-prose link's underline-and-color treatment onto
+  the CTA button's label too, since both are anchors and the override lives outside any Tailwind
+  `@layer`; the fix scopes that rule off `.cta-link` so the button keeps its own button styling.
+
+  **Hover system** (`b134cfc`). One site-wide hover vocabulary, a single `150ms ease` token
+  declared once in `ecxc-theme.css`'s unlayered `:root`: body-link underline reveal, nav ink
+  shift, tag-pill border/ink deepening, CTA brightness+1px rise, linked-card shadow+1px rise, and
+  footer icon shift. Verified with computed-style probes (a canvas-roundtrip to normalize
+  Chromium's `oklch()` computed colors to sRGB) plus a contrast check on the CTA
+  (6.05:1 resting, 5.53:1 hover, both clear of the 3:1 floor) and a `:has()`-scoped card affordance
+  that fires only while the pointer is over the card's real link.
+
+  **Design pass** (`7d8f7e2`, `51c1a5a`). Six locked picks (Geoff, 2026-07-06) as one coherent
+  pass: a tighter h1 masthead scale, icon-led section headers on dated sections, framed-neutral
+  CTA cards (a new `render/cta-panel.ts` after-render step groups the heading and lead-in copy
+  with the button into one `.cta-panel`, matching `render/table-scroll.ts`'s own seam), a
+  three-tier escalating alert chrome (`structural`: plain border, no tint, no icon;
+  `note`: soft tint wash, no border; `caution`: full border, thicker rule, small-caps title),
+  grouped-card checklists (items keep the surrounding prose's own type scale rather than a
+  separate, larger Utopia step), and selective de-carding of the `passage` directive (flat by
+  default; `variant="card"` or `variant="emphasis"` earn chrome only where the content is
+  object-like or advisory). A same-day follow-up fix (`51c1a5a`) closed three gaps the pass's own
+  verification found: the CTA card had framed only the button, not the panel; the `structural`
+  alert tier had zero content instances to prove the three-tier escalation; and checklist items
+  were rendering one step larger than surrounding prose.
+
+  **Live verification (this pass).** All 11 `sitemap.xml` URLs return 200 on the deployed
+  `https://ecxc.ski`. At 1440: the About page's five `ec-passage` blocks all
+  compute `box-shadow: none` and a `0px` border (the flat, de-carded flow holds); Training's
+  `.cta-panel` computes a real border, shadow, and background around the whole heading-plus-copy
+  block (the framed CTA holds); a checklist item and a plain prose paragraph both compute
+  `font-size: 16px` (the checklist-scale fix holds); the live `alert-caution` (About's "Risks &
+  waiver") and `alert-structural` (Training's "Carpooling") crop visibly distinct, matching the
+  escalating-chrome design; the CTA button's live resting contrast is 6.05:1. `alert-note` has no
+  live content instance to probe (see "Next up" above), an honest gap, not a regression.
+
+- **Chassis restructure (2026-07-05), deployed.** Task 4 of
   `../cairn-cms/docs/superpowers/plans/2026-07-05-chassis-restructure.md`. Split `src/lib` into
   `src/chassis/` (the genre-free plumbing: `content.ts`, `feed.ts`, `cairn.server.ts`, `render.ts`'s
   `makeIconRenderer` icon wiring, `theme-toggle.ts`, `tokens.css`, `prose.css`, `composition.css`,
@@ -73,7 +107,7 @@ Geoff's go**; the rebuild is fully gated and verified locally but not pushed or 
   desktop and a 390px mobile check. `npm run check` (0/0), `npm test` (19/19, exit 0), and
   `npm run build` all pass.
 
-- **Rebuild from Waymark (2026-07-05), deploy HELD.** Plan:
+- **Rebuild from Waymark (2026-07-05), deployed 2026-07-06.** Plan:
   `docs/superpowers/plans/2026-07-05-rebuild-from-waymark.md`. Five tasks: (1) retired the
   0.62.2-era app wholesale for a fresh Waymark scaffold on the v2 adapter idiom
   (`defineConcept`/`fieldset`, `posts`+`pages` concepts, `githubApp(...)`, entry-aware `render`);
@@ -140,8 +174,8 @@ Geoff's go**; the rebuild is fully gated and verified locally but not pushed or 
   installation-token round trip) hangs indefinitely in this sandbox's `wrangler dev`/workerd
   runtime past two minutes with near-zero worker CPU, a known environment limitation (an identical
   plain-Node replay of the same JWT sign-and-exchange call resolves in under a second), not a
-  credentials or code bug. The authed checklist beyond the guard needs the deployed https Worker,
-  Geoff's step per the held-deploy boundary.
+  credentials or code bug. The authed checklist beyond the guard needs the deployed https Worker;
+  see the pre-publish checklist below.
 
   **Full gate, every task.** `npm run check`: 0 errors, 0 warnings (579 files). `npm test`: 19/19
   passed, exit 0. `npm run build`: green (adapter-cloudflare output built; the two upstream
@@ -257,8 +291,9 @@ which cannot express the design outranks a mechanical gap.
 | Rename 1–6 | Full ECXC rebrand through repo rename | ✓ Done |
 | Drafting system | Coach voice system + site rewrite | ✓ Done |
 | cairn 0.50–0.62.2 | Single-mount admin + component-picker system + media + editor/help | ✓ Done |
-| Rebuild from Waymark | Fresh scaffold on cairn ^0.80.0, ecxc-theme.css, media library | ✓ Done (2026-07-05), deploy HELD |
-| Chassis restructure | `src/lib` → `src/chassis`/`src/theme` + the spectrum bar/inline FAQ/archives-chips fixes | ✓ Done (2026-07-05), deploy HELD |
+| Rebuild from Waymark | Fresh scaffold on cairn ^0.80.0, ecxc-theme.css, media library | ✓ Deployed 2026-07-06 |
+| Chassis restructure | `src/lib` → `src/chassis`/`src/theme` + the spectrum bar/inline FAQ/archives-chips fixes | ✓ Deployed 2026-07-06 |
+| CTA fix, hover system, design pass | CTA-label contrast fix, site-wide hover vocabulary, six locked design picks | ✓ Deployed 2026-07-06 |
 
 ### Pre-publish checklist (gate before announcing)
 
@@ -269,5 +304,5 @@ which cannot express the design outranks a mechanical gap.
 - Real photos in place of any remaining placeholders (the hero and hero migration landed in this
   rebuild; the profile photo uploaded but stays unplaced pending a confirmed identity, per task 4).
 
-**Deploy:** Live at **https://ecxc.ski** (0.62.2-era app, pre-rebuild). The rebuild above is HELD on
-branch `rebuild-waymark-2`, gated and verified, awaiting Geoff's push/deploy.
+**Deploy:** Live at **https://ecxc.ski**, the rebuild plus the CTA fix, hover system, and design
+pass, all on `main` as of 2026-07-06. The pre-publish checklist above is still open.

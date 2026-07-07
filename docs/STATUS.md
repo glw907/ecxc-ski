@@ -17,17 +17,32 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-The rebuild's own pre-publish checklist (below) is still open: a real magic-link login and the
-full authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the
-D1 session mechanism past the guard, not the GitHub App round trip), the waiver's attorney
-review, the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The
-`note`-tier alert (`alert-structural`/`alert-caution` both have a live content instance;
-`alert-note` does not) has no content to exercise it yet; add one the next time a page needs an
-informational, no-tint alert.
+No dev-side action is queued. What remains is Geoff's own: a real magic-link login and the full
+authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the D1
+session mechanism past the guard, not the GitHub App round trip), the waiver's attorney review,
+the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The `note`-tier
+alert (`alert-structural`/`alert-caution` both have a live content instance; `alert-note` does
+not) has no content to exercise it yet; add one the next time a page needs an informational,
+no-tint alert.
 
 ---
 
 ## History
+
+- **Docs landing sweep (2026-07-06).** `CLAUDE.md`'s stack line named a `@schedule-x/svelte` and
+  hand-authored `remark` + `remark-gfm` pipeline (both removed by the calendar-feature drop and
+  the cairn-cms `createRenderer` adoption respectively) and carried a `New Event` content-type
+  section for a concept that no longer exists (only `posts` and `pages`, per `src/theme/cairn.config.ts`);
+  fixed, and two new sections point at the `src/chassis`/`src/theme` split
+  (`src/chassis/README.md`) and the family-wide design/verification standards
+  (`../cairn-cms/CLAUDE.md`'s polish/fidelity and responsive standards, the computed-style-probe
+  verification method this pass's own hover system used). `docs/cairn-dx-findings.md` gained an
+  explicit historical-snapshot framing (it predates both the ecxc rename and the meta-workspace
+  flattening) and its now-resolved npm-workspace finding leads with the resolution instead of
+  burying it after the complaint. The fully executed `2026-07-05-rebuild-from-waymark.md` plan
+  moved to `docs/superpowers/archive/plans/`. Grepped `docs/` and `CLAUDE.md` for `TODO`/`FIXME`/
+  `WATCH:` markers: none found. `docs/architecture.md` and `docs/design-language.md` remain
+  pre-rebuild and are carried forward (see finding 6's update, further down in this file).
 
 - **CTA fix, hover system, and design pass (2026-07-06), all deployed.** Three waves landed and
   pushed the same day, each its own gated commit, bringing the rebuild's remaining visual debt
@@ -258,18 +273,22 @@ which cannot express the design outranks a mechanical gap.
    adding one post-render behavior means re-parsing and re-stringifying already-rendered HTML
    through a second `unified` pipeline rather than composing into the engine's own pipeline.
 6. **Docs drift is a carried cost of a wholesale rebuild, not itself a defect.**
-   `docs/architecture.md` and this repo's `CLAUDE.md` both still describe the pre-rebuild
+   `docs/architecture.md` and this repo's `CLAUDE.md` both still described the pre-rebuild
    0.62.2-era app (the old markdown pipeline, `src/app.css`, `@schedule-x`, an `events` content
    type none of which exist anymore). Out of scope for this gate-and-verify task; flagged here so a
    documentation pass picks it up before it misleads the next person who reads this repo, the same
    carried-follow-up shape 907.life's own Pass 18 findings used for its own stale architecture
-   section.
+   section. **Update (docs landing sweep, 2026-07-06): `CLAUDE.md`'s half is fixed** (the stack
+   line, the dead `events` content-type section); see the History entry below. `docs/architecture.md`
+   and `docs/design-language.md` (the latter newly found stale by the same sweep: `decorate*()`
+   functions, `src/app.css`, the pre-chassis markdown pipeline) still describe the pre-rebuild app
+   and remain open.
 
 > **Follow-ups (carried).** The pre-publish checklist below (attorney review of the waiver, the
 > CrewLAB confirmations, the old `cairn-ecnordic-auth` D1 decommission) is unaffected by this
-> rebuild and still open. `docs/architecture.md` and `CLAUDE.md` need a rewrite pass once the
-> deploy lands (finding 6 above). The kit `csrf.checkOrigin` deprecation (kit#15992) stays on the
-> cairn watch list.
+> rebuild and still open. `docs/architecture.md` and `docs/design-language.md` need a rewrite pass
+> (finding 6 above); `CLAUDE.md`'s own half of that finding is resolved. The kit `csrf.checkOrigin`
+> deprecation (kit#15992) stays on the cairn watch list.
 
 - **cairn 0.59 → 0.62.2 (2026-06-25).** Editor copy-edit, per-field description hints, the
   `/admin/help` Help home, a non-blocking address-collision advisory. No content change.
@@ -294,6 +313,7 @@ which cannot express the design outranks a mechanical gap.
 | Rebuild from Waymark | Fresh scaffold on cairn ^0.80.0, ecxc-theme.css, media library | ✓ Deployed 2026-07-06 |
 | Chassis restructure | `src/lib` → `src/chassis`/`src/theme` + the spectrum bar/inline FAQ/archives-chips fixes | ✓ Deployed 2026-07-06 |
 | CTA fix, hover system, design pass | CTA-label contrast fix, site-wide hover vocabulary, six locked design picks | ✓ Deployed 2026-07-06 |
+| Docs landing sweep | `CLAUDE.md`/DX-findings/STATUS audited against the rebuild; stale pre-rebuild references corrected | ✓ Done 2026-07-06 |
 
 ### Pre-publish checklist (gate before announcing)
 

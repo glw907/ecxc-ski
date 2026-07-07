@@ -1,5 +1,14 @@
 # cairn-cms DX findings (from the ecnordic 0.21 migration)
 
+> **Historical snapshot.** This log records friction from the 2026-06 migration to cairn-cms
+> 0.21, when this site was still named ecnordic and was an npm-workspaces member of
+> `~/Projects/cairn`. Both of those facts changed later (the site renamed to ecxc-ski at Rename
+> 6, and the meta-workspace flattened to standalone sibling repos on 2026-06-04, noted inline in
+> finding 1 below); read the findings as history, not current state. The findings themselves were
+> already synthesized into the cairn-cms backlog (see below) and stay here for the record. Current
+> friction from the 2026-07-05 rebuild onto Waymark lives in `docs/STATUS.md`'s own "Template
+> findings" section, not in this file.
+
 Friction this migration hit in the cairn-cms consumer surface. Each entry: the symptom, where it
 bit, and a concrete suggested fix. The pass-end synthesis (Plan B, final task) files these as
 engine backlog items in cairn-cms.
@@ -41,9 +50,10 @@ handlers; do the types flow without casts; do `$props`/`$app/state`/the runes be
 the import paths and the export map obvious. Note both what flowed naturally and what fought a
 SvelteKit idiom.
 
-1. **A plain `npm install` cannot relock the site lockfile.** Symptom: ecnordic is an npm
-   workspace member, so running `npm install` from inside the site rewrites the workspace-root
-   lockfile and leaves the site's own committed lockfile stale, which breaks CI `npm ci`. The
+1. **RESOLVED 2026-06-04, kept as scaffolder guidance: a plain `npm install` could not relock the
+   site lockfile at the time.** Symptom, as it stood during this migration: ecnordic was an npm
+   workspace member, so running `npm install` from inside the site rewrote the workspace-root
+   lockfile and left the site's own committed lockfile stale, which broke CI `npm ci`. The
    version bump needs a move-aside dance (mv the root `package.json` and `package-lock.json` aside,
    `npm install --package-lock-only --ignore-scripts`, then restore the root files). Location: the
    `^0.21.0` bump in `package.json`, Plan A Task 1. A SvelteKit developer expects a bump and a plain

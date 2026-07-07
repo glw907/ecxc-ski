@@ -6,7 +6,28 @@ East Community Cross Country. SvelteKit + TypeScript, deployed to Cloudflare Wor
 
 ## Stack
 
-SvelteKit · TypeScript · Tailwind CSS v4 · DaisyUI v5 · @schedule-x/svelte · remark + remark-gfm · Pagefind · @sveltejs/adapter-cloudflare
+SvelteKit · TypeScript · Tailwind CSS v4 · DaisyUI v5 · `@glw907/cairn-cms` (markdown render + magic-link admin) · Pagefind · @sveltejs/adapter-cloudflare
+
+## Structure
+
+Rebuilt on the Waymark starter template (2026-07-05). `src/chassis/` is the genre-free
+plumbing shared with every cairn-cms site (content indexing, feeds, the runtime composition
+point, the token/prose CSS foundation); `src/theme/` is ecxc's own adapter config, chrome
+components, `ecxc-theme.css`/`ecxc-components.css`, and directive registry. Read
+`src/chassis/README.md` before touching either side: it states the boundary and every seam a
+theme edit is allowed to reach through.
+
+## Design work
+
+Design changes follow the family-wide standards in `../cairn-cms/CLAUDE.md` ("The polish and
+fidelity standards", "The responsive standard"): a rebuild may diverge from its pre-rebuild
+look only where it improves, and every viewport from 320 to 2560 gets composed, not merely
+left unbroken. Verify a design claim with a computed-style probe (a canvas round-trip
+normalizes Chromium's `oklch()` computed colors to sRGB for a contrast check), not a
+screenshot alone; `docs/STATUS.md`'s "Live verification" entries are the worked examples.
+`ecxc-theme.css` carries its own load-bearing cascade notes inline, including the
+unlayered-override trap that once erased the CTA button's label and the one-token hover
+vocabulary; read its header comments before editing a cascade-sensitive rule there.
 
 ## Development Workflow
 
@@ -26,7 +47,7 @@ page HTML: after any content edit, run `npx vitest run -u` and commit the snapsh
 npm install
 npm run dev                      # dev server at http://localhost:5173
 npm run build                    # build to .svelte-kit/cloudflare/
-npm run build && npx pagefind --site .svelte-kit/cloudflare
+npm run build:search             # build, then generate the Pagefind index
 ```
 
 ## New Post
@@ -40,20 +61,6 @@ date: YYYY-MM-DD
 draft: false
 description: "One sentence description."
 tags: ["tag1"]
----
-```
-
-## New Event
-
-Create `src/content/events/YYYY-MM-DD-slug.md`:
-
-```yaml
----
-title: "Event Name"
-date: YYYY-MM-DD
-end_date: YYYY-MM-DD
-location: "Venue, Anchorage"
-type: race
 ---
 ```
 

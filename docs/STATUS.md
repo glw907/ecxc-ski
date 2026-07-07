@@ -29,6 +29,16 @@ no-tint alert.
 
 ## History
 
+- **Architecture/design-language rewrite (2026-07-06), family repo tidy.** `docs/architecture.md`
+  and `docs/design-language.md` rewritten from scratch against the current chassis/theme reality
+  (`src/chassis/README.md`, `src/theme/cairn.config.ts`, `ecxc-theme.css`, `markdown/components.ts`),
+  replacing the pre-rebuild 0.62.2-era descriptions (the old markdown pipeline, `src/lib/content.ts`,
+  `decorate*()` functions, the fourteen-plus-directive kit) flagged stale by the docs landing sweep
+  below. Both files shrank substantially (960 lines combined to roughly 340) in the same move, since
+  a short, true doc was the explicit goal over a long, speculative one. `npm run check` (0 errors, 0
+  warnings) and `npm test` (28/28) both green after the edit. Clears the "Follow-ups (carried)" item
+  below and finding 6 of the Rebuild-from-Waymark entry further down.
+
 - **Docs landing sweep (2026-07-06).** `CLAUDE.md`'s stack line named a `@schedule-x/svelte` and
   hand-authored `remark` + `remark-gfm` pipeline (both removed by the calendar-feature drop and
   the cairn-cms `createRenderer` adoption respectively) and carried a `New Event` content-type
@@ -41,8 +51,8 @@ no-tint alert.
   flattening) and its now-resolved npm-workspace finding leads with the resolution instead of
   burying it after the complaint. The fully executed `2026-07-05-rebuild-from-waymark.md` plan
   moved to `docs/superpowers/archive/plans/`. Grepped `docs/` and `CLAUDE.md` for `TODO`/`FIXME`/
-  `WATCH:` markers: none found. `docs/architecture.md` and `docs/design-language.md` remain
-  pre-rebuild and are carried forward (see finding 6's update, further down in this file).
+  `WATCH:` markers: none found. `docs/architecture.md` and `docs/design-language.md` remained
+  pre-rebuild at the time of this sweep; both were rewritten in the family repo tidy above.
 
 - **CTA fix, hover system, and design pass (2026-07-06), all deployed.** Three waves landed and
   pushed the same day, each its own gated commit, bringing the rebuild's remaining visual debt
@@ -279,16 +289,14 @@ which cannot express the design outranks a mechanical gap.
    documentation pass picks it up before it misleads the next person who reads this repo, the same
    carried-follow-up shape 907.life's own Pass 18 findings used for its own stale architecture
    section. **Update (docs landing sweep, 2026-07-06): `CLAUDE.md`'s half is fixed** (the stack
-   line, the dead `events` content-type section); see the History entry below. `docs/architecture.md`
-   and `docs/design-language.md` (the latter newly found stale by the same sweep: `decorate*()`
-   functions, `src/app.css`, the pre-chassis markdown pipeline) still describe the pre-rebuild app
-   and remain open.
+   line, the dead `events` content-type section); see the History entry below. **Update (family
+   repo tidy, 2026-07-06): `docs/architecture.md` and `docs/design-language.md` are rewritten**,
+   both now describing the current chassis/theme reality; see the History entry above.
 
 > **Follow-ups (carried).** The pre-publish checklist below (attorney review of the waiver, the
 > CrewLAB confirmations, the old `cairn-ecnordic-auth` D1 decommission) is unaffected by this
-> rebuild and still open. `docs/architecture.md` and `docs/design-language.md` need a rewrite pass
-> (finding 6 above); `CLAUDE.md`'s own half of that finding is resolved. The kit `csrf.checkOrigin`
-> deprecation (kit#15992) stays on the cairn watch list.
+> rebuild and still open. The kit `csrf.checkOrigin` deprecation (kit#15992) stays on the cairn
+> watch list.
 
 - **cairn 0.59 → 0.62.2 (2026-06-25).** Editor copy-edit, per-field description hints, the
   `/admin/help` Help home, a non-blocking address-collision advisory. No content change.

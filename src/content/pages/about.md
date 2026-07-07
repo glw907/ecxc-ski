@@ -14,13 +14,13 @@ Amy Purevsuren and Geoff Wright started ECXC in 2026. School teams cover the rac
 Anchorage's two storied cross-country ski clubs. Both run year-round professional coaching and have a long record of developing skiers who reach the national level and beyond.
 :::
 
-:::passage[The summer at a glance]{icon="path"}
+:::passage[The summer at a glance]
 Group practice is Monday, Wednesday, and Friday mornings, June 1 to August 19. We run and do strength work most days, and some days the mountain bikes or roller skis come out. Monday is at East High; the other days we meet at Hillside, Kincaid, Bartlett, or out on the Chugach front range.
 
 In late July the whole team goes to a lake near Talkeetna for four days of camp. The [training page](/training) has the times, the gear list, and sign-up.
 :::
 
-:::passage[Who can join]{icon="users-three"}
+:::passage[Who can join]
 Anyone entering 9th through 12th grade, plus graduates home from college for the summer. You don't have to be a skier; runners and athletes from other sports train right alongside. Some kids here are chasing Junior Nationals or Arctic Winter Games[†](#gloss-jn-awg) spots, and some have never followed a training plan. The groups are sorted by pace, with an adult to run or ride with each one, so nobody is left chasing the fast kids.
 :::
 
@@ -42,11 +42,11 @@ We ask three things of every athlete:
 These sports can hurt you. Kids fall, gear breaks, and Anchorage trails come with moose. We manage risk; we can't remove it. Before a first practice, every athlete needs a signed liability waiver on file in [CrewLAB](cairn:pages/crewlab). A parent or guardian signs for anyone under 18, and adults sign for themselves.
 :::
 
-:::passage[Cost]{icon="hand-coins"}
+:::passage[Cost]
 Training and camp are free, and money never decides who joins. Families who want to give can; donations buy gas, campground nights, and shared gear, and outfit athletes who need skis or a ride. If cost is in the way of anything, tell a coach. We won't ask about your finances.
 :::
 
-:::passage[Volunteers]{icon="handshake"}
+:::passage[Volunteers]
 Adults make this work, drivers most of all, since practice moves between trailheads. The [Volunteers page](/volunteers) has this summer's coaches and the jobs we need filled. You don't need a coaching certificate or a ski background.
 :::
 

@@ -48,7 +48,7 @@ Spenst is explosive jumping work, short powerful bounds and hops, the spring a s
 
 Monday is always East High. Wednesday and Friday move around: Hillside out of the Hilltop lot, Kincaid, Bartlett, or one of the Chugach front range trailheads. Check CrewLAB before you drive, because the spot sometimes changes the night before.
 
-:::passage[Carpooling]{icon="car"}
+:::passage[Carpooling]
 If practice is at a trailhead, a carpool leaves East High at 10:00 and comes back to East afterward. Anyone in the lot by 10:00 gets a ride. Pick up at East or at the trailhead, whichever is on your way.
 :::
 
@@ -123,18 +123,32 @@ Camp registration and consent are their own forms in CrewLAB, separate from summ
 ### What to pack
 
 :::checklist{cols="2"}
+#### Sleep
+
 - Sleeping bag and a pillow.
+
+#### Clothing
+
 - Training clothes for cool and warm weather.
 - Rain gear. It is Talkeetna.
 - Pants, shorts, and a sweatshirt for downtime.
 - Spare socks and personal clothing.
 - Swimsuit and towel.
 - Running shoes.
+
+#### Training gear
+
 - Hill bounding poles.
 - Roller-ski kit if you have one: boots, skis, poles, helmet.
+
+#### Daily essentials
+
 - Water bottle, with a carrier for long sessions.
 - Toiletries.
 - Daily medications.
+
+#### Optional
+
 - Food for special diets (optional).
 - Personal snacks (optional).
 :::

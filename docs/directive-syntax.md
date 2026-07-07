@@ -55,11 +55,11 @@ Second panel copy.
 |------|-------|------|------------|-----------------|
 | `card` | required | yes | `icon`, `role` | A bordered card with an icon-and-heading row above the body. |
 | `grid` | required | yes | `icon`, `role` | A card whose first bullet list lays out as a responsive grid. |
-| `alert` | required | yes | `icon`, `role` (required) | A callout box keyed to a role. The only role is `caution`. |
+| `alert` | required | yes | `icon`, `role` | A callout box keyed to a role: `structural` (plain border, no tint), `note` (soft tint, no border), or `caution` (heaviest: full border, thick rule, icon). |
 | `cta` | required | yes | `icon` | A centered card with a chip icon and an emphasized button link. |
 | `split` | required | yes | none | A card that lays its nested `panel` blocks side by side. |
 | `panel` | none | yes | `icon`, `role` | A single panel with an optional icon. Use it inside `split`. |
-| `passage` | required | yes | `icon`, `role` | A titled section without the card border. |
+| `passage` | required | yes | `icon`, `variant` | A titled section, flat by default. `variant="card"` or `variant="emphasis"` earns extra visual weight. |
 | `aside` | optional | yes | none | A quiet gloss: a small term label over muted text. The title is the term. |
 | `figure` | optional | yes | none | A captioned image. The body holds one markdown image; the title is the caption. |
 | `gallery` | optional | yes | none | A small set of images in a responsive grid. The body holds the images; the title heads the set. |
@@ -69,7 +69,7 @@ Second panel copy.
 | `day` | required | yes | `kind`, `time` | One row: day, time, then focus. Use inside `week`. |
 | `spectrum` | none | yes | none | A pace continuum with a bar plus labelled zones. The body holds `zone` blocks. |
 | `zone` | required | yes | none | One zone of the spectrum. Use inside `spectrum`. |
-| `checklist` | none | yes | `cols` | A check-box list for gear (single column; `cols="2"` for two). Wrap a bullet list, use under a heading. |
+| `checklist` | none | yes | `cols` | A check-box list for gear (single column; `cols="2"` for two). A `####` heading before a sub-list groups items under a category. |
 | `faq` | none | yes | none | A ruled question-and-answer list. Wrap a bullet list whose items lead with a bold question. |
 
 ### Per-directive notes
@@ -79,8 +79,12 @@ Second panel copy.
 `grid` takes an optional intro line followed by a bullet list. The first list becomes the grid. A
 typical open is `::::grid[What to bring]{icon="backpack"}`.
 
-`alert` requires `role="caution"`. A caution alert with no `icon` defaults to the `warning` glyph, so
-you rarely set the icon by hand. Open it with `::::alert[Heads up]{role="caution"}`.
+`alert` takes a `role` of `structural`, `note`, or `caution`, escalating in chrome weight with
+urgency: `structural` is a plain border with no tint and no icon, for organizational grouping with
+no urgency at all; `note` is a soft tint wash with no border, for a fact worth flagging; `caution`
+is the heaviest, a full border, a thick rule, and an icon. A caution alert with no `icon` defaults
+to the `warning` glyph, so you rarely set the icon by hand. Open it with
+`::::alert[Heads up]{role="caution"}`.
 
 `cta` promotes a link to a primary button. Put one link in the body with `class="download-link"`, as
 in `<a class="download-link" href="/waiver">Sign the waiver</a>`. If the label ends in an arrow,
@@ -91,7 +95,11 @@ stays static.
 renders, but the side-by-side layout comes from the `split` wrapper. Mind the colon count: four
 outside, three inside.
 
-`passage` has the same shape as `card` without the card chrome, for a lighter titled section.
+`passage` is flat by default: an ordinary headed paragraph, no chrome and no icon. Two opt-in
+variants earn extra weight: `variant="card"` for a passage that reads as a standalone object
+(a roster entry, say), and `variant="emphasis"` for a left accent rule with no full box, for
+advisory content that is still narrative. Both variants keep the `icon`; the flat default drops
+it. Reach for a variant only when the passage earns it; most narrative passages stay flat.
 
 `aside` is for a gloss or side note, like a one-line definition of spenst, OD, or SafeSport. It
 renders a quiet semantic `<aside>`: the title becomes a small term label over muted text, marked by a

@@ -36,7 +36,10 @@ const makeIcon: MakeIcon = makeIconRenderer(ICON_PATHS);
 const LINK_PATTERN = '^(#|/|cairn:|https?://)';
 const LINK_HELP = 'Use an anchor (#id), a path (/page), a cairn: link, or a full URL.';
 
-// ─── Alert: Waymark's shape, unchanged ──────────────────────────────────────
+// ─── Alert: Waymark's shape, widened with a third "structural" role ────────
+// The escalating-chrome pass (2026-07-06) adds `structural`, a plain-bordered tier with no tint
+// and no icon, for organizational grouping that carries no urgency at all; `note` stays the
+// soft info-tinted tier and `caution` the heaviest, per ecxc-theme.css's own three-tier chrome.
 const alert = defineComponent({
   name: 'alert',
   label: 'Alert',
@@ -48,14 +51,14 @@ const alert = defineComponent({
   build: (ctx) => {
     const name = strAttr(ctx, 'icon');
     const role = strAttr(ctx, 'role');
-    const icon = name ? makeIcon(name, role) : undefined;
+    const icon = role !== 'structural' && name ? makeIcon(name, role) : undefined;
     return cardShell(['alert', `alert-${role ?? 'note'}`], [
       headRow(ctx.slot('title'), icon),
       h('div', { className: ['alert-body'] }, ctx.slot('body')),
     ]);
   },
   attributes: {
-    role: fields.select({ label: 'Role', options: ['note', 'caution'] }),
+    role: fields.select({ label: 'Role', options: ['structural', 'note', 'caution'] }),
     icon: fields.icon({ label: 'Icon' }),
   },
   slots: [
@@ -154,14 +157,21 @@ const callout = defineComponent({
   },
 });
 
-// ─── Passage: a titled prose block, no card chrome (site-declared) ──────────
-// Waymark has no plain "titled section, no card" primitive; the pre-rebuild site's `card` and
-// `passage` directives collapsed into this one, since neither carried a visual distinction real
-// content depended on.
+// ─── Passage: a titled prose block, flat by default (site-declared) ────────
+// Waymark has no plain "titled section" primitive; the pre-rebuild site's `card` and `passage`
+// directives collapsed into this one. The selective-de-carding pass (2026-07-06) replaced the
+// engine's previous uniform carding of every instance: the default (no `variant`) is now ordinary
+// headed prose, no chrome and no icon, since a plain narrative passage reads as a continuation of
+// the article, not a separate object. `variant="card"` earns the club's resting-card recipe for a
+// passage that reads as a standalone object (e.g. a roster entry); `variant="emphasis"` earns a
+// lighter left-rule accent for advisory content that is still narrative. Both opt-in variants keep
+// the icon; the flat default drops it, matching the plain-heading treatment (docs/STATUS.md).
 function buildPassage(ctx: ComponentContext): Element {
-  const icon = strAttr(ctx, 'icon');
+  const variant = strAttr(ctx, 'variant');
+  const icon = variant ? strAttr(ctx, 'icon') : undefined;
   const iconEl = icon ? ecGlyph(icon) : undefined;
-  return h('section', { className: ['ec-passage'] }, [
+  const className = variant ? ['ec-passage', `ec-passage-${variant}`] : ['ec-passage'];
+  return h('section', { className }, [
     headRow(ctx.slot('title'), iconEl),
     h('div', { className: ['ec-passage-body'] }, ctx.slot('body')),
   ]);
@@ -170,11 +180,12 @@ function buildPassage(ctx: ComponentContext): Element {
 const passage = defineComponent({
   name: 'passage',
   label: 'Passage',
-  description: 'A titled block of prose, with no card chrome.',
-  use: "Give a stretch of prose its own heading without boxing it in a card.",
+  description: 'A titled block of prose, flat by default.',
+  use: "Give a stretch of prose its own heading. Reach for the card or emphasis variant only when the passage earns extra visual weight.",
   build: buildPassage,
   attributes: {
     icon: fields.icon({ label: 'Icon' }),
+    variant: fields.select({ label: 'Variant', options: ['card', 'emphasis'] }),
   },
   slots: [
     { name: 'title', label: 'Title', kind: 'inline', required: true },
@@ -182,7 +193,10 @@ const passage = defineComponent({
   ],
   group: 'Page structure',
   icon: 'compass',
-  preview: { attributes: { icon: 'compass' }, slots: { title: 'Title', body: 'Body copy.' } },
+  preview: {
+    attributes: { icon: 'compass', variant: 'card' },
+    slots: { title: 'Title', body: 'Body copy.' },
+  },
 });
 
 // ─── Aside: a quiet footnote gloss (site-declared) ──────────────────────────
@@ -219,7 +233,7 @@ const aside = defineComponent({
   preview: { slots: { title: 'Term', body: 'A short definition or note.' } },
 });
 
-// ─── Checklist: a two-column gear list (site-declared) ──────────────────────
+// ─── Checklist: a flat or grouped gear list (site-declared) ────────────────
 function markFirstListAs(children: ElementContent[], cls: string): Element | undefined {
   const ul = children.find((c) => isElement(c) && c.tagName === 'ul') as Element | undefined;
   if (ul) {
@@ -229,10 +243,48 @@ function markFirstListAs(children: ElementContent[], cls: string): Element | und
   return ul;
 }
 
+/**
+ * A checklist category: a `####` heading immediately followed by its bullet list, both found
+ *  among the checklist's body children. Grouping is opt-in: a body with no `####` heading keeps
+ *  the flat, uncarded rendering `buildChecklist` has always produced.
+ */
+interface ChecklistGroup {
+  title: ElementContent[];
+  list: Element;
+}
+
+function extractChecklistGroups(children: ElementContent[]): ChecklistGroup[] {
+  const groups: ChecklistGroup[] = [];
+  for (const [index, node] of children.entries()) {
+    if (!isElement(node) || node.tagName !== 'h4') continue;
+    const list = children.slice(index + 1).find(isElement);
+    if (list && list.tagName === 'ul') groups.push({ title: node.children as ElementContent[], list });
+  }
+  return groups;
+}
+
+function buildChecklistGroup({ title, list }: ChecklistGroup): Element {
+  list.properties = { ...list.properties, className: ['ec-checklist'] };
+  list.children = (list.children as ElementContent[]).filter((c) => !(c.type === 'text' && /^\s*$/.test(c.value)));
+  return h('div', { className: ['ec-checklist-group'] }, [
+    h('div', { className: ['ec-checklist-group-head'] }, [
+      ecGlyph('backpack'),
+      h('span', { className: ['ec-checklist-group-title'] }, title),
+    ]),
+    list,
+  ]);
+}
+
 function buildChecklist(ctx: ComponentContext): Element {
   const body = ctx.slot('body');
+  const twoCol = strAttr(ctx, 'cols') === '2';
+  const groups = extractChecklistGroups(body);
+  if (groups.length > 0) {
+    const className = twoCol ? ['ec-checklist-card', 'ec-checklist-2col'] : ['ec-checklist-card'];
+    return h('div', { className }, groups.map(buildChecklistGroup));
+  }
   const ul = markFirstListAs(body, 'ec-checklist');
-  if (ul && strAttr(ctx, 'cols') === '2' && Array.isArray(ul.properties?.className)) {
+  if (ul && twoCol && Array.isArray(ul.properties?.className)) {
     (ul.properties.className as string[]).push('ec-checklist-2col');
   }
   return ul ?? h('div', {}, body);
@@ -241,7 +293,9 @@ function buildChecklist(ctx: ComponentContext): Element {
 const checklist = defineComponent({
   name: 'checklist',
   label: 'Checklist',
-  description: 'A check-box list for gear. `cols="2"` lays it out in two columns.',
+  description:
+    'A check-box list for gear. `cols="2"` lays it out in two columns. A `####` heading before a ' +
+    'sub-list groups the items under that category, with one quiet icon per category.',
   use: 'List what to bring, under a heading of its own.',
   insertTemplate: '::::checklist\n- First item\n- Second item\n::::',
   build: buildChecklist,

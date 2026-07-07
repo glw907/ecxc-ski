@@ -8,15 +8,15 @@ Here's who's running things this summer, and how to pitch in.
 
 ## This summer's coaches
 
-:::passage[Geoff Wright]{icon="person-simple-run"}
+:::passage[Geoff Wright]{icon="person-simple-run" variant="card"}
 Geoff Wright leads the summer session. He's coached NSAA's[†](#gloss-nsaa) Junior Nordic program for 13 years, eight of them as site director at Kincaid, spent 2024/25 as an assistant coach at West High, and now coaches at Bettye Davis East. He's a lifelong runner and cyclist who came to skiing as an adult, and he's raised three competitive runner-skiers; the youngest now trains with the APU[†](#gloss-apu) Nordic Elite Team. The rest of the time it's books, general nerdery, and Sunday morning pancakes.
 :::
 
-:::passage[Amy Purevsuren]{icon="person-simple-run"}
+:::passage[Amy Purevsuren]{icon="person-simple-run" variant="card"}
 Amy Purevsuren runs the Talkeetna camp and is the head XC ski coach at Bettye Davis East High School. She raced for Western Colorado, where she was a seven-time All-American and won the 1997 national title in the 15K freestyle, the first individual skiing championship in school history. The day job is high school English, a career that started in the Peace Corps in Mongolia and has included 11 years in rural Alaska turning students into lifelong readers. She lives in Anchorage with her husband and three kids, and the family reads, camps, and gets outside together.
 :::
 
-:::passage[Duncan Wright]{icon="person-simple-run"}
+:::passage[Duncan Wright]{icon="person-simple-run" variant="card"}
 Duncan Wright, Geoff's oldest, coaches the Friday distance sessions. He's a competitive mountain runner, cyclist, and skier: top-10 at Crow Pass and at the Kesugi Ridge 50K, where he was the youngest in the field, and second at the Kenai 250, a 250-mile mountain bike race. He has an Outdoor Studies degree from APU, where he also trained for a year with the Elite XC ski team. Away from racing he reads science fiction, builds bikes, works on trails, and builds beautifual things out of wood.
 :::
 

@@ -15,6 +15,13 @@ describe('the ecxc registry', () => {
     expect(out).toContain('Watch out.');
   });
 
+  it('renders a structural alert with no icon, even when one is set explicitly', async () => {
+    const out = await renderMarkdown(':::alert[Carpooling]{role="structural" icon="car"}\nMeet at 10.\n:::\n');
+    expect(out).toContain('class="alert alert-structural"');
+    expect(out).not.toContain('class="ec-icon"');
+    expect(out).toContain('Carpooling');
+  });
+
   it('renders a cta with the primary variant class, and newTab adding target/rel', async () => {
     const out = await renderMarkdown(':::cta{label="Join" url="https://example.com/join" newTab="true"}\n:::\n');
     expect(out).toContain('class="cta-link cta-primary"');
@@ -54,10 +61,23 @@ describe('the ecxc registry', () => {
     expect(out).toContain('Second point');
   });
 
-  it('renders a passage with no card chrome', async () => {
+  it('renders a passage flat by default, dropping even an explicit icon', async () => {
     const out = await renderMarkdown(':::passage[Title]{icon="compass"}\nBody copy.\n:::\n');
     expect(out).toContain('class="ec-passage"');
+    expect(out).not.toContain('class="ec-passage ec-passage-');
+    expect(out).not.toContain('class="ec-glyph"');
     expect(out).toContain('Body copy.');
+  });
+
+  it('renders a passage as a card when variant="card" is set, keeping its icon', async () => {
+    const out = await renderMarkdown(':::passage[Title]{icon="compass" variant="card"}\nBody copy.\n:::\n');
+    expect(out).toContain('class="ec-passage ec-passage-card"');
+    expect(out).toContain('class="ec-glyph"');
+  });
+
+  it('renders a passage with the emphasis variant', async () => {
+    const out = await renderMarkdown(':::passage[Title]{variant="emphasis"}\nBody copy.\n:::\n');
+    expect(out).toContain('class="ec-passage ec-passage-emphasis"');
   });
 
   it('renders an aside with its anchor id, for a footnote dagger to target', async () => {
@@ -69,6 +89,21 @@ describe('the ecxc registry', () => {
   it('renders a checklist, tagging the two-column modifier from cols', async () => {
     const out = await renderMarkdown(':::checklist{cols="2"}\n- Item one\n- Item two\n:::\n');
     expect(out).toContain('class="ec-checklist ec-checklist-2col"');
+  });
+
+  it('groups a checklist into categories when the body carries #### headings', async () => {
+    const out = await renderMarkdown(
+      ':::checklist{cols="2"}\n#### Sleep\n\n- Bag\n\n#### Clothing\n\n- Coat\n- Boots\n:::\n',
+    );
+    expect(out).toContain('class="ec-checklist-card ec-checklist-2col"');
+    expect(out).toContain('class="ec-checklist-group"');
+    expect(out).toContain('class="ec-checklist-group-title"');
+    expect(out).toContain('Sleep');
+    expect(out).toContain('Clothing');
+    expect(out).toContain('Bag');
+    expect(out).toContain('Coat');
+    expect(out).toContain('Boots');
+    expect(out).not.toContain('<h4');
   });
 
   it('renders nested program cards inside a programs row', async () => {

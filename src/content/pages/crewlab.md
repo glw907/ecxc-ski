@@ -4,7 +4,7 @@ title: "CrewLAB"
 
 ECXC runs on CrewLAB, a free phone app. If you want to know when practice is or what a coach just posted, that's where you look. Athletes check it most days. Parents get the calendar and announcements without sitting in the team chat.
 
-:::passage[Why one app]{icon="chat-circle"}
+:::passage[Why one app]
 Because group texts scatter and email gets ignored. When rain moves practice, one notification reaches everyone at once, instead of a text thread half the parents never joined. And every channel is visible to the volunteers, so the conversations around your athlete happen where responsible adults can read them. CrewLAB designed its messaging around SafeSport[†](#gloss-safesport) guidelines and enforces the openness: messages are group-only, never one adult to one athlete.
 :::
 
@@ -24,7 +24,7 @@ Day to day, you'll use it for five things.
 :::
 ::::
 
-:::passage[For parents & supporters]{icon="users-three"}
+:::passage[For parents & supporters]
 Your account gets the team calendar, the announcements, and the supporters' channel, which is where the practical side of the team happens. The carpool your athlete needs to get to camp probably starts as a message there. You can message the volunteers directly whenever something needs an adult answer.
 
 What you won't see: your athlete's check-ins, workout log, coach feedback, or the team chat. That's deliberate. Kids get a team space of their own, and what adults post stays in the open.
@@ -32,7 +32,7 @@ What you won't see: your athlete's check-ins, workout log, coach feedback, or th
 Guardians sign the waiver from their own account, and payments run through the app. [ASK: confirm what ECXC collects through CrewLAB, whether camp cost-share, dues, or donations.] CrewLAB takes cards, bank transfer, Apple Pay, and Google Pay.
 :::
 
-:::passage[Waiver and forms]{icon="flag"}
+:::passage[Waiver and forms]{icon="flag" variant="emphasis"}
 Sign the waiver in CrewLAB; if you're looking for a paper version, there isn't one. A parent or guardian signs for an athlete under 18, adult athletes sign for themselves, and it has to be on file before the first practice. Camp checks for it too.
 
 The parent handbook and the gear and vendor list are in the app as well, so you're always reading the current version. What a family gives, or doesn't, has no effect on who joins. Nobody checks.

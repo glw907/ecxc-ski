@@ -327,3 +327,107 @@
 .prose .faq-question {
   cursor: default;
 }
+
+/* ============================================================================
+   THE RE-EXPRESSION PASS (2026-07-06). Four items the chassis restructure's own report left
+   untouched, awaiting this ruling (docs/STATUS.md, "the four re-expression items"): the page
+   masthead's voice and scale, a dated section's icon-and-caption anatomy, the CTA's visual
+   weight, and the alert family's chrome-to-urgency mapping. Every rule below is plain, unlayered
+   CSS, the same technique the rest of this file uses to beat chassis/prose.css's `@layer
+   components` rules unconditionally; see this file's own header comment for why no `!important`
+   is needed against a layered rule. None of the four selectors below ever reaches a component
+   anchor or button (h1, h2, a plain paragraph, and the alert/cta directive classes), so none of
+   them risks the `.prose a` trap the body-link override above documents.
+   ============================================================================ */
+
+/* Heading voice & scale: the masthead shrinks and tightens until the longest realistic title
+   holds one line at 1440 (the pre-rebuild masthead's own promise), rather than the chassis
+   default's larger, looser setting, which wraps a normal-length page title
+   ("About East Community Cross Country") to two lines inside the reading measure. Applies to
+   every `.prose > h1` alike, a post's date-led title included, so the voice stays one rule. */
+.prose > h1 {
+  font-weight: 650;
+  font-size: clamp(1.85rem, 1.65rem + 0.85vw, 2.3rem);
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+}
+
+/* Section-header anatomy: a dated section (an `##` heading immediately followed by a paragraph
+   holding only italic text, training.md's own date-and-cadence convention) gets one small
+   accent-colored glyph before the heading, replacing the pre-rebuild site's three-device stack
+   (a colored eyebrow, an icon, AND a bold heading, all at once, now permanently retired). The
+   meta line itself is promoted from a plain italic sentence to an uppercase, letter-spaced
+   caption, so it reads as structured metadata rather than a stray aside. `:has()` detects the
+   pattern structurally (matching the FAQ-pointer trick in ecxc-components.css), so no markup or
+   component change is needed to earn it. */
+.prose h2:has(+ p > em:only-child)::before {
+  content: '';
+  --cairn-h2-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM172.42,72.84l-64,32a8.05,8.05,0,0,0-3.58,3.58l-32,64A8,8,0,0,0,80,184a8.1,8.1,0,0,0,3.58-.84l64-32a8.05,8.05,0,0,0,3.58-3.58l32-64a8,8,0,0,0-10.74-10.74ZM138,138,97.89,158.11,118,118l40.15-20.07Z'/%3E%3C/svg%3E");
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  margin-right: 0.4rem;
+  vertical-align: 0.02em;
+  background: var(--color-accent);
+  mask: var(--cairn-h2-icon) center / contain no-repeat;
+  -webkit-mask: var(--cairn-h2-icon) center / contain no-repeat;
+}
+.prose h2 + p:has(> em:only-child) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-step--1);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.prose h2 + p:has(> em:only-child) em {
+  font-style: normal;
+}
+
+/* CTA treatment: the `cta` directive's own rendered paragraph (prose.css's `.cta`, today just the
+   button with no surrounding chrome) earns the chassis's own neutral resting-card recipe
+   (composition.css's `.cairn-card`, read here by value since `.cta` never carries that class):
+   structural separation at the conversion moment, with color reserved for the button alone, the
+   one place it has always belonged. */
+.prose .cta {
+  background: var(--color-base-100);
+  border: var(--border) solid var(--color-card-border);
+  border-radius: var(--radius-box);
+  padding: var(--spacing-m);
+  box-shadow: var(--cairn-shadow);
+}
+
+/* Alert semantics: chrome weight now escalates with urgency instead of every alert getting the
+   same blue tint and left rule regardless of role (chassis/prose.css's default). `structural` (no
+   default icon; theme/markdown/components.ts's build() drops one even if set) is the calmest: a
+   plain border, no rule, no tint, for organizational grouping with no urgency at all. `note` is a
+   soft background wash with no border at all, the FAQ pointer's own recipe (ecxc-components.css)
+   reused here: a fact worth flagging, not a caution. `caution` stays the heaviest tier, now with a
+   thicker rule and a small-caps title, so the hierarchy still reads without color vision. */
+.prose .alert-structural {
+  border: var(--border) solid var(--color-card-border);
+  background: var(--color-base-100);
+}
+.prose .alert-structural .card-title {
+  color: var(--color-base-content);
+}
+
+.prose .alert-note {
+  border: none;
+  background: color-mix(in oklab, var(--color-info) 7%, var(--color-base-100));
+}
+.prose .alert-note .card-title {
+  font-weight: 500;
+  color: var(--color-base-content);
+}
+
+.prose .alert-caution {
+  border: var(--border) solid var(--cairn-warning-ink);
+  border-left-width: 5px;
+  box-shadow: var(--cairn-shadow);
+}
+.prose .alert-caution .card-title {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  font-size: var(--text-step--1);
+}

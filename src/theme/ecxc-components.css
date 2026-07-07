@@ -13,32 +13,44 @@
    rules on specificity the same way). Imported from theme.css, after ecxc-theme.css. */
 
 .prose {
-  /* ─── Passage: a titled prose block in the club's card chrome ───────────
-     The pre-rebuild site split this into two directives, a bordered `card`
-     and a chromeless `passage`; the rebuilt engine's single `passage`
-     component collapsed them, and the collapse dropped the border along the
-     way. The reference renders (about, crewlab, volunteers, training) card
-     every titled passage uniformly, so this rule restores that one
-     resting-card treatment (bg-base-100, the card hairline, the box radius,
-     the same elevation the program cards already use) rather than
-     reintroducing a second flat variant the engine has no attribute for. */
+  /* ─── Passage: flat by default, two opt-in weights ──────────────────────
+     The pre-rebuild site split this into a bordered `card` and a chromeless `passage`; the
+     rebuilt engine's single `passage` component collapsed them, and a first pass carded every
+     instance uniformly to paper over the collapse. The selective-de-carding pass (2026-07-06)
+     reverses that: the default (no `variant`) is ordinary headed prose, the same weight as any
+     other in-flow heading, so a narrative passage reads as a continuation of the article rather
+     than a boxed aside. Two opt-in variants earn extra weight: `card` (the club's resting-card
+     recipe: bg-base-100, the card hairline, the box radius, the program-card elevation) for a
+     passage that reads as a standalone object, and `emphasis` (a left accent rule, no full box)
+     for advisory content that is still narrative. `buildPassage` only renders the icon for a
+     variant instance, so the flat default carries no glyph either (docs/STATUS.md). */
   & .ec-passage {
     --flow-space: var(--spacing-m);
-    background: var(--color-base-100);
-    border: var(--border) solid var(--color-card-border);
-    border-radius: var(--radius-box);
-    padding: var(--spacing-m);
-    box-shadow: var(--cairn-shadow);
   }
-  & .ec-passage .ec-head {
+  & .ec-passage > .ec-head > .card-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-step-1);
+    margin: 0 0 0.35rem;
+  }
+  & .ec-passage-body > * {
+    margin: 0;
+  }
+  & .ec-passage-body > * + * {
+    margin-top: var(--spacing-2xs);
+  }
+
+  /* Both weighted variants share the icon-and-heading head row and the compact title size; only
+     the container chrome differs below. */
+  & .ec-passage-card > .ec-head,
+  & .ec-passage-emphasis > .ec-head {
     display: flex;
     align-items: center;
     gap: var(--spacing-2xs);
     margin-bottom: 0.3rem;
   }
-  & .ec-passage .card-title {
-    font-family: var(--font-display);
-    font-weight: 650;
+  & .ec-passage-card > .ec-head > .card-title,
+  & .ec-passage-emphasis > .ec-head > .card-title {
     font-size: var(--text-step-0);
     margin: 0;
   }
@@ -51,16 +63,26 @@
      the same "working green" (`--color-accent`, the mid-spruce token) for every ambient icon, and
      reserved fireweed (`--color-primary`) for actions, so this icon follows suit rather than the
      primary a first pass gave it. */
-  & .ec-passage .ec-head .ec-glyph {
+  & .ec-passage-card .ec-head .ec-glyph,
+  & .ec-passage-emphasis .ec-head .ec-glyph {
     width: 1.4rem;
     height: 1.4rem;
     color: var(--color-accent);
   }
-  & .ec-passage-body > * {
-    margin: 0;
+
+  & .ec-passage-card {
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-m);
+    box-shadow: var(--cairn-shadow);
   }
-  & .ec-passage-body > * + * {
-    margin-top: var(--spacing-2xs);
+
+  /* A quieter earn than the full card: a left accent rule, no box, for advisory content that has
+     not stopped being narrative. */
+  & .ec-passage-emphasis {
+    border-left: 3px solid var(--color-accent);
+    padding-left: var(--spacing-m);
   }
 
   /* ─── Gloss aside: a quiet term-and-definition footnote target ─────────── */
@@ -139,6 +161,62 @@
     & .ec-checklist-2col {
       columns: 1;
     }
+  }
+
+  /* ─── Checklist groups: category-headed lists in the club's resting card ───
+     Grouping is opt-in at the content level (a `####` heading before a sub-list inside the
+     checklist body; `buildChecklist`'s own comment has the detection rule). A plain flat list (no
+     heading) keeps the bare, uncarded `.ec-checklist` rendering above, unchanged. A grouped list
+     earns the resting-card recipe as a whole (the same bg-base-100/border/radius/shadow every
+     other earned card on the site uses) with one quiet accent icon per CATEGORY head, never per
+     item; each category is `break-inside: avoid` as a unit, so a two-column split can never land
+     inside one. The item markers stay the same `.ec-checklist` list at the same text-step-0 body
+     size as the flat list above; grouping never changes the reading size of the list text. */
+  & .ec-checklist-card {
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-m);
+    box-shadow: var(--cairn-shadow);
+    margin: var(--spacing-m) 0;
+  }
+  & .ec-checklist-card.ec-checklist-2col {
+    columns: 2;
+    column-gap: var(--spacing-l);
+  }
+  @media (max-width: 34rem) {
+    & .ec-checklist-card.ec-checklist-2col {
+      columns: 1;
+    }
+  }
+  & .ec-checklist-group {
+    break-inside: avoid;
+    margin-bottom: var(--spacing-s);
+  }
+  & .ec-checklist-group:last-child {
+    margin-bottom: 0;
+  }
+  & .ec-checklist-group-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+  & .ec-checklist-group-head .ec-glyph {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-accent);
+  }
+  & .ec-checklist-group-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  & .ec-checklist-card .ec-checklist {
+    margin: 0;
   }
 
   /* ─── Program cards: a row of side-by-side clickable offerings ─────────── */

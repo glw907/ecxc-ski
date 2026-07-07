@@ -139,12 +139,17 @@
     columns: 2;
     column-gap: var(--spacing-l);
   }
+  /* No explicit font-size: a real page paragraph carries none either (chassis/prose.css sets no
+     font-size on a bare `<p>`), so both read the same inherited size straight off the html root's
+     own fluid clamp (site.css). `--text-step-0` looks like the obvious "body text" token, but
+     theme.css declares it as its own, larger Utopia scale step (17 to 19.5px) that no real
+     paragraph on the page actually uses, only components read it; setting it here made a checklist
+     item render about 22% larger than the surrounding prose. */
   & .ec-checklist > li {
     break-inside: avoid;
     position: relative;
     margin-block: 0.4rem;
     padding-left: 1.6rem;
-    font-size: var(--text-step-0);
     line-height: var(--leading-snug);
   }
   & .ec-checklist > li::before {
@@ -170,8 +175,8 @@
      earns the resting-card recipe as a whole (the same bg-base-100/border/radius/shadow every
      other earned card on the site uses) with one quiet accent icon per CATEGORY head, never per
      item; each category is `break-inside: avoid` as a unit, so a two-column split can never land
-     inside one. The item markers stay the same `.ec-checklist` list at the same text-step-0 body
-     size as the flat list above; grouping never changes the reading size of the list text. */
+     inside one. The item markers stay the same `.ec-checklist` list at the same inherited body size
+     as the flat list above; grouping never changes the reading size of the list text. */
   & .ec-checklist-card {
     background: var(--color-base-100);
     border: var(--border) solid var(--color-card-border);

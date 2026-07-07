@@ -388,13 +388,51 @@
    button with no surrounding chrome) earns the chassis's own neutral resting-card recipe
    (composition.css's `.cairn-card`, read here by value since `.cta` never carries that class):
    structural separation at the conversion moment, with color reserved for the button alone, the
-   one place it has always belonged. */
+   one place it has always belonged. This is the fallback for a lone `.cta` with no heading and
+   copy leading into it (never in current content, but a directive an editor could still drop in
+   on its own); `.cta-panel .cta` below strips this card back off for the common, grouped case. */
 .prose .cta {
   background: var(--color-base-100);
   border: var(--border) solid var(--color-card-border);
   border-radius: var(--radius-box);
   padding: var(--spacing-m);
   box-shadow: var(--cairn-shadow);
+}
+
+/* The common case: a heading and its lead-in copy end in the button. render/cta-panel.ts groups
+   that run at render time (createRenderer's own pipeline has no seam for a site to fuse markdown
+   siblings, the same trade table-scroll.ts already made for a bare markdown table), so the whole
+   moment, heading, copy, and button, shares ONE frame here; color still lives on the button alone.
+   `:has()` picks the flow-space that matches whichever heading level led in (prose.css's own `h2`/
+   `h3` resting values), so the panel's own gap from the prior block reads the same as the bare
+   heading's did. The nested `.cta` gives up its own card so the button reads as the panel's one
+   call to action, not a card inside a card. */
+.prose .cta-panel {
+  background: var(--color-base-100);
+  border: var(--border) solid var(--color-card-border);
+  border-radius: var(--radius-box);
+  padding: var(--spacing-m);
+  box-shadow: var(--cairn-shadow);
+}
+.prose .cta-panel:has(> h2) {
+  --flow-space: var(--spacing-xl);
+}
+.prose .cta-panel:has(> h3) {
+  --flow-space: var(--spacing-l);
+}
+.prose .cta-panel > :first-child {
+  margin-top: 0;
+}
+.prose .cta-panel > * + * {
+  margin-top: var(--spacing-xs);
+}
+.prose .cta-panel > .cta {
+  margin-top: var(--spacing-s);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 /* Alert semantics: chrome weight now escalates with urgency instead of every alert getting the

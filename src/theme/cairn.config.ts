@@ -5,6 +5,7 @@ import { defineAdapter, defineConcept, fieldset, fields, githubApp, parseSiteCon
 import { normalizeAssets, makeMediaResolver, readCommittedManifest } from '@glw907/cairn-cms/media';
 import { renderMarkdown, registry } from './render.js';
 import { wrapScrollableTables } from './render/table-scroll.js';
+import { wrapCtaPanels } from './render/cta-panel.js';
 import siteYaml from './site.config.yaml?raw';
 // The ?url import resolves the compiled stylesheets to their served URLs (the hashed assets in a
 // build), so the editor's preview frame can link the same sheets the (site) layout loads. They
@@ -81,13 +82,16 @@ export const cairn = defineAdapter({
   rendering: {
     // The entry-aware render: the editor preview and every public page call this one function.
     // The default media resolver backs the public build; the preview path injects its own. After
-    // the engine's own renderMarkdown, wrapScrollableTables (this theme's own post-processing
-    // rehype step, since createRenderer keeps its internal plugin ordering closed) wraps every
-    // bare markdown table in a scrollable, labeled region, so a table never blows out a narrow
-    // viewport (chassis/prose.css's .table-scroll class already expects this wrapper).
+    // the engine's own renderMarkdown, two of this theme's own post-processing rehype steps run
+    // (createRenderer keeps its internal plugin ordering closed, so a site adds behavior at this
+    // HTML-string boundary): wrapScrollableTables wraps every bare markdown table in a scrollable,
+    // labeled region, so a table never blows out a narrow viewport (chassis/prose.css's
+    // .table-scroll class already expects this wrapper); wrapCtaPanels groups a heading and its
+    // lead-in copy with the cta directive's own button into one `.cta-panel`, the frame
+    // ecxc-theme.css cards (the framed-neutral-CTA-cards pick).
     render: async ({ body, resolve, resolveMedia }) => {
       const html = await renderMarkdown(body, { resolve, resolveMedia: resolveMedia ?? publicMediaResolver });
-      return wrapScrollableTables(html);
+      return wrapCtaPanels(await wrapScrollableTables(html));
     },
     components: registry,
   },

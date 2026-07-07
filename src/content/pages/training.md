@@ -48,7 +48,7 @@ Spenst is explosive jumping work, short powerful bounds and hops, the spring a s
 
 Monday is always East High. Wednesday and Friday move around: Hillside out of the Hilltop lot, Kincaid, Bartlett, or one of the Chugach front range trailheads. Check CrewLAB before you drive, because the spot sometimes changes the night before.
 
-:::passage[Carpooling]
+:::alert[Carpooling]{role="structural"}
 If practice is at a trailhead, a carpool leaves East High at 10:00 and comes back to East afterward. Anyone in the lot by 10:00 gets a ride. Pick up at East or at the trailhead, whichever is on your way.
 :::
 

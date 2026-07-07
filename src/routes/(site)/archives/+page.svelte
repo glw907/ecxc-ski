@@ -50,7 +50,7 @@
     border-radius: 999px;
     padding: 0.3rem 0.8rem;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .tag-chip:hover {
     color: var(--color-primary);
@@ -72,9 +72,11 @@
   }
   .feed-links a {
     color: var(--color-accent);
-    text-decoration: none;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color var(--cairn-hover-transition);
   }
   .feed-links a:hover {
-    text-decoration: underline;
+    text-decoration-color: currentColor;
   }
 </style>

@@ -175,7 +175,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
     display: flex;
     align-items: center;
     color: var(--color-fireweed);
-    transition: opacity 0.2s ease;
+    transition: opacity var(--cairn-hover-transition);
   }
   /* 0.85 keeps the mark above the 3:1 non-text contrast bar on the spruce band. */
   .site-logo:hover {
@@ -209,7 +209,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
     text-decoration: none;
     padding: 0.3rem 0.6rem;
     border-radius: 6px;
-    transition: color 0.15s ease, background 0.15s ease;
+    transition: color var(--cairn-hover-transition), background var(--cairn-hover-transition);
   }
   .nav-link:hover {
     color: var(--color-header-ink-strong);
@@ -238,7 +238,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
     padding: 0.65rem;
     cursor: pointer;
     color: var(--color-header-ink);
-    transition: color 0.2s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .header-icon-btn:hover {
     color: var(--color-header-ink-strong);
@@ -284,7 +284,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
     text-decoration: none;
     padding-block: 0.8rem;
     border-bottom: 1px solid color-mix(in oklab, var(--color-header-ink) 25%, transparent);
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .mobile-link:last-child {
     border-bottom: none;
@@ -313,7 +313,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
       padding: 0.65rem;
       cursor: pointer;
       color: var(--color-header-ink);
-      transition: color 0.2s ease;
+      transition: color var(--cairn-hover-transition);
     }
     .hamburger:hover {
       color: var(--color-header-ink-strong);

@@ -233,7 +233,7 @@
     color: var(--color-accent);
     text-decoration: none;
     letter-spacing: 0.02em;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--cairn-hover-transition);
   }
   .welcome-link:hover {
     opacity: 0.75;
@@ -284,7 +284,7 @@
     color: var(--color-base-content);
     line-height: 1.25;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .recent-title:hover {
     color: var(--color-primary);
@@ -324,7 +324,7 @@
     font-weight: 600;
     color: var(--color-accent);
     text-decoration: none;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--cairn-hover-transition);
   }
   .recent-readmore {
     font-size: 0.7rem;
@@ -347,10 +347,16 @@
   /* ─── Arrow nudge, the shared hover cue ─────────────────── */
   .arrow {
     display: inline-block;
-    transition: transform 0.18s ease;
+    transition: transform var(--cairn-hover-transition);
   }
   a:hover .arrow {
     transform: translateX(3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a:hover .arrow,
+    .post-entry:has(.post-title a:hover) {
+      transform: none;
+    }
   }
 
   /* ─── News section ──────────────────────────────────────── */
@@ -393,7 +399,7 @@
   .featured-title a {
     color: var(--color-base-content);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .featured-title a:hover {
     color: var(--color-primary);
@@ -439,7 +445,7 @@
     border-radius: 2px;
     line-height: 1.6;
     text-decoration: none;
-    transition: color 0.15s ease, border-color 0.15s ease;
+    transition: color var(--cairn-hover-transition), border-color var(--cairn-hover-transition);
   }
   .post-tag:hover {
     color: var(--color-primary);
@@ -470,10 +476,14 @@
     border-radius: 10px;
     padding: 1.1rem 1.5rem;
     box-shadow: 0 1px 4px oklch(0% 0 0 / 0.05);
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow var(--cairn-hover-transition), transform var(--cairn-hover-transition);
   }
-  .post-entry:hover {
+  /* A linked card, but only its title is the actual link: keyed on `:has()` so the whisper-of-
+     shadow-plus-rise fires only while the pointer is over the real clickable target, not the
+     whole card's whitespace. */
+  .post-entry:has(.post-title a:hover) {
     box-shadow: 0 2px 10px -4px oklch(0% 0 0 / 0.1);
+    transform: translateY(-1px);
   }
   .post-title {
     font-family: var(--font-display);
@@ -486,7 +496,7 @@
   .post-title a {
     color: var(--color-base-content);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .post-title a:hover {
     color: var(--color-primary);

@@ -68,7 +68,7 @@
     letter-spacing: 0.04em;
     color: var(--color-muted);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .back-link:hover {
     color: var(--color-base-content);
@@ -119,7 +119,7 @@
     border: var(--border) solid var(--color-card-border);
     border-radius: var(--radius-selector);
     text-decoration: none;
-    transition: color 0.15s ease, border-color 0.15s ease;
+    transition: color var(--cairn-hover-transition), border-color var(--cairn-hover-transition);
   }
   .post-tag:hover {
     color: var(--color-primary);

@@ -39,7 +39,7 @@
       </p>
       <a
         href="/"
-        class="mt-m inline-flex h-11 items-center justify-center rounded-field bg-primary px-5 text-step--1 font-semibold text-primary-content no-underline hover:opacity-90"
+        class="error-cta mt-m inline-flex h-11 items-center justify-center rounded-field bg-primary px-5 text-step--1 font-semibold text-primary-content no-underline"
       >
         Back to {siteConfig.siteName}
       </a>
@@ -48,3 +48,22 @@
 
   <SiteFooter />
 </div>
+
+<style>
+  /* The same CTA recipe as the `cta` directive's rendered button (ecxc-theme.css's `.cta-link`
+     override): a slight brightness lift plus a 1px rise, no glow and no scale. This button is a
+     bare Tailwind utility anchor, not `.prose .cta-link`, so the recipe is restated here rather
+     than reached through that selector. */
+  .error-cta {
+    transition: filter var(--cairn-hover-transition), transform var(--cairn-hover-transition);
+  }
+  .error-cta:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .error-cta:hover {
+      transform: none;
+    }
+  }
+</style>

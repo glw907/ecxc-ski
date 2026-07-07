@@ -75,6 +75,7 @@ Shared by the `/archives` full listing and a `/tags/[tag]` detail page. -->
   .row__title a {
     color: inherit;
     text-decoration: none;
+    transition: color var(--cairn-hover-transition);
   }
   .row__title a:hover {
     color: var(--color-primary);
@@ -90,6 +91,7 @@ Shared by the `/archives` full listing and a `/tags/[tag]` detail page. -->
     font-size: var(--text-step--1);
     color: var(--color-muted);
     text-decoration: none;
+    transition: color var(--cairn-hover-transition);
   }
   .row__tag:hover {
     color: var(--color-base-content);

@@ -70,7 +70,7 @@ declared again locally since Svelte scoped styles do not share custom properties
     gap: 0.4rem;
     color: var(--color-header-ink);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--cairn-hover-transition);
   }
   .footer-icon-link:hover {
     color: var(--color-fireweed);

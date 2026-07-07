@@ -101,6 +101,7 @@
     font-weight: 650;
     color: var(--color-info);
     text-decoration: none;
+    transition: color var(--cairn-hover-transition);
   }
   & a[href^='#gloss-']:hover {
     color: var(--color-primary);
@@ -162,11 +163,14 @@
     padding: var(--spacing-m);
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    transition: border-color var(--cairn-hover-transition), box-shadow var(--cairn-hover-transition),
+      transform var(--cairn-hover-transition);
   }
+  /* A linked card: a whisper of shadow plus a 1px rise, nothing bouncy. */
   & .ec-program:hover {
     border-color: color-mix(in oklab, var(--color-primary) 45%, var(--color-card-border));
     box-shadow: var(--cairn-shadow);
+    transform: translateY(-1px);
   }
   & .ec-program-head {
     display: flex;
@@ -188,7 +192,7 @@
     font-size: var(--text-step-1);
     text-decoration-line: underline;
     text-decoration-color: transparent;
-    transition: text-decoration-color 0.18s ease;
+    transition: text-decoration-color var(--cairn-hover-transition);
   }
   & .ec-program:hover .ec-program-name {
     text-decoration-color: var(--color-primary);
@@ -222,16 +226,19 @@
   }
   & .ec-arr {
     display: inline-block;
-    transition: transform 0.18s ease;
+    transition: transform var(--cairn-hover-transition);
   }
   & a:hover .ec-arr {
     transform: translateX(3px);
   }
+  /* Only the transforms (the card's rise, the arrow's nudge) drop out here; the border, shadow,
+     and underline-reveal fades above carry no motion and keep running. */
   @media (prefers-reduced-motion: reduce) {
-    & .ec-program,
-    & .ec-program-name,
-    & .ec-arr {
-      transition: none;
+    & .ec-program:hover {
+      transform: none;
+    }
+    & a:hover .ec-arr {
+      transform: none;
     }
   }
 
@@ -320,7 +327,7 @@
     text-decoration-color: color-mix(in oklab, var(--color-info) 45%, transparent);
     text-decoration-thickness: 1.5px;
     text-underline-offset: 2px;
-    transition: text-decoration-color 0.15s ease;
+    transition: text-decoration-color var(--cairn-hover-transition);
   }
   & a[href='#frequently-asked-questions']:hover {
     text-decoration-color: var(--color-info);
@@ -329,7 +336,7 @@
     content: ' \2193'; /* the FAQ sits at the foot of the page */
     display: inline-block;
     font-weight: 700;
-    transition: transform 0.18s ease;
+    transition: transform var(--cairn-hover-transition);
   }
   & a[href='#frequently-asked-questions']:hover::after {
     transform: translateY(2px);

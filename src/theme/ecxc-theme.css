@@ -105,6 +105,15 @@
   --font-mono: 'iA Writer Mono S', ui-monospace, monospace;
 }
 
+/* THE HOVER SYSTEM (Geoff's site-wide ruling, 2026-07-06): one shared recipe for every clickable
+   surface below, chrome and prose alike, so a future tuning pass touches this one token rather
+   than each rule by hand. Motion (a translateY rise, an arrow nudge) is what each rule's own
+   `prefers-reduced-motion` guard disables; a plain color, border, or shadow fade carries no motion
+   and keeps running under that preference, the same distinction WCAG's own guidance draws. */
+:root {
+  --cairn-hover-transition: 150ms ease;
+}
+
 /* The light theme (default, unconditional). Overrides the `cairn` DaisyUI theme block's role tokens.
    `!important` per the technique note above. */
 :root {
@@ -234,9 +243,40 @@
    button face) the moment the restructure lifted this rule out of prose.css's layer. */
 
 /* The old body-link idiom: the fireweed accent, not the chassis default's inherited color. Scoped
-   to classless anchors so it never outranks a component anchor's own layered color pairing. */
-.prose a:not([class]) {
+   to classless anchors so it never outranks a component anchor's own layered color pairing, and
+   past that, to anchors with no `#` fragment href so it never reaches the gloss footnote marker
+   or the FAQ pointer link below (both classless too, both ecxc-components.css's own bespoke
+   devices with their own hover already). The hover itself reuses the site's own underline-reveal
+   device (the FAQ pointer link and the program-card title below both already fade a transparent
+   underline to `currentColor` on hover): a plain body link otherwise carried no cue at all beyond
+   its resting color, so hovering one used to do nothing. */
+.prose a:not([class]):not([href^='#']) {
   color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--cairn-hover-transition);
+}
+.prose a:not([class]):not([href^='#']):hover {
+  text-decoration-color: currentColor;
+}
+
+/* CTA buttons (the `cta` directive's rendered anchor, prose.css's `.cta-link`): a slight
+   brightness lift plus a 1px rise, no glow and no scale. prose.css declares no hover state at all
+   for this class, so this only ADDS a new selector state; it never fights a layered declaration
+   the way the color overrides above do. `filter: brightness()` multiplies every rendered channel
+   (the button's fill and its label alike) by the same amount, so the pair lifts together rather
+   than the lift washing out the contrast between them. */
+.prose .cta-link {
+  transition: filter var(--cairn-hover-transition), transform var(--cairn-hover-transition);
+}
+.prose .cta-link:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .prose .cta-link:hover {
+    transform: none;
+  }
 }
 
 /* The callout points list reads as a 2-up grid of cards, not a plain bullet list, matching the

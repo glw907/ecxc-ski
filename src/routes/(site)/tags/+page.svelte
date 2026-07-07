@@ -41,6 +41,7 @@
     font-size: var(--text-step-1);
     color: var(--color-base-content);
     text-decoration: none;
+    transition: color var(--cairn-hover-transition);
   }
   .tag-index__link:hover {
     color: var(--color-primary);

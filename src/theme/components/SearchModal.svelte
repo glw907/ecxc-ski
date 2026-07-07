@@ -160,7 +160,7 @@ carries no injection risk beyond what the crawled pages themselves already rende
             <a
               href={result.url}
               onclick={() => dialogEl?.close()}
-              class="block rounded-field px-m py-s no-underline hover:bg-base-200"
+              class="search-result-link block rounded-field px-m py-s no-underline"
             >
               <p class="font-display font-semibold text-base-content">{result.meta.title ?? result.url}</p>
               <p class="text-step--1 text-muted">{@html result.excerpt}</p>
@@ -177,12 +177,23 @@ carries no injection risk beyond what the crawled pages themselves already rende
 
 <style>
   .search-trigger {
-    transition: color 0.15s;
+    transition: color var(--cairn-hover-transition);
   }
   .search-trigger:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
+
+  /* A search result row: a linked card, so it gets the same whisper-of-ground-tint the rest of
+     the site's clickable rows use, transitioned rather than snapped (Tailwind's own `hover:`
+     utility carries no transition on its own). */
+  .search-result-link {
+    transition: background-color var(--cairn-hover-transition);
+  }
+  .search-result-link:hover {
+    background-color: var(--color-base-200);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .search-trigger {
       transition: none;

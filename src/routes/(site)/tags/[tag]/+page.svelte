@@ -18,6 +18,21 @@
   </h1>
   <PostList posts={data.posts} labels={data.labels} />
   <p class="mt-l">
-    <a href="/tags/" class="text-primary hover:underline">&larr; All tags</a>
+    <a href="/tags/" class="all-tags-link">&larr; All tags</a>
   </p>
 </section>
+
+<style>
+  /* The same underline-reveal device the bare body links and the FAQ pointer use: the resting
+     accent color is the only cue until hover fades in the underline, transitioned rather than
+     Tailwind's own instant `hover:underline` toggle. */
+  .all-tags-link {
+    color: var(--color-primary);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color var(--cairn-hover-transition);
+  }
+  .all-tags-link:hover {
+    text-decoration-color: currentColor;
+  }
+</style>

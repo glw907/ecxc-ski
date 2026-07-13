@@ -2,8 +2,9 @@
 ecxc.ski's public site header: the "hoodie colorway" masthead, ported from the pre-rebuild site's
 own `Nav.svelte` (structural-device catalogue, rebuild-waymark-2). A sticky black-spruce band with
 a fireweed bottom rule, carrying the ECXC tile-mark logo on the left and the primary nav plus
-search/theme icons on the right; a hamburger replaces the nav below 640px and opens a dropdown that
-pushes the page down rather than overlaying it. The band's four colors (`--color-header`,
+search/theme icons on the right; a hamburger replaces the nav below 900px (the six unwrapped
+display-face labels need the room) and opens a dropdown that pushes the page down rather than
+overlaying it. The band's four colors (`--color-header`,
 `--color-header-ink`, `--color-header-ink-strong`, `--color-fireweed`) are a fixed brand device, not
 part of the light/dark base ladder: the header reads the same dark band in both themes, so they are
 declared as local constants on `.site-header` rather than added to the shared token file. The
@@ -193,10 +194,14 @@ regardless of this header's own dark band, which never changes with the toggle. 
     display: block;
   }
 
+  /* margin-left:auto packs the nav against the utility cluster and hands ALL free bar width to
+     the logo's side, so the mark sits alone and reads as the home affordance. The intra-group
+     gap stays well under that free span; grouping is carried by the spacing contrast. */
   .desktop-nav {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 0.9rem;
+    margin-left: auto;
   }
 
   .nav-link {
@@ -207,6 +212,7 @@ regardless of this header's own dark band, which never changes with the toggle. 
     text-transform: uppercase;
     color: var(--color-header-ink);
     text-decoration: none;
+    white-space: nowrap;
     padding: 0.3rem 0.6rem;
     border-radius: 6px;
     transition: color var(--cairn-hover-transition), background var(--cairn-hover-transition);
@@ -223,10 +229,26 @@ regardless of this header's own dark band, which never changes with the toggle. 
     background: color-mix(in oklab, var(--color-header-ink-strong) 8%, transparent);
   }
 
+  /* The search/theme pair is a utility cluster, not nav: a short ink-mix rule (the mobile
+     menu's own divider idiom) marks the boundary. The rule is a pseudo-element so its height
+     is fixed at cap-ish height instead of stretching to the tallest button. */
   .icon-group {
     display: flex;
     align-items: center;
     gap: 0.1rem;
+    position: relative;
+    margin-left: 1rem;
+    padding-left: 1.1rem;
+  }
+  .icon-group::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 1px;
+    height: 1.375rem;
+    background: color-mix(in oklab, var(--color-header-ink) 35%, transparent);
   }
 
   .header-icon-btn {
@@ -300,8 +322,19 @@ regardless of this header's own dark band, which never changes with the toggle. 
     color: var(--color-fireweed);
   }
 
-  @media (max-width: 639px) {
+  /* 900px, not the usual 640: six uppercase display-face labels plus the utility cluster need
+     ~860px on one unwrapped line. Between 640 and 899 the drawer serves; labels never wrap. */
+  @media (max-width: 899px) {
     .desktop-nav {
+      display: none;
+    }
+    /* No nav group to separate from below the breakpoint; the divider would dangle beside the
+       hamburger. space-between still right-aligns the cluster. */
+    .icon-group {
+      margin-left: 0;
+      padding-left: 0;
+    }
+    .icon-group::before {
       display: none;
     }
     .hamburger {

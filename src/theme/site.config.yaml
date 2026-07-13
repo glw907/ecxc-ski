@@ -22,7 +22,6 @@ vocabulary:
 
 menus:
   primary:
-    - { label: Home, url: / }
     - { label: About, url: /about }
     - { label: Training, url: /training }
     - { label: Talkeetna Camp, url: /talkeetna }

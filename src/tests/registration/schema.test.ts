@@ -90,6 +90,35 @@ describe('trainingSchema', () => {
     const result = v.safeParse(trainingSchema, fields);
     expect(result.success).toBe(true);
   });
+
+  it('fails a blank athlete signature regardless of age, including an adult athlete', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteSignature: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.issues.map((issue) => issue.message).join(' ');
+      expect(messages).toContain("Please type the athlete's name to sign.");
+    }
+  });
+});
+
+// The waiver's per-section `agree-<id>` fields (built by schema.ts's own
+// `waiverAgreementFields`) only accept a real boolean, never the raw posted string a checkbox
+// sends without SvelteKit's `b:` name prefix. WaiverText.svelte's checkbox is hand-authored
+// (its field name is generated at runtime, so it cannot go through `RemoteFormField.as(...)`,
+// which would add the prefix automatically), so this is the schema-side half of that contract;
+// components.test.ts asserts the rendered `name="b:agree-<id>"` half.
+describe('waiver agreement fields require a real boolean, not the raw posted "on" string', () => {
+  it('accepts a checked section once it has coerced to the real boolean true', () => {
+    const result = v.safeParse(trainingSchema, baseFields(dobForAge(18)));
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a checked section still carrying the raw posted string "on" (the shape a checkbox posts without the b: name prefix)', () => {
+    const fields = { ...baseFields(dobForAge(18)), 'agree-risks': 'on' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('campSchema', () => {
@@ -123,6 +152,12 @@ describe('campSchema', () => {
     const fields = { ...campFields(dobForAge(18)), carpool: 'can-drive', carpoolSeats: 2 };
     const result = v.safeParse(campSchema, fields);
     expect(result.success).toBe(true);
+  });
+
+  it('fails a blank athlete signature regardless of age, including an adult athlete', () => {
+    const fields = { ...campFields(dobForAge(18)), athleteSignature: '' };
+    const result = v.safeParse(campSchema, fields);
+    expect(result.success).toBe(false);
   });
 });
 

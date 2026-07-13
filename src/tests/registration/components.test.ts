@@ -75,11 +75,16 @@ const { default: WaiverText } = await import('$theme/components/WaiverText.svelt
 const { default: RegistrationForm } = await import('$theme/components/RegistrationForm.svelte');
 
 describe('WaiverText', () => {
-  it('renders one required agreement checkbox per waiver section, named agree-<id>', () => {
+  it('renders one required agreement checkbox per waiver section, posted as b:agree-<id>', () => {
     const { body } = render(WaiverText);
 
+    // The `b:` prefix is load-bearing, not decorative: SvelteKit's convert_formdata only
+    // coerces a checked box's posted "on" string to a real boolean when the field name
+    // carries it, matching schema.test.ts's own boolean-vs-string coverage of the same
+    // contract from the schema side.
     for (const section of WAIVER_SECTIONS) {
-      expect(body).toContain(`name="agree-${section.id}"`);
+      expect(body).toContain(`id="agree-${section.id}"`);
+      expect(body).toContain(`name="b:agree-${section.id}"`);
     }
     const checkboxCount = (body.match(/type="checkbox"/g) ?? []).length;
     expect(checkboxCount).toBe(WAIVER_SECTIONS.length);
@@ -136,5 +141,43 @@ describe('RegistrationForm', () => {
     const { body } = render(RegistrationForm, { props: { variant } });
 
     expect(body).not.toContain('You are registered');
+  });
+
+  it('renders an h2 heading the form section, so the page runs h1 then h2 then the waiver h3s without a skip', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    expect(body).toContain('<h2>Register</h2>');
+  });
+
+  it('mounts the failed-submit alert region from first render, empty until there are issues', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    expect(body).toMatch(/<div role="alert"[^>]*tabindex="-1"/);
+    // No validation issues on first render (the mocked fields.allIssues() returns []), so
+    // no error message text should be present yet.
+    expect(body).not.toContain('rounded-field border border-error');
+  });
+
+  it('mounts the success status region from first render, hidden until a submission succeeds', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    expect(body).toMatch(/<div role="status"[^>]*tabindex="-1"[^>]*hidden/);
+  });
+
+  it('wires each field to its own stable error id via aria-describedby', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    for (const field of ['athleteFullName', 'parentEmail', 'athleteSignature']) {
+      expect(body).toContain(`aria-describedby="${field}-error"`);
+      expect(body).toContain(`id="${field}-error"`);
+    }
+  });
+
+  it('requires the athlete signature unconditionally', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    const athleteSignatureInput = body.match(/<input id="athleteSignature"[^>]*>/)?.[0];
+    expect(athleteSignatureInput).toBeDefined();
+    expect(athleteSignatureInput).toContain('required');
   });
 });

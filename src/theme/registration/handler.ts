@@ -16,8 +16,8 @@ const SHEET_TAB: Record<FormKind, string> = {
 };
 
 const RECORD_EMAIL_FAILURE_MESSAGE =
-  'Something went wrong saving your registration. Nothing was recorded. Please try again, ' +
-  'or reach us through the contact form.';
+  'Something went wrong saving your registration. Please try again. If it fails a second ' +
+  'time, use the contact form instead so we can sort it out.';
 
 /**
  * The posted, validated shape both forms share, hand-written rather than inferred from
@@ -143,7 +143,12 @@ export async function handleRegistration(
 
   const turnstileToken = data['cf-turnstile-response'];
   const turnstileSecret = env.TURNSTILE_SECRET_KEY;
-  if (turnstileSecret && !(await verifyTurnstile(turnstileToken, deps.ip, turnstileSecret))) {
+  if (!turnstileSecret) {
+    // Fail closed: a deploy missing the Turnstile secret must not silently accept every
+    // submission unchecked, unlike the Sheets step below, which is allowed to degrade.
+    invalid('Registration is temporarily unavailable. Please try again later or use the contact form instead.');
+  }
+  if (!(await verifyTurnstile(turnstileToken, deps.ip, turnstileSecret))) {
     invalid('Spam check failed. Please try again.');
   }
 
@@ -182,7 +187,8 @@ export async function handleRegistration(
 
   try {
     await sendRecordEmail({ CONTACT_EMAIL: env.CONTACT_EMAIL, SEND_EMAIL: env.SEND_EMAIL }, record, { sheetsError });
-  } catch {
+  } catch (error) {
+    console.error('registration record email failed', error);
     invalid(RECORD_EMAIL_FAILURE_MESSAGE);
   }
 
@@ -191,7 +197,8 @@ export async function handleRegistration(
     try {
       await sendParentCopy({ EMAIL: env.EMAIL }, record);
       parentCopySent = true;
-    } catch {
+    } catch (error) {
+      console.error('registration parent copy failed', error);
       parentCopySent = false;
     }
   }

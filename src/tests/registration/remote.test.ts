@@ -112,10 +112,16 @@ describe('handleRegistration', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
   let order: string[];
 
-  /** A record-email/parent-copy env pair that each push a label onto `order` when called. */
+  /**
+   * A record-email/parent-copy env pair that each push a label onto `order` when called.
+   * `TURNSTILE_SECRET_KEY` defaults to present (the default `fetchMock` below verifies it
+   * successfully), since Turnstile is not what most of these tests are about; the dedicated
+   * "Turnstile" suite below overrides it to exercise the fail-closed and failed-verify paths.
+   */
   function makeDeps(overrides: Partial<RegistrationEnv> = {}): RegistrationDeps {
     return {
       env: {
+        TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
         CONTACT_EMAIL: 'coach@ecxc.ski',
         SEND_EMAIL: {
           send: vi.fn(async (_msg: unknown) => {
@@ -139,6 +145,9 @@ describe('handleRegistration', () => {
     captured = [];
     order = [];
     fetchMock = vi.fn(async (url: string) => {
+      if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
       if (url === 'https://oauth2.googleapis.com/token') {
         return new Response(JSON.stringify({ access_token: 'test-access-token' }), { status: 200 });
       }
@@ -176,6 +185,9 @@ describe('handleRegistration', () => {
   it('still returns success when the Sheets append fails, and flags it in the record email', async () => {
     const keyB64 = await makeServiceAccountKeyB64('sa@example.iam.gserviceaccount.com');
     fetchMock.mockImplementation(async (url: string) => {
+      if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
       if (url === 'https://oauth2.googleapis.com/token') {
         return new Response(JSON.stringify({ access_token: 'test-access-token' }), { status: 200 });
       }
@@ -201,14 +213,18 @@ describe('handleRegistration', () => {
     expect(captured[0].raw.toLowerCase()).toContain('not configured');
   });
 
-  it('rejects when the record email fails, and never attempts the parent copy', async () => {
+  it('rejects when the record email fails, logs the swallowed error, and never attempts the parent copy', async () => {
     const parentCopy = vi.fn();
     const deps = makeDeps();
-    deps.env.SEND_EMAIL = { send: vi.fn().mockRejectedValue(new Error('smtp down')) };
+    const sendError = new Error('smtp down');
+    deps.env.SEND_EMAIL = { send: vi.fn().mockRejectedValue(sendError) };
     deps.env.EMAIL = { send: parentCopy };
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     // invalid() throws a ValidationError whose own .message is always the fixed string
-    // "Validation failed"; the user-facing text lives on .issues[].message instead.
+    // "Validation failed"; the user-facing text lives on .issues[].message instead. The
+    // reworded copy no longer claims nothing was recorded (the Sheets row may well have
+    // landed already); it just tells the family to retry, then fall back to the contact form.
     const rejection: { issues: { message: string }[] } = await handleRegistration(
       'training',
       baseFields(),
@@ -220,16 +236,107 @@ describe('handleRegistration', () => {
       (error: unknown) => error as { issues: { message: string }[] },
     );
 
-    expect(rejection.issues[0]?.message).toMatch(/Nothing was recorded/);
+    expect(rejection.issues[0]?.message).toMatch(/try again/i);
+    expect(rejection.issues[0]?.message).toMatch(/use the contact form instead/i);
+    expect(rejection.issues[0]?.message).not.toMatch(/nothing was recorded/i);
     expect(parentCopy).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledWith('registration record email failed', sendError);
+
+    consoleError.mockRestore();
   });
 
-  it('swallows a parent-copy failure and reports it in the result', async () => {
+  it('swallows a parent-copy failure, logs it, and reports it in the result', async () => {
     const deps = makeDeps();
-    deps.env.EMAIL = { send: vi.fn().mockRejectedValue(new Error('parent inbox full')) };
+    const parentCopyError = new Error('parent inbox full');
+    deps.env.EMAIL = { send: vi.fn().mockRejectedValue(parentCopyError) };
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     const result = await handleRegistration('training', baseFields(), deps);
 
     expect(result).toEqual({ success: true, parentCopySent: false });
+    expect(consoleError).toHaveBeenCalledWith('registration parent copy failed', parentCopyError);
+
+    consoleError.mockRestore();
+  });
+});
+
+describe('handleRegistration Turnstile enforcement', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  function makeDeps(overrides: Partial<RegistrationEnv> = {}): RegistrationDeps {
+    return {
+      env: {
+        CONTACT_EMAIL: 'coach@ecxc.ski',
+        SEND_EMAIL: { send: vi.fn(async () => undefined) },
+        EMAIL: { send: vi.fn(async () => undefined) },
+        ...overrides,
+      },
+      ip: '203.0.113.5',
+      userAgent: 'test-agent/1.0',
+      now: () => '2026-07-13T12:00:00.000Z',
+    };
+  }
+
+  beforeEach(() => {
+    captured = [];
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  it('rejects, without ever calling Turnstile, when TURNSTILE_SECRET_KEY is missing (fails closed)', async () => {
+    const deps = makeDeps({ TURNSTILE_SECRET_KEY: undefined });
+
+    const rejection: { issues: { message: string }[] } = await handleRegistration(
+      'training',
+      baseFields(),
+      deps,
+    ).then(
+      () => {
+        throw new Error('expected handleRegistration to reject');
+      },
+      (error: unknown) => error as { issues: { message: string }[] },
+    );
+
+    expect(rejection.issues[0]?.message).toMatch(/temporarily unavailable/i);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects when TURNSTILE_SECRET_KEY is present but Cloudflare reports the token failed verification', async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ success: false }), { status: 200 }));
+    const deps = makeDeps({ TURNSTILE_SECRET_KEY: 'test-secret' });
+
+    const rejection: { issues: { message: string }[] } = await handleRegistration(
+      'training',
+      baseFields(),
+      deps,
+    ).then(
+      () => {
+        throw new Error('expected handleRegistration to reject');
+      },
+      (error: unknown) => error as { issues: { message: string }[] },
+    );
+
+    expect(rejection.issues[0]?.message).toMatch(/spam check failed/i);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
+  it('proceeds past the Turnstile check when the secret is present and Cloudflare verifies the token', async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    const deps = makeDeps({ TURNSTILE_SECRET_KEY: 'test-secret' });
+
+    const result = await handleRegistration('training', baseFields(), deps);
+
+    // Sheets is unconfigured in this deps set, which degrades to a captured error rather than
+    // a rejection; reaching that point at all proves Turnstile did not block the submission.
+    expect(result).toEqual({ success: true, parentCopySent: true });
+    expect(captured[0].raw).toContain('SHEETS APPEND FAILED');
   });
 });

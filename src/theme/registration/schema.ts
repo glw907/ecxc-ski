@@ -140,7 +140,10 @@ const sharedFields = {
     ['grant', 'deny'],
     'Please choose whether you grant or do not grant photo and media permission.',
   ),
-  athleteSignature: v.optional(v.pipe(v.string(), v.trim()), ''),
+  // Unconditionally required: the program has no under-13 athletes, so the age-gated exemption
+  // this field used to carry (blank allowed under 13) only opened a blank-signature corner via
+  // a mistyped date of birth. Every athlete, at any age, types their own name to sign.
+  athleteSignature: requiredText("Please type the athlete's name to sign."),
   parentSignature: v.optional(v.pipe(v.string(), v.trim()), ''),
   parentConsent: v.optional(v.boolean(), false),
   athleteConsent: v.pipe(
@@ -186,13 +189,6 @@ export const trainingSchema = v.pipe(
     ),
     ['parentConsent'],
   ),
-  v.forward(
-    v.check(
-      (input) => ageNow(input.athleteDob) < 13 || input.athleteSignature.trim() !== '',
-      'Please have the athlete type their name to sign.',
-    ),
-    ['athleteSignature'],
-  ),
 );
 
 export const campSchema = v.pipe(
@@ -210,13 +206,6 @@ export const campSchema = v.pipe(
       'Please check the box confirming a parent or guardian is signing electronically, since the athlete is under 18.',
     ),
     ['parentConsent'],
-  ),
-  v.forward(
-    v.check(
-      (input) => ageNow(input.athleteDob) < 13 || input.athleteSignature.trim() !== '',
-      'Please have the athlete type their name to sign.',
-    ),
-    ['athleteSignature'],
   ),
   v.forward(
     v.check(

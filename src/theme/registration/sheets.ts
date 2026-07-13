@@ -9,6 +9,10 @@
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 const TOKEN_LIFETIME_SECONDS = 3600;
+// Backdate `iat` by this much to tolerate the signing clock running slightly ahead of
+// Google's; a `iat` that reads as "in the future" to the token endpoint is rejected outright,
+// while a `iat` a minute in the past is well within Google's own tolerance.
+const CLOCK_SKEW_SECONDS = 60;
 
 const encoder = new TextEncoder();
 
@@ -39,16 +43,32 @@ function pemToPkcs8(pem: string): Uint8Array {
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 }
 
+/**
+ * Decode the base64-encoded service-account key JSON. Whitespace (a copy-pasted multi-line
+ * secret, or a trailing newline from `wrangler secret put`) is stripped before decoding, since
+ * `atob` rejects it outright. On any decode failure, throws a fixed message carrying no part of
+ * the input: a raw `JSON.parse` error embeds a fragment of the bad input in its own message,
+ * and this message ends up relayed to Geoff by email (see handler.ts's `sheetsError`), so it
+ * must never carry key material.
+ */
+function decodeServiceAccountKey(b64: string): ServiceAccountKey {
+  try {
+    return JSON.parse(atob(b64.replace(/\s+/g, ''))) as ServiceAccountKey;
+  } catch {
+    throw new Error('service account key could not be decoded');
+  }
+}
+
 /** Sign an RS256 JWT asserting the service account for the Sheets scope, valid one hour. */
 async function signJwt(key: ServiceAccountKey): Promise<string> {
-  const now = Math.floor(Date.now() / 1000);
+  const iat = Math.floor(Date.now() / 1000) - CLOCK_SKEW_SECONDS;
   const header = bytesToB64url(encoder.encode(JSON.stringify({ alg: 'RS256', typ: 'JWT' })));
   const claims = {
     iss: key.client_email,
     scope: SHEETS_SCOPE,
     aud: TOKEN_URL,
-    iat: now,
-    exp: now + TOKEN_LIFETIME_SECONDS,
+    iat,
+    exp: iat + TOKEN_LIFETIME_SECONDS,
   };
   const payload = bytesToB64url(encoder.encode(JSON.stringify(claims)));
   const signingInput = `${header}.${payload}`;
@@ -108,7 +128,7 @@ export async function appendRegistrationRow(
   tab: string,
   row: string[],
 ): Promise<void> {
-  const key = JSON.parse(atob(env.GOOGLE_SA_KEY_B64)) as ServiceAccountKey;
+  const key = decodeServiceAccountKey(env.GOOGLE_SA_KEY_B64);
   const jwt = await signJwt(key);
   const accessToken = await exchangeAccessToken(jwt);
 

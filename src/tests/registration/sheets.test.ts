@@ -65,6 +65,12 @@ describe('appendRegistrationRow', () => {
     expect(typeof claims.iat).toBe('number');
     expect(claims.exp).toBe((claims.iat as number) + 3600);
 
+    // `iat` is backdated by 60 seconds to tolerate the signing clock running slightly ahead
+    // of Google's; allow a few seconds of test wall-clock slack either side of that offset.
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    expect(claims.iat as number).toBeLessThanOrEqual(nowSeconds - 60);
+    expect(claims.iat as number).toBeGreaterThanOrEqual(nowSeconds - 65);
+
     const appendCall = fetchMock.mock.calls.find(([url]) => (url as string).includes('sheets.googleapis.com'));
     expect(appendCall).toBeDefined();
     const [appendUrl, appendInit] = appendCall as [string, RequestInit];
@@ -97,5 +103,42 @@ describe('appendRegistrationRow', () => {
     await expect(
       appendRegistrationRow({ GOOGLE_SA_KEY_B64: keyB64, REGISTRATION_SHEET_ID: 'sheet-123' }, 'Training', ['x']),
     ).rejects.toThrow(/append/);
+  });
+
+  it('tolerates whitespace in the base64 secret, as a copy-pasted multi-line value would carry', async () => {
+    const keyB64 = await makeServiceAccountKeyB64(SA_EMAIL);
+    const withWhitespace = (keyB64.match(/.{1,20}/g) ?? [keyB64]).join('\n') + '\n';
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === 'https://oauth2.googleapis.com/token') {
+        return new Response(JSON.stringify({ access_token: 'test-access-token' }), { status: 200 });
+      }
+      return new Response('{}', { status: 200 });
+    });
+
+    await expect(
+      appendRegistrationRow(
+        { GOOGLE_SA_KEY_B64: withWhitespace, REGISTRATION_SHEET_ID: 'sheet-123' },
+        'Training',
+        ['x'],
+      ),
+    ).resolves.toBeUndefined();
+  });
+
+  it('rejects with a fixed message that carries no input material when the key cannot be decoded', async () => {
+    const badKeyB64 = 'not-valid-base64-json !!! super-secret-looking-fragment';
+
+    let caught: unknown;
+    try {
+      await appendRegistrationRow({ GOOGLE_SA_KEY_B64: badKeyB64, REGISTRATION_SHEET_ID: 'sheet-123' }, 'Training', [
+        'x',
+      ]);
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toBeInstanceOf(Error);
+    expect((caught as Error).message).toBe('service account key could not be decoded');
+    expect((caught as Error).message).not.toContain('super-secret-looking-fragment');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

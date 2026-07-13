@@ -4,6 +4,7 @@ import { WAIVER_SECTIONS } from '$theme/waiver/waiver';
 import {
   buildRecord,
   campSchema,
+  CREWLAB_HEADERS,
   SHEET_HEADERS,
   toRowValues,
   trainingSchema,
@@ -27,6 +28,11 @@ function baseFields(dob: string) {
     homePhone: '',
     cellPhone: '907-555-0100',
     parentEmail: 'pat@example.com',
+    athleteEmail: 'athlete@example.com',
+    athleteCell: '',
+    parentCrewlabInvite: false,
+    secondParentName: '',
+    secondParentEmail: '',
     emergencyName: 'Emery Contact',
     emergencyRelationship: 'Aunt',
     emergencyPhone: '907-555-0101',
@@ -118,6 +124,84 @@ describe('waiver agreement fields require a real boolean, not the raw posted "on
     const fields = { ...baseFields(dobForAge(18)), 'agree_risks': 'on' };
     const result = v.safeParse(trainingSchema, fields);
     expect(result.success).toBe(false);
+  });
+});
+
+describe('CrewLAB invite fields', () => {
+  it('rejects a blank athlete email and cell together, forwarding to athleteEmail', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: '', athleteCell: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const forwarded = result.issues.some((issue) => issue.path?.[0]?.key === 'athleteEmail');
+      expect(forwarded).toBe(true);
+    }
+  });
+
+  it('passes with only an athlete email', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: 'athlete@example.com', athleteCell: '' };
+    expect(v.safeParse(trainingSchema, fields).success).toBe(true);
+  });
+
+  it('passes with only an athlete cell', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: '', athleteCell: '907-555-0199' };
+    expect(v.safeParse(trainingSchema, fields).success).toBe(true);
+  });
+
+  it('rejects a second-parent name with no email, forwarding to secondParentEmail', () => {
+    const fields = { ...baseFields(dobForAge(18)), secondParentName: 'Sam Second', secondParentEmail: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const forwarded = result.issues.some((issue) => issue.path?.[0]?.key === 'secondParentEmail');
+      expect(forwarded).toBe(true);
+    }
+  });
+
+  it('rejects a second-parent email with no name, forwarding to secondParentName', () => {
+    const fields = { ...baseFields(dobForAge(18)), secondParentName: '', secondParentEmail: 'sam@example.com' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const forwarded = result.issues.some((issue) => issue.path?.[0]?.key === 'secondParentName');
+      expect(forwarded).toBe(true);
+    }
+  });
+
+  it('passes with both second-parent fields blank', () => {
+    const fields = { ...baseFields(dobForAge(18)), secondParentName: '', secondParentEmail: '' };
+    expect(v.safeParse(trainingSchema, fields).success).toBe(true);
+  });
+
+  it('passes with both second-parent fields filled', () => {
+    const fields = {
+      ...baseFields(dobForAge(18)),
+      secondParentName: 'Sam Second',
+      secondParentEmail: 'sam@example.com',
+    };
+    expect(v.safeParse(trainingSchema, fields).success).toBe(true);
+  });
+
+  it('defaults parentCrewlabInvite to false when omitted', () => {
+    const fields = { ...baseFields(dobForAge(18)) } as Record<string, unknown>;
+    delete fields['parentCrewlabInvite'];
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { parentCrewlabInvite: boolean }).parentCrewlabInvite).toBe(false);
+    }
+  });
+
+  it('enforces the same athlete-contact requirement on campSchema', () => {
+    const fields = {
+      ...baseFields(dobForAge(18)),
+      athleteEmail: '',
+      athleteCell: '',
+      dietary: '',
+      carpool: 'self',
+      gearNotes: '',
+    };
+    expect(v.safeParse(campSchema, fields).success).toBe(false);
   });
 });
 
@@ -219,5 +303,67 @@ describe('buildRecord and toRowValues', () => {
       submittedAt: new Date().toISOString(),
     });
     expect(record.signatures.athleteIsAdult).toBe(false);
+  });
+
+  it('assembles crewlab info, including the second parent only when both fields are filled', () => {
+    const parsed = v.parse(trainingSchema, {
+      ...baseFields('2008-01-01'),
+      athleteEmail: 'athlete@example.com',
+      athleteCell: '907-555-0199',
+      parentCrewlabInvite: true,
+      secondParentName: 'Sam Second',
+      secondParentEmail: 'sam@example.com',
+    });
+    const record = buildRecord('training', parsed, META);
+
+    expect(record.crewlab.athleteEmail).toBe('athlete@example.com');
+    expect(record.crewlab.athleteCell).toBe('907-555-0199');
+    expect(record.crewlab.parentInvite).toBe(true);
+    expect(record.crewlab.secondParent).toEqual({ name: 'Sam Second', email: 'sam@example.com' });
+  });
+
+  it('leaves crewlab.secondParent undefined when the pair is blank', () => {
+    const parsed = v.parse(trainingSchema, baseFields('2008-01-01'));
+    const record = buildRecord('training', parsed, META);
+    expect(record.crewlab.secondParent).toBeUndefined();
+  });
+
+  it('appends CREWLAB_HEADERS last for both kinds', () => {
+    expect(SHEET_HEADERS.training.slice(-5)).toEqual(CREWLAB_HEADERS);
+    expect(SHEET_HEADERS.camp.slice(-5)).toEqual(CREWLAB_HEADERS);
+  });
+
+  it('appends the five CrewLAB cells last in a training row, booleans as Yes/No', () => {
+    const parsed = v.parse(trainingSchema, {
+      ...baseFields('2008-01-01'),
+      athleteEmail: 'athlete@example.com',
+      athleteCell: '907-555-0199',
+      parentCrewlabInvite: true,
+      secondParentName: 'Sam Second',
+      secondParentEmail: 'sam@example.com',
+    });
+    const record = buildRecord('training', parsed, META);
+    const row = toRowValues(record);
+    expect(row).toHaveLength(SHEET_HEADERS.training.length);
+    expect(row.slice(-5)).toEqual([
+      'athlete@example.com',
+      '907-555-0199',
+      'Yes',
+      'Sam Second',
+      'sam@example.com',
+    ]);
+  });
+
+  it('appends the five CrewLAB cells last in a camp row too', () => {
+    const parsed = v.parse(campSchema, {
+      ...baseFields('2008-01-01'),
+      dietary: '',
+      carpool: 'self',
+      gearNotes: '',
+    });
+    const record = buildRecord('camp', parsed, META);
+    const row = toRowValues(record);
+    expect(row).toHaveLength(SHEET_HEADERS.camp.length);
+    expect(row.slice(-5)).toEqual(['athlete@example.com', '', 'No', '', '']);
   });
 });

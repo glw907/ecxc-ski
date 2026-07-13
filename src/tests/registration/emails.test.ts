@@ -54,6 +54,12 @@ function makeRecord(kind: 'training' | 'camp'): RegistrationRecord {
       phone: '907-555-0102',
       email: 'eddie@example.com',
     },
+    crewlab: {
+      athleteEmail: 'alice@example.com',
+      athleteCell: '907-555-0199',
+      parentInvite: true,
+      secondParent: { name: 'Sam Second', email: 'sam@example.com' },
+    },
     insurance: { provider: 'Acme Health', policyNumber: 'POL-123', groupNumber: 'GRP-9' },
     physician: { name: 'Dr. Doc', phone: '907-555-0103' },
     medical: { medications: 'none', allergies: 'none', conditions: 'none', tetanus: '2020-01-01' },
@@ -134,6 +140,21 @@ describe('sendRecordEmail', () => {
   it('throws when the send binding rejects', async () => {
     sendEmailMock.mockRejectedValueOnce(new Error('binding unavailable'));
     await expect(sendRecordEmail(env, makeRecord('training'), {})).rejects.toThrow('binding unavailable');
+  });
+
+  it('places the CrewLAB invite group directly after the parent group, with the invite values', async () => {
+    await sendRecordEmail(env, makeRecord('training'), {});
+    const raw = captured[0].raw;
+
+    const parentIndex = raw.indexOf('Parent or guardian');
+    const crewlabIndex = raw.indexOf('CrewLAB invite');
+    const emergencyIndex = raw.indexOf('Emergency contact');
+
+    expect(parentIndex).toBeGreaterThan(-1);
+    expect(crewlabIndex).toBeGreaterThan(parentIndex);
+    expect(emergencyIndex).toBeGreaterThan(crewlabIndex);
+    expect(raw).toContain('alice@example.com');
+    expect(raw).toContain('sam@example.com');
   });
 });
 

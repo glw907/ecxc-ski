@@ -25,6 +25,12 @@ export interface RegistrationRecord {
     email: string;
   };
   emergency: { name: string; relationship: string; phone: string; email?: string };
+  crewlab: {
+    athleteEmail?: string;
+    athleteCell?: string;
+    parentInvite: boolean;
+    secondParent?: { name: string; email: string };
+  };
   insurance: { provider: string; policyNumber: string; groupNumber?: string };
   physician: { name?: string; phone?: string };
   medical: { medications: string; allergies: string; conditions: string; tetanus?: string };
@@ -119,6 +125,19 @@ const sharedFields = {
   homePhone: optionalText(),
   cellPhone: requiredText('Please enter a cell phone number.'),
   parentEmail: v.pipe(v.string(), v.trim(), v.email('Please enter a valid email address.')),
+  // CrewLAB invite contacts: where the athlete's team-app invite goes, plus an optional
+  // opt-in and second-parent pair. Cross-field requirements (at least one athlete contact;
+  // the second-parent pair travels together) live in the schema pipes below, since a single
+  // field's own validator cannot see its sibling fields.
+  athleteEmail: optionalEmailField(
+    'Please enter a valid email address for the athlete, or leave it blank.',
+  ),
+  athleteCell: optionalText(),
+  parentCrewlabInvite: v.optional(v.boolean(), false),
+  secondParentName: optionalText(),
+  secondParentEmail: optionalEmailField(
+    'Please enter a valid email address for the second parent, or leave it blank.',
+  ),
   emergencyName: requiredText("Please enter an emergency contact's name."),
   emergencyRelationship: requiredText(
     "Please enter the emergency contact's relationship to the athlete.",
@@ -196,6 +215,31 @@ export const trainingSchema = v.pipe(
     ),
     ['parentConsent'],
   ),
+  v.forward(
+    v.check(
+      (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
+      "Please give us an email or a cell number for the athlete's CrewLAB invite — either works.",
+    ),
+    ['athleteEmail'],
+  ),
+  // The second-parent pair travels together. Two directional checks (rather than one),
+  // each forwarding to the field that is actually blank in the failing case: a name with no
+  // email fails the first check (forwarded to the email), an email with no name fails the
+  // second (forwarded to the name). Both blank or both filled pass both checks.
+  v.forward(
+    v.check(
+      (input) => input.secondParentName.trim() === '' || input.secondParentEmail.trim() !== '',
+      "Please give the second parent's name and email together, or leave both blank.",
+    ),
+    ['secondParentEmail'],
+  ),
+  v.forward(
+    v.check(
+      (input) => input.secondParentEmail.trim() === '' || input.secondParentName.trim() !== '',
+      "Please give the second parent's name and email together, or leave both blank.",
+    ),
+    ['secondParentName'],
+  ),
 );
 
 export const campSchema = v.pipe(
@@ -221,6 +265,27 @@ export const campSchema = v.pipe(
     ),
     ['carpoolSeats'],
   ),
+  v.forward(
+    v.check(
+      (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
+      "Please give us an email or a cell number for the athlete's CrewLAB invite — either works.",
+    ),
+    ['athleteEmail'],
+  ),
+  v.forward(
+    v.check(
+      (input) => input.secondParentName.trim() === '' || input.secondParentEmail.trim() !== '',
+      "Please give the second parent's name and email together, or leave both blank.",
+    ),
+    ['secondParentEmail'],
+  ),
+  v.forward(
+    v.check(
+      (input) => input.secondParentEmail.trim() === '' || input.secondParentName.trim() !== '',
+      "Please give the second parent's name and email together, or leave both blank.",
+    ),
+    ['secondParentName'],
+  ),
 );
 
 /** The posted, validated shape both schemas share. */
@@ -236,6 +301,11 @@ interface SharedParsedFields {
   homePhone: string;
   cellPhone: string;
   parentEmail: string;
+  athleteEmail: string;
+  athleteCell: string;
+  parentCrewlabInvite: boolean;
+  secondParentName: string;
+  secondParentEmail: string;
   emergencyName: string;
   emergencyRelationship: string;
   emergencyPhone: string;
@@ -310,6 +380,15 @@ export function buildRecord(
       relationship: input.emergencyRelationship,
       phone: input.emergencyPhone,
       email: toOptional(input.emergencyEmail),
+    },
+    crewlab: {
+      athleteEmail: toOptional(input.athleteEmail),
+      athleteCell: toOptional(input.athleteCell),
+      parentInvite: input.parentCrewlabInvite,
+      secondParent:
+        input.secondParentName !== '' && input.secondParentEmail !== ''
+          ? { name: input.secondParentName, email: input.secondParentEmail }
+          : undefined,
     },
     insurance: {
       provider: input.insuranceProvider,
@@ -390,9 +469,17 @@ const SIGNATURE_HEADERS = [
   'User Agent',
 ];
 
+export const CREWLAB_HEADERS = [
+  'Athlete Email (CrewLAB)',
+  'Athlete Cell (CrewLAB)',
+  'Parent CrewLAB Invite',
+  'Second Parent Name',
+  'Second Parent Email',
+];
+
 export const SHEET_HEADERS: Record<FormKind, string[]> = {
-  training: [...SHARED_HEADERS, ...SIGNATURE_HEADERS],
-  camp: [...SHARED_HEADERS, ...CAMP_LOGISTICS_HEADERS, ...SIGNATURE_HEADERS],
+  training: [...SHARED_HEADERS, ...SIGNATURE_HEADERS, ...CREWLAB_HEADERS],
+  camp: [...SHARED_HEADERS, ...CAMP_LOGISTICS_HEADERS, ...SIGNATURE_HEADERS, ...CREWLAB_HEADERS],
 };
 
 /** A sheet cell: `undefined` becomes blank, a boolean becomes Yes/No. */
@@ -451,5 +538,13 @@ export function toRowValues(record: RegistrationRecord): string[] {
     record.meta.userAgent,
   ];
 
-  return [...shared, ...campLogistics, ...signature];
+  const crewlab = [
+    cell(record.crewlab.athleteEmail),
+    cell(record.crewlab.athleteCell),
+    cell(record.crewlab.parentInvite),
+    cell(record.crewlab.secondParent?.name),
+    cell(record.crewlab.secondParent?.email),
+  ];
+
+  return [...shared, ...campLogistics, ...signature, ...crewlab];
 }

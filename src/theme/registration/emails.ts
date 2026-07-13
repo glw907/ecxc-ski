@@ -8,7 +8,13 @@
 // plain `{ to, from, subject, html, text }` object, not an `EmailMessage` instance; this module
 // follows that same shape rather than the wrangler.toml comment's own gloss on it.
 import { createMimeMessage } from 'mimetext';
-import { SHEET_HEADERS, toRowValues, type FormKind, type RegistrationRecord } from './schema';
+import {
+  CREWLAB_HEADERS,
+  SHEET_HEADERS,
+  toRowValues,
+  type FormKind,
+  type RegistrationRecord,
+} from './schema';
 
 const SENDER = 'noreply@ecxc.ski';
 const SENDER_NAME = 'ECXC Registration';
@@ -49,6 +55,7 @@ const INSURANCE_HEADERS = new Set([
 ]);
 const MEDICAL_HEADERS = new Set(['Medications', 'Allergies', 'Conditions', 'Last Tetanus Shot']);
 const CAMP_HEADERS = new Set(['Dietary Needs', 'Carpool', 'Carpool Seats', 'Gear Notes']);
+const CREWLAB_HEADER_SET = new Set(CREWLAB_HEADERS);
 const PHOTO_HEADERS = new Set(['Photo Release']);
 const SIGNATURE_HEADERS = new Set(['Athlete Signature', 'Parent Signature', 'Athlete Is Adult']);
 
@@ -58,6 +65,7 @@ const SIGNATURE_HEADERS = new Set(['Athlete Signature', 'Parent Signature', 'Ath
 const FIELD_GROUPS: { heading: string; headers: Set<string> }[] = [
   { heading: 'Athlete', headers: ATHLETE_HEADERS },
   { heading: 'Parent or guardian', headers: PARENT_HEADERS },
+  { heading: 'CrewLAB invite', headers: CREWLAB_HEADER_SET },
   { heading: 'Emergency contact', headers: EMERGENCY_HEADERS },
   { heading: 'Insurance & physician', headers: INSURANCE_HEADERS },
   { heading: 'Medical', headers: MEDICAL_HEADERS },

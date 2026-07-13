@@ -39,6 +39,11 @@ export interface ParsedRegistrationFields {
   homePhone: string;
   cellPhone: string;
   parentEmail: string;
+  athleteEmail: string;
+  athleteCell: string;
+  parentCrewlabInvite: boolean;
+  secondParentName: string;
+  secondParentEmail: string;
   emergencyName: string;
   emergencyRelationship: string;
   emergencyPhone: string;

@@ -66,14 +66,19 @@ tags: ["tag1"]
 
 ## Worker & Secrets
 
-The `ecxc` Worker carries three secrets. A renamed or recreated Worker starts with none (this
+The `ecxc` Worker carries four secrets. A renamed or recreated Worker starts with none (this
 broke admin saves and the contact form at the Rename 4 cutover, backlog #32), so re-put all
-three after any Worker rename. `GITHUB_APP_PRIVATE_KEY_B64` lives in `~/.local/secrets`; the
-Turnstile secret is recoverable from the Turnstile API.
+four after any Worker rename. Registration submissions also fail closed without
+`TURNSTILE_SECRET_KEY` (deliberate: the parent-copy email path must never run unguarded).
+`GITHUB_APP_PRIVATE_KEY_B64` and `GOOGLE_SA_KEY_B64` (the registration-roster Sheets writer)
+live in the workstation age store; `~/.dotfiles/scripts/secrets/sync.sh --worker ecxc`
+re-puts both, and `~/.dotfiles/secrets/registry.md` carries their scope and rotation. The
+Turnstile secret is recoverable from the Turnstile API. The roster spreadsheet ID is the
+committed `REGISTRATION_SHEET_ID` var in `wrangler.toml`, not a secret.
 
 ```bash
 npx wrangler secret list
-npx wrangler secret put GITHUB_APP_PRIVATE_KEY_B64   # cairn's GitHub App key (admin saves)
+~/.dotfiles/scripts/secrets/sync.sh --worker ecxc    # GitHub App key + Google SA key
 npx wrangler secret put TURNSTILE_SECRET_KEY
 npx wrangler secret put CONTACT_EMAIL
 ```

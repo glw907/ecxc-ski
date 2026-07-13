@@ -218,7 +218,7 @@ export const trainingSchema = v.pipe(
   v.forward(
     v.check(
       (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
-      "Please give us an email or a cell number for the athlete's CrewLAB invite — either works.",
+      "Please give us an email or a cell number for the athlete's CrewLAB invite; either works.",
     ),
     ['athleteEmail'],
   ),
@@ -268,7 +268,7 @@ export const campSchema = v.pipe(
   v.forward(
     v.check(
       (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
-      "Please give us an email or a cell number for the athlete's CrewLAB invite — either works.",
+      "Please give us an email or a cell number for the athlete's CrewLAB invite; either works.",
     ),
     ['athleteEmail'],
   ),

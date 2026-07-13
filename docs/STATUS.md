@@ -17,15 +17,21 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**Registration forms + digital waiver pass, in flight (2026-07-13).** Plan:
-`docs/superpowers/plans/2026-07-13-registration-forms.md` (spec:
-`docs/superpowers/specs/2026-07-13-registration-forms-design.md`). Training and Talkeetna
-Camp each get a registration form sharing one code-owned digital waiver; submissions append
-to a Google Sheet (ASC service account, reused) and email the signed record. Blocked
-externally on Geoff: `gcloud auth login` (Sheets API enablement) and his personal Google
-address for the roster-Sheet share.
+**Two queued initiatives for a fresh session (start on Opus or a deliberate Fable sitting,
+initiative-scoped):**
 
-Before this pass, no other dev-side action was queued. What remains is Geoff's own: a real magic-link login and the full
+1. **cairn upgrade 0.81 → 0.84.1**, first. Read each version's upgrade notes, verify against
+   actual imports (the guides have been wrong about impact before), full gate, admin smoke. It
+   may unlock or obsolete backlog items (e.g. #23 waits on a post-rehype hook).
+2. **Backlog clear.** ~16 open items, several likely obsolete on triage (they reference
+   pre-rebuild `src/lib/...` paths). Triage real-vs-stale first, then fix. One or two passes.
+
+**One manual check owed from the registration pass:** confirm the test record email and the
+parent-copy email actually arrived (the pipeline is proven to *send* both; delivery/content
+was never inspected). Search the CONTACT_EMAIL inbox and the parent address for the
+`TEST ROW - DELETE ME` submission, then delete them.
+
+**Registration forms: SHIPPED and verified live (2026-07-13).** See History below. What remains is Geoff's own: a real magic-link login and the full
 authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the D1
 session mechanism past the guard, not the GitHub App round trip), the waiver's attorney review,
 the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The `note`-tier
@@ -36,6 +42,35 @@ no-tint alert.
 ---
 
 ## History
+
+- **Registration forms + digital waiver (2026-07-13), SHIPPED and verified live.** Spec/plan:
+  `docs/superpowers/specs/2026-07-13-registration-forms-design.md`,
+  `docs/superpowers/plans/2026-07-13-registration-forms.md`. Training (`/training`, re-scoped
+  from the old page, URL kept generic for future seasons) and Talkeetna Camp (`/talkeetna`,
+  new) each carry a registration form sharing one code-owned digital waiver
+  (`src/theme/waiver/waiver.ts`, SHA-256-pinned). A submission validates (valibot), verifies
+  Turnstile (fail-closed), appends a row to the roster Google Sheet (service-account JWT via
+  WebCrypto), emails the signed record to `CONTACT_EMAIL` (must-succeed), and emails a copy to
+  the parent (soft-fail). The print `/waiver` page was retired (301 to `/training`); the waiver
+  is digital-only, re-expressed with plain-terms summaries plus an adult-participant clause,
+  E-SIGN/Alaska UETA consent, governing law, and severability (attorney review still owed, per
+  the pre-publish checklist). Content rewritten brief-first (two independent critic passes).
+
+  **Infra provisioned:** a dedicated GCP project `ecxc-registrations` + `ecxc-sheets` service
+  account (the ASC account was not usable: its Sheets API was disabled and Geoff lacks
+  enable-permission on that project). Key stored in the workstation age store
+  (`GOOGLE_SA_KEY_B64`, `sync.sh --worker ecxc`), the roster spreadsheet ID committed as
+  `REGISTRATION_SHEET_ID`. The Worker now carries four secrets (CLAUDE.md updated).
+
+  **Four-reviewer gate + live e2e found five real bugs, all fixed:** the waiver checkboxes and
+  the Turnstile field both used hyphenated names that crash SvelteKit's remote-form client
+  (identifier-path parser) on every real submission (the Turnstile one hit the contact form
+  too); a stale `CONTACT_EMAIL` (`@ecnordic.ski`) blocked the must-succeed record email;
+  Turnstile was fail-open on a missing secret; the SA-key decode could leak key bytes into an
+  error. Both forms now submit green end to end (camp + training), the roster row verified
+  landing and cleaned up, contrast/render reads passed at 1440 and 390. The live-e2e harness
+  and runbook are `scripts/e2e-registration.mjs` + `docs/registration-e2e.md`. Backlog: #33/#34/
+  #35 logged, #12/#17/#18 closed, #22 re-scoped.
 
 - **Architecture/design-language rewrite (2026-07-06), family repo tidy.** `docs/architecture.md`
   and `docs/design-language.md` rewritten from scratch against the current chassis/theme reality
@@ -330,6 +365,7 @@ which cannot express the design outranks a mechanical gap.
 | Chassis restructure | `src/lib` → `src/chassis`/`src/theme` + the spectrum bar/inline FAQ/archives-chips fixes | ✓ Deployed 2026-07-06 |
 | CTA fix, hover system, design pass | CTA-label contrast fix, site-wide hover vocabulary, six locked design picks | ✓ Deployed 2026-07-06 |
 | Docs landing sweep | `CLAUDE.md`/DX-findings/STATUS audited against the rebuild; stale pre-rebuild references corrected | ✓ Done 2026-07-06 |
+| Registration forms + digital waiver | Training + Talkeetna forms, code-owned digital waiver, Sheets + email pipeline | ✓ Deployed 2026-07-13 |
 
 ### Pre-publish checklist (gate before announcing)
 

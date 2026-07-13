@@ -27,6 +27,8 @@ Day to day, you'll use it for five things.
 :::passage[For parents & supporters]
 Your account gets the team calendar, the announcements, and the supporters' channel, which is where the practical side of the team happens. The carpool your athlete needs to get to camp probably starts as a message there. You can message the volunteers directly whenever something needs an adult answer.
 
+If your family chips in toward camp or makes a donation, you pay through the app. CrewLAB takes all major cards and bank transfer.
+
 What you won't see: your athlete's check-ins, workout log, coach feedback, or the team chat. That's deliberate. Kids get a team space of their own, and what adults post stays in the open.
 :::
 

@@ -25,8 +25,12 @@
   supporters' channel; do NOT see check-ins, workout logs, volunteer feedback, or athlete chat
   (deliberate: athletes get their own space; the app's open design covers the oversight). Turn on
   supporters'-channel notifications: weather moves, packing lists, travel plans land there.
-- [ASK: what does ECXC actually collect through CrewLAB: camp cost-share, dues, or donations?
-  Backlog #21. CrewLAB payments accept cards, bank transfer, Apple Pay, Google Pay.]
+- Payments (Geoff, 2026-07-13, closes #21): ECXC collects camp cost-share and donations through
+  CrewLAB, no dues. Both are voluntary; the free-camp and need-blind frames stay true (giving is
+  a chip-in, never a condition). Payment methods per CrewLAB's own guide
+  (crewlab.io/guide/payments/, verified 2026-07-13): Stripe processing, "all major credit and
+  debit cards as well as ACH bank transfers." The old Apple Pay/Google Pay claim was inherited,
+  never verified, and is NOT in CrewLAB's docs; do not restate it.
 - Waiver (updated 2026-07-13): signed on the site as part of registration (/training or
   /talkeetna), NOT in CrewLAB. Guardian signs for under-18; adult athletes sign for themselves.
   Required before first practice.

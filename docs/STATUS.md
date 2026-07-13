@@ -20,32 +20,48 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**CrewLAB invite integration (spec approved-direction, plan pending).** Fold CrewLAB onboarding
-into the existing forms, no new ones: registration gains an athlete invite-contact fieldset
-(email/cell, one required), a parent opt-in, and an optional second-parent invite pair;
-supporters route through the contact form; the public join link comes off the site (four
-content files). Spec: `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md`.
-Geoff sanctioned Fable-level work for the flow quality and Workflow orchestration. Spec
-approved 2026-07-13. Plan: `docs/superpowers/plans/2026-07-13-crewlab-invite-integration.md`
-(executing).
+**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below:
 
-Also carried, Geoff's own, from the pre-publish checklist below plus the manual checks:
-
-- Confirm the registration test emails arrived (the record email in the CONTACT_EMAIL inbox and
-  the parent copy for the `TEST ROW - DELETE ME` submission), then delete them. The pipeline is
-  proven to *send* both; delivery/content was never inspected.
+- **Revoke or regenerate the old public CrewLAB join link** (#22, now the sharpest item: the
+  invite-only flow shipped, and the old `crewlab.app.link/5g7vhhYEn3b` stays a live credential
+  for anyone holding it; check Invite Teammates for a regenerate option or ask CrewLAB
+  support — rotation is publicly undocumented, per `docs/crewlab-onboarding-research.md`).
 - Magic-link login and the full authed `/admin` checklist on the deployed Worker (the local
   sandbox proves the guard but not the GitHub App round trip), then the old
   `cairn-ecnordic-auth` D1 decommission.
-- Attorney review of the waiver; the CrewLAB confirmations (#21 payments answer, #22 join link).
+- Attorney review of the waiver. Delete the two CrewLAB-pass test emails (delivery itself was
+  confirmed live 2026-07-13, closing the older carried check).
 
-Small candidates for a future pass: a live `alert-note` content instance (still none to exercise
-that tier), a site-wide varied-phrasing sweep of the repeated contact-us formula (content-review
-finding, 2026-07-13), and the `roster` directive once real photos exist (#19).
+Small candidates for a future pass: a live `alert-note` content instance, a site-wide
+varied-phrasing sweep of the repeated contact-us formula (content-review finding, 2026-07-13),
+and the `roster` directive once real photos exist (#19).
 
 ---
 
 ## History
+
+- **CrewLAB invite integration + nav grouping (2026-07-13), SHIPPED and verified live.** Spec:
+  `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced
+  research record `docs/crewlab-onboarding-research.md`, the operating reference for the invite
+  loop); plan archived. CrewLAB onboarding is invite-only through the existing forms, no new
+  ones: registration (both forms, shared schema) collects the athlete's invite contact
+  (email/cell, at least one required), a parent opt-in, and an optional second-parent pair,
+  riding the whole existing pipeline (five columns appended to both roster tabs, live header
+  rows extended via API and verified; a `CrewLAB invite` group in the record email). Boosters
+  route through the contact form. Four content pages re-pointed (home's action line, about,
+  training, crewlab's rewritten Getting started + CTA); the public join link is off the site
+  (deployed grep: zero hits). #21 closed same day (camp cost-share + donations restored to the
+  parents passage). Workflow-orchestrated (Geoff's opt-in): three site-implementer tasks, a
+  three-lens review workflow (svelte/a11y/workers) with adversarial verification — one
+  confirmed a11y finding (the either-of-two-contacts instruction now rides both inputs'
+  aria-describedby) and four lows fixed, one refuted-by-prior-work; two independent
+  content-review gates PASS. Live e2e both forms: SUCCESS + `SHEET VERIFY: PASS`, both test
+  rows verified and deleted, both emails confirmed received by Geoff (closing the older
+  delivery check), Turnstile secret rotated back. Renders verified at 1440/390 (fieldset,
+  crewlab page). Same pass, Geoff's nav ask: the Home menu item is gone (the tile mark is the
+  home link), the nav packs right with the free width on the logo's side, an ink-mix rule sets
+  off the search/theme cluster, and the hamburger breakpoint rose to 919px with a matchMedia
+  drawer reset (640-919 was wrapping labels; verified at 375/700/910/920/1440).
 
 - **cairn 0.84.1 upgrade + backlog triage (2026-07-13), pushed.** Upgraded `@glw907/cairn-cms`
   ^0.81.0 → ^0.84.1: the whole span is additive per the changelog, verified against all seven
@@ -316,6 +332,7 @@ table scrolling). The full text of both sections is preserved in this file as of
 | Docs landing sweep | `CLAUDE.md`/DX-findings/STATUS audited against the rebuild; stale pre-rebuild references corrected | ✓ Done 2026-07-06 |
 | Registration forms + digital waiver | Training + Talkeetna forms, code-owned digital waiver, Sheets + email pipeline | ✓ Deployed 2026-07-13 |
 | cairn 0.84.1 + backlog triage | Upgrade 0.81→0.84.1 gated + smoked; 16 backlog items → 7; favicon set, strict prerender, stale-waiver content sweep | ✓ Done 2026-07-13 |
+| CrewLAB invite integration | Invite-only onboarding through the existing forms; five schema fields, four content pages, nav grouping; live e2e green | ✓ Deployed 2026-07-13 |
 
 ### Pre-publish checklist (gate before announcing)
 

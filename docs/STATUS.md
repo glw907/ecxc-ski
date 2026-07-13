@@ -20,12 +20,10 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below:
+**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below
+(#22 closed 2026-07-13: Geoff revoked the old public join link the day the invite-only flow
+shipped):
 
-- **Revoke or regenerate the old public CrewLAB join link** (#22, now the sharpest item: the
-  invite-only flow shipped, and the old `crewlab.app.link/5g7vhhYEn3b` stays a live credential
-  for anyone holding it; check Invite Teammates for a regenerate option or ask CrewLAB
-  support — rotation is publicly undocumented, per `docs/crewlab-onboarding-research.md`).
 - Magic-link login and the full authed `/admin` checklist on the deployed Worker (the local
   sandbox proves the guard but not the GitHub App round trip), then the old
   `cairn-ecnordic-auth` D1 decommission.

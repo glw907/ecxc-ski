@@ -38,8 +38,10 @@ Pass-driven. Any of "continue development," "next pass," "finish pass," or "ship
 Website content (pages, posts, form copy under `src/content/`) uses the web-content register,
 not the technical voice. Draft with the `content-draft` skill (brief-first, reply stance) and
 gate-check with `content-review`. Routing and voice rules are in `.claude/rules/content.md`; the
-generative authority is `docs/content-guide.md`. Characterization snapshots pin the rendered
-page HTML: after any content edit, run `npx vitest run -u` and commit the snapshots too.
+generative authority is `docs/content-guide.md`. Content edits change the committed content
+manifest: after any content edit, run `npm run cairn:manifest` and commit
+`src/content/.cairn/index.json` too (a stale manifest fails the build red). The pre-rebuild
+HTML characterization snapshots are gone; there is nothing to `vitest run -u`.
 
 ## Build & Dev
 

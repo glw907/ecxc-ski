@@ -28,14 +28,12 @@ Day to day, you'll use it for five things.
 Your account gets the team calendar, the announcements, and the supporters' channel, which is where the practical side of the team happens. The carpool your athlete needs to get to camp probably starts as a message there. You can message the volunteers directly whenever something needs an adult answer.
 
 What you won't see: your athlete's check-ins, workout log, coach feedback, or the team chat. That's deliberate. Kids get a team space of their own, and what adults post stays in the open.
-
-Guardians sign the waiver from their own account, and payments run through the app. [ASK: confirm what ECXC collects through CrewLAB, whether camp cost-share, dues, or donations.] CrewLAB takes cards, bank transfer, Apple Pay, and Google Pay.
 :::
 
 :::passage[Waiver and forms]{icon="flag" variant="emphasis"}
-Sign the waiver in CrewLAB; if you're looking for a paper version, there isn't one. A parent or guardian signs for an athlete under 18, adult athletes sign for themselves, and it has to be on file before the first practice. Camp checks for it too.
+The waiver isn't in the app. You sign it when you register, on the [training](cairn:pages/training) or [camp](cairn:pages/talkeetna) page. A parent or guardian signs for an athlete under 18, adult athletes sign for themselves, and it has to be on file before the first practice. There's no paper version.
 
-The parent handbook and the gear and vendor list are in the app as well, so you're always reading the current version. What a family gives, or doesn't, has no effect on who joins. Nobody checks.
+The parent handbook and the gear and vendor list are in the app, so you're always reading the current version. What a family gives, or doesn't, has no effect on who joins. Nobody checks.
 :::
 
 ### Getting started

@@ -12,6 +12,10 @@
         {
           "concept": "pages",
           "id": "crewlab"
+        },
+        {
+          "concept": "pages",
+          "id": "training"
         }
       ]
     },
@@ -22,7 +26,16 @@
       "permalink": "/crewlab",
       "summary": "ECXC runs on CrewLAB, a free phone app. If you want to know when practice is or what a coach just posted, that's where you look. Athletes check it most days. Parents get the calendar and…",
       "draft": false,
-      "links": []
+      "links": [
+        {
+          "concept": "pages",
+          "id": "talkeetna"
+        },
+        {
+          "concept": "pages",
+          "id": "training"
+        }
+      ]
     },
     {
       "id": "home",

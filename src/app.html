@@ -3,6 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Safari ignores SVG favicons and requests /favicon.ico, so the raster set rides along
+         (BACKLOG #30). Both rasters derive from static/favicon.svg (docs/design/build-mark.py's
+         mark, oklch flattened to hex); regenerate them if the mark changes. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
       // The no-flash theme read (Task 4 of the rebuild-from-Waymark plan, inherited verbatim from
       // Waymark: examples/showcase/src/app.html). Runs synchronously before the first paint, so a

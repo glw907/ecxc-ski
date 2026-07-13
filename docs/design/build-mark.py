@@ -134,8 +134,8 @@ fs = (64 - 2 * inset) / 100
 favicon = [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">',
     "  <!-- ECXC four-tile mark on a spruce field. Glyph paths are a copy of"
-    " the nav mark in src/lib/components/Nav.svelte; colors mirror the"
-    " header (spruce) and display fireweed tokens in src/app.css. -->",
+    " the nav mark in src/theme/components/SiteHeader.svelte; colors mirror the"
+    " header (spruce) and display fireweed tokens in src/theme/ecxc-theme.css. -->",
     f'  <rect width="64" height="64" rx="14" fill="{SPRUCE}" />',
     f'  <g transform="translate({num(inset)} {num(inset)}) scale({num(fs)})" '
     f'fill="{FIREWEED}">',

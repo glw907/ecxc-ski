@@ -1,6 +1,9 @@
 # ecxc.ski: Project Status
 
-## Current state (2026-07-06)
+## Current state (2026-07-13)
+
+On `@glw907/cairn-cms ^0.84.1` (upgraded from 0.81.0 on 2026-07-13, full gate and admin-guard
+smoke green) with the backlog triaged the same day from 16 open items to 7 (see History).
 
 Rebuilt from scratch on the Waymark starter template and `@glw907/cairn-cms ^0.80.0`, then
 **deployed to production** (the pre-rebuild 0.62.2-era app is retired; `https://ecxc.ski` now
@@ -17,31 +20,43 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**Two queued initiatives for a fresh session (start on Opus or a deliberate Fable sitting,
-initiative-scoped):**
+**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below plus
+the carried manual checks:
 
-1. **cairn upgrade 0.81 → 0.84.1**, first. Read each version's upgrade notes, verify against
-   actual imports (the guides have been wrong about impact before), full gate, admin smoke. It
-   may unlock or obsolete backlog items (e.g. #23 waits on a post-rehype hook).
-2. **Backlog clear.** ~16 open items, several likely obsolete on triage (they reference
-   pre-rebuild `src/lib/...` paths). Triage real-vs-stale first, then fix. One or two passes.
+- Confirm the registration test emails arrived (the record email in the CONTACT_EMAIL inbox and
+  the parent copy for the `TEST ROW - DELETE ME` submission), then delete them. The pipeline is
+  proven to *send* both; delivery/content was never inspected.
+- Magic-link login and the full authed `/admin` checklist on the deployed Worker (the local
+  sandbox proves the guard but not the GitHub App round trip), then the old
+  `cairn-ecnordic-auth` D1 decommission.
+- Attorney review of the waiver; the CrewLAB confirmations (#21 payments answer, #22 join link).
 
-**One manual check owed from the registration pass:** confirm the test record email and the
-parent-copy email actually arrived (the pipeline is proven to *send* both; delivery/content
-was never inspected). Search the CONTACT_EMAIL inbox and the parent address for the
-`TEST ROW - DELETE ME` submission, then delete them.
-
-**Registration forms: SHIPPED and verified live (2026-07-13).** See History below. What remains is Geoff's own: a real magic-link login and the full
-authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the D1
-session mechanism past the guard, not the GitHub App round trip), the waiver's attorney review,
-the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The `note`-tier
-alert (`alert-structural`/`alert-caution` both have a live content instance; `alert-note` does
-not) has no content to exercise it yet; add one the next time a page needs an informational,
-no-tint alert.
+Small candidates for a future pass: a live `alert-note` content instance (still none to exercise
+that tier), a site-wide varied-phrasing sweep of the repeated contact-us formula (content-review
+finding, 2026-07-13), and the `roster` directive once real photos exist (#19).
 
 ---
 
 ## History
+
+- **cairn 0.84.1 upgrade + backlog triage (2026-07-13), pushed.** Upgraded `@glw907/cairn-cms`
+  ^0.81.0 → ^0.84.1: the whole span is additive per the changelog, verified against all seven
+  subpaths the site imports; doctor 12/0, check 0/0 (612 files), tests 84/84, build green; the
+  local https admin-guard smoke passed exactly per the recipe (no cookie → 303 login; minted
+  session → 307 `/admin/posts` + fresh `__Host-cairn_csrf`; the content-list GitHub round trip
+  still hangs in this sandbox, the known environment limitation). Backlog then triaged 16 open →
+  7: five obsolete post-rebuild (#5 #14 #20 #23 #31), #15 already fixed by the rebuild
+  (`PostList` emits `<h2>`), #16 resolved by the engine's default validate gate (verified
+  empirically: deleting a post's `title` fails the build via the manifest verify), #1 fixed
+  (all three prerender options `'fail'`, build clean), #30 fixed wider than logged (the rebuild
+  shipped NO favicon link at all; now `favicon.ico` 16/32/48 + `apple-touch-icon.png` + three
+  `app.html` links). The triage also caught stale content: about.md and crewlab.md still said
+  the waiver is signed in CrewLAB (false since the registration pass) and the live `/crewlab`
+  page was rendering a raw `[ASK: payments]` editorial marker; both files corrected to the
+  one-form registration model (independent content-review gate: PASS), #21 re-scoped to add the
+  payments answer back once confirmed. CLAUDE.md's stale snapshot instruction replaced with the
+  real post-content-edit step (`npm run cairn:manifest`; the pre-rebuild HTML snapshots no
+  longer exist).
 
 - **Registration forms + digital waiver (2026-07-13), SHIPPED and verified live.** Spec/plan:
   `docs/superpowers/specs/2026-07-13-registration-forms-design.md`,
@@ -250,91 +265,17 @@ no-tint alert.
   `INVALID_ANNOTATION` Rolldown warnings from `@glw907/cairn-cms`'s shipped `.svelte` files are
   informational, not build failures).
 
-### The flexibility verdict (task 5)
+### The flexibility verdict + template findings (harvested; full text in git history)
 
-The redo amendment's own question: how much of the ecxc identity did the token-only seam
-(`ecxc-theme.css` over neutral Waymark, zero chrome edits, per task 4's own report) actually
-express on the real, rendered site, not just in the token file's own values.
-
-**Roughly 35-40% of the pre-rebuild visual identity survives through the seam alone, honestly
-assessed against the live site side by side at three widths.** What transferred in full: both
-self-hosted faces (Alegreya Sans, iA Writer Mono S) and the display face (Nunito), and the single
-fireweed-pink accent hue, which does real work across the whole site (active nav state, every CTA
-button, the callout/alert left-rule and icon tint, in-prose links). What did not transfer: two of
-the four named brand tokens in `ecxc-theme.css` itself. `--color-secondary` (black spruce) and
-`--color-accent` (mid spruce) are correctly defined, real oklch values with a legible dark/light
-comment explaining their intended job ("black spruce: people, community, wayfinding"; "mid spruce:
-highlights & interactive accents"), but grep confirms zero consuming rule anywhere in the copied
-chrome or prose CSS: no component reads `--color-secondary`/`--color-accent` as a background,
-border, or text color. `--color-neutral` (spruce-slate, commented "the CTA panel's structural
-dark") has exactly one consumer in the entire codebase, `--cairn-cta-bg` in `theme.css`, which only
-renders on Waymark's `/styleguide` demo route, a page this site was never given (only the showcase
-carries it). Three of the theme file's four brand tokens are inert on the live site: correctly
-authored, never seen. The old site's other defining visual traits, a colored (near-black-spruce)
-header and footer band, a colored square-letter "ECXC" logo lockup, bolder/more saturated
-alert-callout tinting with a visible left border and role icon, and a pink-to-green gradient
-divider, have no token-addressable equivalent in Waymark's copied `SiteHeader.svelte`/
-`SiteFooter.svelte`/`prose.css`; each reads a plain `base-100`/`base-200` surface by the template's
-own design, and reaching any of them would mean editing those copied, site-owned files directly
-(a chrome edit), which this task deliberately did not do so the pure-seam result stays legible as
-evidence. Per the amendment's own rule, this gap is not a defect to silently patch here; it is the
-finding the flexibility test exists to surface.
-
-### Template findings (consolidated across both rebuilds, ranked)
-
-Reported back to cairn-cms per the plan's harvest step; 907.life's Pass 18 ran the same plan
-independently first, so several items below carry two-site confirmation. Ranked by how much it
-would bite the next Waymark-based rebuild, TOP-RANK first per the amendment's own rule that a seam
-which cannot express the design outranks a mechanical gap.
-
-1. **TOP-RANK, ecxc only: three of a site's four theme-file brand tokens can be entirely inert on
-   the real site with no build warning.** See the flexibility verdict above in full.
-   `--color-secondary`/`--color-accent`/`--color-neutral` are real, well-considered values that a
-   site author would reasonably believe are "wired in" (the theme file's own header comment says
-   so), but nothing in the copied Waymark chrome or prose ever reads two of them, and the third's
-   only real estate is a demo page most consumer sites never copy. Recommend the showcase's own
-   `SiteHeader`/`SiteFooter`/prose components exercise all five DaisyUI role colors somewhere
-   visible in the default template (even a thin accent stripe or a secondary-tinted footer detail),
-   or `cairn-doctor`/a lint step flags a theme-layer token with zero real consumers, the same way an
-   unused CSS custom property is invisible to every current tool short of a manual grep.
-2. **A scaffold-copy checklist gap lets a real accessibility/responsive fix go unwired for four
-   tasks, independently reproduced on a second site (found and fixed here and on 907.life).**
-   `prose.css`'s `.table-scroll` wrapper is a two-part contract (the class plus a render-time step
-   that emits it) documented only in an inline comment; a site that copies the CSS without
-   separately copying and wiring `table-scroll.ts` gets no error and no warning until a real table
-   overflows a narrow viewport. Two independent sites hit the identical gap on the identical file.
-   Recommend either an explicit scaffold-copy checklist naming every render-step file a template's
-   CSS depends on, or folding table-scroll into `createRenderer`'s own default behavior (a site
-   opts out, rather than every consumer remembering to opt in).
-3. **The engine's sitemap surface only sees concept-derived routes, independently re-confirmed on a
-   second site.** `sitemapResponse`/`site.all()`/`posts.allTags()` hand back only concept
-   permalinks; a site-owned route with no concept behind it (`/archives`, `/tags`, `/contact`, a
-   bespoke `/waiver`) is invisible to both and must be hand-listed, with nothing tying that list to
-   the real route tree, which is exactly how the drift on `main` (the pre-rebuild sitemap missing
-   `/archives`) happened in the first place. Two sites needing the identical manual list, with
-   drift as the observed failure mode both times, is a stronger signal for an engine-side answer
-   (an optional extra-static-routes argument, or a build check flagging an undeclared route
-   directory) than either finding alone.
-4. **`fields.url` rejects any relative path, anchor, or `cairn:` reference; real content routinely
-   needs one.** `cta.url` had to widen to `fields.text` + a link-shape pattern since real content
-   needed both an internal `/crewlab` link and an external app-link URL from the same attribute.
-   Not caught by any build or test gate; only surfaces as a broken guided-insert form in the admin
-   editor. Worth a documented `fields.linkUrl` (or a `fields.url({ allowRelative: true })` option)
-   in the core field set, since this is not the first site to hit it.
-5. **No custom rehype seam on `createRenderer`** (already filed; this pass's table-scroll fix is a
-   third independent data point for it, after the docs-friction-log entry and 907.life's Pass 18):
-   adding one post-render behavior means re-parsing and re-stringifying already-rendered HTML
-   through a second `unified` pipeline rather than composing into the engine's own pipeline.
-6. **Docs drift is a carried cost of a wholesale rebuild, not itself a defect.**
-   `docs/architecture.md` and this repo's `CLAUDE.md` both still described the pre-rebuild
-   0.62.2-era app (the old markdown pipeline, `src/app.css`, `@schedule-x`, an `events` content
-   type none of which exist anymore). Out of scope for this gate-and-verify task; flagged here so a
-   documentation pass picks it up before it misleads the next person who reads this repo, the same
-   carried-follow-up shape 907.life's own Pass 18 findings used for its own stale architecture
-   section. **Update (docs landing sweep, 2026-07-06): `CLAUDE.md`'s half is fixed** (the stack
-   line, the dead `events` content-type section); see the History entry below. **Update (family
-   repo tidy, 2026-07-06): `docs/architecture.md` and `docs/design-language.md` are rewritten**,
-   both now describing the current chassis/theme reality; see the History entry above.
+The rebuild's flexibility verdict (roughly 35-40% of the pre-rebuild identity survived the
+token-only seam; three of the theme file's four brand tokens were inert on the live site with no
+warning) and the six consolidated template findings (inert brand tokens, the table-scroll
+scaffold-copy gap, sitemap blindness to non-concept routes, `fields.url` rejecting relative
+paths, no custom rehype seam, docs drift) were reported to cairn-cms per the plan's harvest
+step, several with two-site confirmation from 907.life's Pass 18. The rehype-seam and
+table-scroll items shipped in cairn 0.81 (the `remarkPlugins`/`rehypePlugins` seam, default-on
+table scrolling). The full text of both sections is preserved in this file as of commit
+`d6248e8`.
 
 > **Follow-ups (carried).** The pre-publish checklist below (attorney review of the waiver, the
 > CrewLAB confirmations, the old `cairn-ecnordic-auth` D1 decommission) is unaffected by this
@@ -366,6 +307,7 @@ which cannot express the design outranks a mechanical gap.
 | CTA fix, hover system, design pass | CTA-label contrast fix, site-wide hover vocabulary, six locked design picks | ✓ Deployed 2026-07-06 |
 | Docs landing sweep | `CLAUDE.md`/DX-findings/STATUS audited against the rebuild; stale pre-rebuild references corrected | ✓ Done 2026-07-06 |
 | Registration forms + digital waiver | Training + Talkeetna forms, code-owned digital waiver, Sheets + email pipeline | ✓ Deployed 2026-07-13 |
+| cairn 0.84.1 + backlog triage | Upgrade 0.81→0.84.1 gated + smoked; 16 backlog items → 7; favicon set, strict prerender, stale-waiver content sweep | ✓ Done 2026-07-13 |
 
 ### Pre-publish checklist (gate before announcing)
 

@@ -39,7 +39,7 @@ We ask three things of every athlete:
 ::::
 
 :::alert[Risks & waiver]{role="caution"}
-These sports can hurt you. Kids fall, gear breaks, and Anchorage trails come with moose. We manage risk; we can't remove it. Before a first practice, every athlete needs a signed liability waiver on file in [CrewLAB](cairn:pages/crewlab). A parent or guardian signs for anyone under 18, and adults sign for themselves.
+These sports can hurt you. Kids fall, gear breaks, and Anchorage trails come with moose. We manage risk; we can't remove it. Before a first practice, every athlete needs a signed liability waiver on file; it's part of the registration form on the [training page](cairn:pages/training). A parent or guardian signs for anyone under 18, and adults sign for themselves.
 :::
 
 :::passage[Cost]
@@ -52,7 +52,7 @@ Adults make this work, drivers most of all, since practice moves between trailhe
 
 ### Getting started
 
-Sign up in CrewLAB; the waiver and the schedule are there once you're in. If you want to ask something first, use the [contact form](/contact).
+Register on the [training page](cairn:pages/training). Then join [CrewLAB](cairn:pages/crewlab), where coaches post the schedule and practice changes. If you want to ask something first, use the [contact form](/contact).
 
-:::cta{label="Get started on CrewLAB" url="/crewlab"}
+:::cta{label="Register for summer training" url="/training"}
 :::

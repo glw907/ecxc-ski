@@ -30,16 +30,12 @@ const config = {
       remoteFunctions: true
     },
     prerender: {
-      // A 5xx during prerender means a page actually crashed, so fail the build. This is what makes
-      // the content graph fail-closed: a dangling cairn: link target throws "cairn link target not
-      // found" out of the render, the page 500s, and the build stops here instead of shipping a
-      // broken page. A 4xx (a link to a missing path) stays a warning, the lenient scaffold default.
-      handleHttpError: ({ status, message }) => {
-        if (status >= 500) throw new Error(message);
-        console.warn(message);
-      },
-      handleMissingId: 'warn',
-      handleUnseenRoutes: 'warn'
+      // Strict since the content went real (BACKLOG #1): a crashed page (5xx, including the
+      // content graph's "cairn link target not found"), a link to a missing path, a broken
+      // fragment, or an unlisted route all fail the build instead of warning.
+      handleHttpError: 'fail',
+      handleMissingId: 'fail',
+      handleUnseenRoutes: 'fail'
     }
   }
 };

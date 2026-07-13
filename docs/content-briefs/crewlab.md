@@ -27,17 +27,21 @@
   supporters'-channel notifications: weather moves, packing lists, travel plans land there.
 - [ASK: what does ECXC actually collect through CrewLAB: camp cost-share, dues, or donations?
   Backlog #21. CrewLAB payments accept cards, bank transfer, Apple Pay, Google Pay.]
-- Waiver: signed in CrewLAB only (no print/mail/third-party). Guardian signs for under-18; adult
-  athletes (e.g., graduates) sign for themselves. Required before first session and before camp.
+- Waiver (updated 2026-07-13): signed on the site as part of registration (/training or
+  /talkeetna), NOT in CrewLAB. Guardian signs for under-18; adult athletes sign for themselves.
+  Required before first practice.
 - Cost facts: summer program and camp both free; donations optional and need-blind.
 - Parent handbook and gear/vendor list live in CrewLAB (always the current version).
-- Joining: App Store, Google Play, or app.crewlab.io; invite link; pick account type; parents
-  link to their athlete. (REMOVED 2026-06-09: "the link is what lets volunteers message an
-  under-18 athlete" was an AI distortion from the first Opus draft, carried here by extraction;
-  Geoff never made that claim. The verified mechanic, per CrewLAB's FAQ, is group-only
-  messaging enforcement, with no role stated for the parent link. State no mechanic for the
-  link beyond the instruction.)
-- Join link: https://crewlab.app.link/5g7vhhYEn3b
+- Joining (updated 2026-07-13, invite-only): no public join link on the site. Geoff sends each
+  person the matching role-tagged invite link himself (CrewLAB has no targeted email invite;
+  see docs/crewlab-onboarding-research.md). The registration form collects where the athlete's
+  invite goes (email or cell), a parent opt-in, and an optional second parent. Non-registrants
+  (boosters, alumni, family friends) request via the contact form. After a parent joins, the
+  Connected Athletes request + athlete confirmation links the accounts; that's the only
+  mechanic to state for the parent link.
+- SUPERSEDED 2026-07-13, do not use: the public join link
+  (crewlab.app.link/5g7vhhYEn3b). Removed from the site; Geoff to ask CrewLAB support about
+  revoking it.
 
 ## Audience questions
 
@@ -46,7 +50,7 @@ parent and what stays private? Where do I sign the waiver and pay? How do we get
 
 ## Next step
 
-Join ECXC on CrewLAB (the invite link).
+Register for training or camp (the invite follows); non-registrants use the contact form.
 
 ## Container plan
 

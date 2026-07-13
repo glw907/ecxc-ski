@@ -38,7 +38,11 @@ The parent handbook and the gear and vendor list are in the app, so you're alway
 
 ### Getting started
 
-Install CrewLAB from the App Store or Google Play, or use app.crewlab.io in a browser, then tap the invite below and pick athlete or supporter when you sign up. Parents, link your account to your athlete's. If sign-up goes sideways, [contact us](/contact) and a volunteer will sort it out.
+We send every invite ourselves; there's no public link to tap. Register for [training](cairn:pages/training) or [camp](cairn:pages/talkeetna) and tell us on the form where the athlete's invite should go, email or cell. Parents, check the invite box on the same form and yours comes too, and there's a spot for a second parent or guardian. When your invite arrives, install CrewLAB from the App Store or Google Play, or use app.crewlab.io in a browser, and follow the link.
 
-:::cta{label="Join ECXC on CrewLAB" url="https://crewlab.app.link/5g7vhhYEn3b" newTab="true"}
+Parents, one more step once you're in: open your profile, find Connected Athletes, and send your athlete a connection request. They confirm it from their side. That's what links your account to theirs.
+
+Not registering an athlete? Boosters, alumni, family friends, and graduates sitting a summer out can still get in. [Contact us](/contact) with a line about how you're connected and we'll send a supporter invite.
+
+:::cta{label="Register for training or camp" url="/training"}
 :::

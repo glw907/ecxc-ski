@@ -1,5 +1,9 @@
 # Brief: training
 
+> **SUPERSEDED (2026-07-13).** This is the pre-registration-pass brief; `training-page.md` is
+> the current one. Kept for the harvest record only. Its CrewLAB sign-up facts are obsolete:
+> sign-up and the waiver live on /training, and CrewLAB joining is invite-only.
+
 ## Facts
 
 - Two offerings, separate sign-ups, most athletes do both, either alone is fine. Both free,

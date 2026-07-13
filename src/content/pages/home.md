@@ -8,4 +8,4 @@ East Community Cross Country is a free summer training group for Anchorage high 
 
 Anyone entering 9th grade through 12th can join, and so can graduates home from college. Plenty of our athletes have never skied.
 
-[Sign up on CrewLAB](/crewlab), or read [how training works](/training) first.
+[Sign up for summer training](/training#register), or read [how training works](/training) first.

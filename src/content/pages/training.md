@@ -101,7 +101,7 @@ We keep loaner roller skis and poles and can usually scare up other gear. Ask a 
 
 Sign-up and the liability waiver are one form now, at the bottom of this page. You'll read the waiver there, you and your athlete each type your name to sign, and we email you a copy of the signed record. An athlete who is already 18 signs for themselves. Either way, the waiver has to be on file before the first practice.
 
-If you signed up through CrewLAB in a past summer, we've moved sign-up and the waiver here. CrewLAB is still the team app; coaches post the weekly plan and meeting spots there. Read the [CrewLAB page](cairn:pages/crewlab) to join.
+If you signed up through CrewLAB in a past summer, we've moved sign-up and the waiver here. CrewLAB is still the team app; coaches post the weekly plan and meeting spots there, and we send the athlete's invite once you've registered. The [CrewLAB page](cairn:pages/crewlab) covers the app itself.
 
 :::cta{label="Register for summer training" url="#register"}
 :::

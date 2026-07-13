@@ -37,7 +37,9 @@ New mechanics (this pass):
 - The waiver must be on file before the first practice.
 - Camp registers separately on the /talkeetna page, even for athletes doing the summer.
 - CrewLAB is no longer where you sign up or sign the waiver. It stays the team app: weekly
-  plan, meeting-spot updates, check-ins. The CrewLAB page covers joining it.
+  plan, meeting-spot updates, check-ins. Joining is invite-only (updated 2026-07-13): the
+  registration form collects where the athlete's invite goes, and Geoff sends it after
+  processing. The CrewLAB page covers the app and the invite flow.
 
 ## Audience questions
 

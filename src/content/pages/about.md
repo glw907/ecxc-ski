@@ -52,7 +52,7 @@ Adults make this work, drivers most of all, since practice moves between trailhe
 
 ### Getting started
 
-Register on the [training page](cairn:pages/training). Then join [CrewLAB](cairn:pages/crewlab), where coaches post the schedule and practice changes. If you want to ask something first, use the [contact form](/contact).
+Register on the [training page](cairn:pages/training); we'll send the athlete's [CrewLAB](cairn:pages/crewlab) invite. Not sure yet? Ask a coach through the [contact form](/contact).
 
 :::cta{label="Register for summer training" url="/training"}
 :::

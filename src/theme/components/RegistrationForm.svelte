@@ -336,7 +336,9 @@ the text already being a second, independent channel.
         </p>
         {@render fieldError('parentCrewlabInvite', fields.parentCrewlabInvite)}
 
-        <p class="fieldset-help" id="secondParentHelp">Another parent or guardian who should get their own invite? Optional.</p>
+        <p class="fieldset-help" id="secondParentHelp">
+          Another parent or guardian who should get their own invite? Optional.
+        </p>
 
         <label for="secondParentName">Second parent or guardian name</label>
         <input

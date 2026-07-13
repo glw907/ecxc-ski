@@ -99,6 +99,37 @@ function ageNow(dobIso: string): number {
   return ageInYears(dobIso, new Date().toISOString());
 }
 
+const CREWLAB_CONTACT_MESSAGE =
+  "Please give us an email or a cell number for the athlete's CrewLAB invite; either works.";
+const SECOND_PARENT_PAIR_MESSAGE =
+  "Please give the second parent's name and email together, or leave both blank.";
+
+/** True once the athlete has at least one CrewLAB contact channel, an email or a cell. */
+function hasAthleteCrewlabContact(input: { athleteEmail: string; athleteCell: string }): boolean {
+  return input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '';
+}
+
+// The second-parent pair travels together: two directional checks, each forwarding to the
+// field that is actually blank in the failing case. A name with no email fails the first
+// (forwarded to the email); an email with no name fails the second (forwarded to the name).
+// Both blank or both filled pass both checks.
+
+/** A second-parent name with no email is incomplete. */
+function secondParentEmailGivenName(input: {
+  secondParentName: string;
+  secondParentEmail: string;
+}): boolean {
+  return input.secondParentName.trim() === '' || input.secondParentEmail.trim() !== '';
+}
+
+/** A second-parent email with no name is incomplete. */
+function secondParentNameGivenEmail(input: {
+  secondParentName: string;
+  secondParentEmail: string;
+}): boolean {
+  return input.secondParentEmail.trim() === '' || input.secondParentName.trim() !== '';
+}
+
 const athleteDobField = v.pipe(
   v.string(),
   v.trim(),
@@ -215,31 +246,15 @@ export const trainingSchema = v.pipe(
     ),
     ['parentConsent'],
   ),
-  v.forward(
-    v.check(
-      (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
-      "Please give us an email or a cell number for the athlete's CrewLAB invite; either works.",
-    ),
-    ['athleteEmail'],
-  ),
-  // The second-parent pair travels together. Two directional checks (rather than one),
-  // each forwarding to the field that is actually blank in the failing case: a name with no
-  // email fails the first check (forwarded to the email), an email with no name fails the
-  // second (forwarded to the name). Both blank or both filled pass both checks.
-  v.forward(
-    v.check(
-      (input) => input.secondParentName.trim() === '' || input.secondParentEmail.trim() !== '',
-      "Please give the second parent's name and email together, or leave both blank.",
-    ),
-    ['secondParentEmail'],
-  ),
-  v.forward(
-    v.check(
-      (input) => input.secondParentEmail.trim() === '' || input.secondParentName.trim() !== '',
-      "Please give the second parent's name and email together, or leave both blank.",
-    ),
-    ['secondParentName'],
-  ),
+  v.forward(v.check((input) => hasAthleteCrewlabContact(input), CREWLAB_CONTACT_MESSAGE), [
+    'athleteEmail',
+  ]),
+  v.forward(v.check((input) => secondParentEmailGivenName(input), SECOND_PARENT_PAIR_MESSAGE), [
+    'secondParentEmail',
+  ]),
+  v.forward(v.check((input) => secondParentNameGivenEmail(input), SECOND_PARENT_PAIR_MESSAGE), [
+    'secondParentName',
+  ]),
 );
 
 export const campSchema = v.pipe(
@@ -265,27 +280,15 @@ export const campSchema = v.pipe(
     ),
     ['carpoolSeats'],
   ),
-  v.forward(
-    v.check(
-      (input) => input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '',
-      "Please give us an email or a cell number for the athlete's CrewLAB invite; either works.",
-    ),
-    ['athleteEmail'],
-  ),
-  v.forward(
-    v.check(
-      (input) => input.secondParentName.trim() === '' || input.secondParentEmail.trim() !== '',
-      "Please give the second parent's name and email together, or leave both blank.",
-    ),
-    ['secondParentEmail'],
-  ),
-  v.forward(
-    v.check(
-      (input) => input.secondParentEmail.trim() === '' || input.secondParentName.trim() !== '',
-      "Please give the second parent's name and email together, or leave both blank.",
-    ),
-    ['secondParentName'],
-  ),
+  v.forward(v.check((input) => hasAthleteCrewlabContact(input), CREWLAB_CONTACT_MESSAGE), [
+    'athleteEmail',
+  ]),
+  v.forward(v.check((input) => secondParentEmailGivenName(input), SECOND_PARENT_PAIR_MESSAGE), [
+    'secondParentEmail',
+  ]),
+  v.forward(v.check((input) => secondParentNameGivenEmail(input), SECOND_PARENT_PAIR_MESSAGE), [
+    'secondParentName',
+  ]),
 );
 
 /** The posted, validated shape both schemas share. */

@@ -25,8 +25,9 @@ into the existing forms, no new ones: registration gains an athlete invite-conta
 (email/cell, one required), a parent opt-in, and an optional second-parent invite pair;
 supporters route through the contact form; the public join link comes off the site (four
 content files). Spec: `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md`.
-Geoff sanctioned Fable-level work for the flow quality. Next action: Geoff reviews the spec,
-then write the implementation plan.
+Geoff sanctioned Fable-level work for the flow quality and Workflow orchestration. Spec
+approved 2026-07-13. Plan: `docs/superpowers/plans/2026-07-13-crewlab-invite-integration.md`
+(executing).
 
 Also carried, Geoff's own, from the pre-publish checklist below plus the manual checks:
 

@@ -291,10 +291,14 @@ the text already being a second, independent channel.
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend">CrewLAB team app</legend>
-        <p class="fieldset-help">
+        <!-- The at-least-one-contact requirement is cross-field, so neither input may carry
+             `required` (a lie on either one alone); the instruction is carried instead by this
+             paragraph, referenced from BOTH inputs' aria-describedby so it is announced on
+             focus, not discovered at submit time. -->
+        <p class="fieldset-help" id="crewlabAthleteHelp">
           Practice plans and schedule changes live in CrewLAB, our team app. Once your
-          registration goes through, we send the athlete's invite by email or text, whichever
-          works better.
+          registration goes through, we send the athlete's invite by email or text. Give us at
+          least one of the two.
         </p>
 
         <label for="athleteEmail">Athlete email</label>
@@ -302,7 +306,7 @@ the text already being a second, independent channel.
           id="athleteEmail"
           class="input w-full"
           autocomplete="email"
-          aria-describedby="athleteEmail-error"
+          aria-describedby="athleteEmail-error crewlabAthleteHelp"
           {...fields.athleteEmail.as('email')}
         />
         {@render fieldError('athleteEmail', fields.athleteEmail)}
@@ -312,7 +316,7 @@ the text already being a second, independent channel.
           id="athleteCell"
           class="input w-full"
           autocomplete="tel"
-          aria-describedby="athleteCell-error"
+          aria-describedby="athleteCell-error crewlabAthleteHelp"
           {...fields.athleteCell.as('tel')}
         />
         {@render fieldError('athleteCell', fields.athleteCell)}
@@ -321,25 +325,25 @@ the text already being a second, independent channel.
           <input
             id="parentCrewlabInvite"
             class="checkbox"
-            aria-describedby="parentCrewlabInvite-error"
+            aria-describedby="parentCrewlabInvite-error parentInviteHelp"
             {...fields.parentCrewlabInvite.as('checkbox')}
           />
           Send me a parent invite too
         </label>
-        <p class="fieldset-help">
+        <p class="fieldset-help" id="parentInviteHelp">
           Parents confirm the connection to their athlete inside the app after the invite
           arrives.
         </p>
         {@render fieldError('parentCrewlabInvite', fields.parentCrewlabInvite)}
 
-        <p class="fieldset-help">Another parent or guardian who should get their own invite? Optional.</p>
+        <p class="fieldset-help" id="secondParentHelp">Another parent or guardian who should get their own invite? Optional.</p>
 
         <label for="secondParentName">Second parent or guardian name</label>
         <input
           id="secondParentName"
           class="input w-full"
           autocomplete="name"
-          aria-describedby="secondParentName-error"
+          aria-describedby="secondParentName-error secondParentHelp"
           {...fields.secondParentName.as('text')}
         />
         {@render fieldError('secondParentName', fields.secondParentName)}
@@ -349,7 +353,7 @@ the text already being a second, independent channel.
           id="secondParentEmail"
           class="input w-full"
           autocomplete="email"
-          aria-describedby="secondParentEmail-error"
+          aria-describedby="secondParentEmail-error secondParentHelp"
           {...fields.secondParentEmail.as('email')}
         />
         {@render fieldError('secondParentEmail', fields.secondParentEmail)}

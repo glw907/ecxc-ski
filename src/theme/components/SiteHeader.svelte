@@ -2,7 +2,7 @@
 ecxc.ski's public site header: the "hoodie colorway" masthead, ported from the pre-rebuild site's
 own `Nav.svelte` (structural-device catalogue, rebuild-waymark-2). A sticky black-spruce band with
 a fireweed bottom rule, carrying the ECXC tile-mark logo on the left and the primary nav plus
-search/theme icons on the right; a hamburger replaces the nav below 900px (the six unwrapped
+search/theme icons on the right; a hamburger replaces the nav below 920px (the six unwrapped
 display-face labels need the room) and opens a dropdown that pushes the page down rather than
 overlaying it. The band's four colors (`--color-header`,
 `--color-header-ink`, `--color-header-ink-strong`, `--color-fireweed`) are a fixed brand device, not
@@ -42,6 +42,19 @@ regardless of this header's own dark band, which never changes with the toggle. 
   function closeMobile(): void {
     mobileOpen = false;
   }
+
+  // Must stay in sync with the (max-width: 919px) block in the styles below. Closes an open
+  // drawer when a resize or rotation crosses into desktop layout; otherwise the inline nav and
+  // the pushed-down drawer both render until the next link click.
+  const DESKTOP_NAV = '(min-width: 920px)';
+  $effect(() => {
+    const mq = window.matchMedia(DESKTOP_NAV);
+    const onChange = () => {
+      if (mq.matches) mobileOpen = false;
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  });
 
   /** The two explicit theme choices; theme.css defines both as named DaisyUI themes. */
   type Theme = 'cairn' | 'cairn-dark';
@@ -322,9 +335,12 @@ regardless of this header's own dark band, which never changes with the toggle. 
     color: var(--color-fireweed);
   }
 
-  /* 900px, not the usual 640: six uppercase display-face labels plus the utility cluster need
-     ~860px on one unwrapped line. Between 640 and 899 the drawer serves; labels never wrap. */
-  @media (max-width: 899px) {
+  /* 920px, not the usual 640: six uppercase display-face labels plus the utility cluster need
+     ~860px on one unwrapped line, and .nav-inner's own inline padding (~52px at this width)
+     comes out of that budget too. Below 920 the drawer serves; labels never wrap. Must stay in
+     sync with the DESKTOP_NAV media query in the script block, which closes the drawer when
+     the viewport crosses into desktop layout. */
+  @media (max-width: 919px) {
     .desktop-nav {
       display: none;
     }

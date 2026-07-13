@@ -108,7 +108,15 @@ async function verifyCrewlabRow(kind, expected) {
     console.log('SHEET VERIFY: skipped (GOOGLE_SA_KEY_B64 not set; source ~/.local/secrets)');
     return;
   }
-  const key = JSON.parse(atob(keyB64.replace(/\s+/g, '')));
+  // Fixed message carrying no part of the input: JSON.parse's SyntaxError embeds a fragment
+  // of the decoded string, which here is the service-account key (the same guard sheets.ts's
+  // decodeServiceAccountKey documents), and the caller's catch prints error text.
+  let key;
+  try {
+    key = JSON.parse(atob(keyB64.replace(/\s+/g, '')));
+  } catch {
+    throw new Error('GOOGLE_SA_KEY_B64 did not decode to valid JSON');
+  }
   const jwt = await signServiceAccountJwt(key);
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',

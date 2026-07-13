@@ -197,7 +197,9 @@ describe('RegistrationForm', () => {
       'secondParentName',
       'secondParentEmail',
     ]) {
-      expect(body).toContain(`aria-describedby="${field}-error"`);
+      // The error id must lead the describedby list; a field may append help-text ids after
+      // it (the CrewLAB contacts carry their shared instruction paragraph this way).
+      expect(body).toMatch(new RegExp(`aria-describedby="${field}-error[ "]`));
       expect(body).toContain(`id="${field}-error"`);
     }
   });

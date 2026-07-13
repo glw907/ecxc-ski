@@ -142,7 +142,8 @@ export async function handleRegistration(
   const { env } = deps;
 
   const turnstileToken = data['cf-turnstile-response'];
-  if (env.TURNSTILE_SECRET_KEY && !(await verifyTurnstile(turnstileToken, deps.ip, env.TURNSTILE_SECRET_KEY))) {
+  const turnstileSecret = env.TURNSTILE_SECRET_KEY;
+  if (turnstileSecret && !(await verifyTurnstile(turnstileToken, deps.ip, turnstileSecret))) {
     invalid('Spam check failed. Please try again.');
   }
 
@@ -160,8 +161,9 @@ export async function handleRegistration(
   // `kind` is the caller's own discriminant (enforced by the overloads above), so a 'camp' kind
   // is only ever paired with a ParsedCampFields input; this narrows the same way schema.ts's
   // own buildRecord() does for the analogous cast.
-  const record =
-    kind === 'camp' ? buildRecord('camp', data as ParsedCampFields, meta) : buildRecord('training', data, meta);
+  const record = kind === 'camp'
+    ? buildRecord('camp', data as ParsedCampFields, meta)
+    : buildRecord('training', data, meta);
 
   let sheetsError: string | undefined;
   if (!env.GOOGLE_SA_KEY_B64 || !env.REGISTRATION_SHEET_ID) {
@@ -211,14 +213,15 @@ function toSendCapable(binding: { send(msg: never): Promise<unknown> } | undefin
 /** Build the pipeline's deps from the current request, the one seam the two form actions add. */
 export function buildDeps(): RegistrationDeps {
   const { platform, getClientAddress, request } = getRequestEvent();
+  const env = platform?.env;
   return {
     env: {
-      TURNSTILE_SECRET_KEY: platform?.env?.TURNSTILE_SECRET_KEY,
-      GOOGLE_SA_KEY_B64: platform?.env?.GOOGLE_SA_KEY_B64,
-      REGISTRATION_SHEET_ID: platform?.env?.REGISTRATION_SHEET_ID,
-      CONTACT_EMAIL: platform?.env?.CONTACT_EMAIL,
-      SEND_EMAIL: toSendCapable(platform?.env?.SEND_EMAIL),
-      EMAIL: toSendCapable(platform?.env?.EMAIL),
+      TURNSTILE_SECRET_KEY: env?.TURNSTILE_SECRET_KEY,
+      GOOGLE_SA_KEY_B64: env?.GOOGLE_SA_KEY_B64,
+      REGISTRATION_SHEET_ID: env?.REGISTRATION_SHEET_ID,
+      CONTACT_EMAIL: env?.CONTACT_EMAIL,
+      SEND_EMAIL: toSendCapable(env?.SEND_EMAIL),
+      EMAIL: toSendCapable(env?.EMAIL),
     },
     ip: getClientAddress(),
     userAgent: request.headers.get('user-agent') ?? '',

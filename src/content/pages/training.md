@@ -11,7 +11,7 @@ Cost, gear, and who-can-join questions are answered in the [FAQ](#frequently-ask
 Coached practice Monday, Wednesday, and Friday mornings, plus a plan for the days between.
 :::
 
-:::program[Talkeetna camp]{icon="tent" href="#talkeetna-camp" meta="Jul 21–24 · 4 days, 3 nights" cta="See the camp" role="secondary"}
+:::program[Talkeetna camp]{icon="tent" href="/talkeetna" meta="Jul 21–24 · 4 days, 3 nights" cta="See the camp" role="secondary"}
 Four days at a lake, two workouts a day, swimming and a sauna in between. Registers separately.
 :::
 ::::
@@ -97,67 +97,26 @@ Anyone entering 9th grade through 12th, plus graduates home from college for the
 
 We keep loaner roller skis and poles and can usually scare up other gear. Ask a coach.
 
+### Registration
+
+Sign-up and the liability waiver are one form now, at the bottom of this page. You'll read the waiver there, you and your athlete each type your name to sign, and we email you a copy of the signed record. An athlete who is already 18 signs for themselves. Either way, the waiver has to be on file before the first practice.
+
+If you signed up through CrewLAB in a past summer, we've moved sign-up and the waiver here. CrewLAB is still the team app; coaches post the weekly plan and meeting spots there. Read the [CrewLAB page](cairn:pages/crewlab) to join.
+
+:::cta{label="Register for summer training" url="#register"}
+:::
+
 ### Your first day
 
-Sign the waiver in CrewLAB before you come, then just show up: East High at 10:30 on a Monday, or by 10:00 if it's a carpool day. Bring trail shoes, water, and layers. You'll be running on day one, not roller-skiing, so don't buy anything. Find any adult, say you're new, and they'll get you into the right group.
-
-Sign-up and the liability waiver are both in [CrewLAB](cairn:pages/crewlab), and the waiver has to be on file before your first practice.
-
-:::cta{label="Sign up for summer training" url="https://crewlab.app.link/5g7vhhYEn3b" newTab="true"}
-:::
+Register below before you come, then just show up: East High at 10:30 on a Monday, or by 10:00 if it's a carpool day. Bring trail shoes, water, and layers. You'll be running on day one, not roller-skiing, so don't buy anything. Find any adult, say you're new, and they'll get you into the right group.
 
 If you'd rather ask a person something first, the [contact form](/contact) goes to a coach.
 
-## Talkeetna camp
-
-*Jul 21–24 · 4 days, 3 nights*
-
-Camp is July 21 to 24, up at a lake near Talkeetna. We train twice a day, the kids get the lake and the sauna in between, and the team cooks dinner together. Fair warning on the cabins: they're dry, meaning outhouses and no showers for four days, and the lake is the bath. Amy Purevsuren runs camp, it's free like everything else, and it registers separately in CrewLAB even if your athlete has been with us all summer.
-
-### A day at camp
-
-The first workout comes in the morning and the second in the late afternoon, drawn from running, roller-skiing, strength, and hill bounding with poles. The middle of the day is the lake: swimming, boats, paddleboards. Evenings end early because the mornings start early.
-
-Camp registration and consent are their own forms in CrewLAB, separate from summer training. Donations are welcome at whatever level works for your family. The exact site and address go out to registered families in the app.
-
-### What to pack
-
-:::checklist{cols="2"}
-#### Sleep
-
-- Sleeping bag and a pillow.
-
-#### Clothing
-
-- Training clothes for cool and warm weather.
-- Rain gear. It is Talkeetna.
-- Pants, shorts, and a sweatshirt for downtime.
-- Spare socks and personal clothing.
-- Swimsuit and towel.
-- Running shoes.
-
-#### Training gear
-
-- Hill bounding poles.
-- Roller-ski kit if you have one: boots, skis, poles, helmet.
-
-#### Daily essentials
-
-- Water bottle, with a carrier for long sessions.
-- Toiletries.
-- Daily medications.
-
-#### Optional
-
-- Food for special diets (optional).
-- Personal snacks (optional).
-:::
-
-Register and sign the camp consent in [CrewLAB](cairn:pages/crewlab); both are separate from summer-training sign-up. The waiver has to be on file before camp too.
-
-Questions? The [contact form](/contact) works for camp too.
-
 ## Frequently Asked Questions
+
+:::faq{question="How do I sign up?"}
+In the registration form at the bottom of this page. The waiver is part of the same form. Camp registers separately on the [camp page](/talkeetna).
+:::
 
 :::faq{question="What does it cost?"}
 Nothing. Training and camp are both free, and donating or not changes nothing.
@@ -172,7 +131,7 @@ Anyone entering 9th through 12th grade, plus graduates home from college. Not ju
 :::
 
 :::faq{question="Do I have to do both programs?"}
-No. They sign up separately. Do one or both.
+No. They register separately. Do one or both.
 :::
 
 :::faq{question="What if I miss a session?"}

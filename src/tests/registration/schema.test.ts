@@ -11,7 +11,7 @@ import {
 
 /** All waiver agreement checkboxes checked, as a real submission would send them. */
 function agreements(): Record<string, boolean> {
-  return Object.fromEntries(WAIVER_SECTIONS.map((section) => [`agree-${section.id}`, true]));
+  return Object.fromEntries(WAIVER_SECTIONS.map((section) => [`agree_${section.id}`, true]));
 }
 
 function baseFields(dob: string) {
@@ -70,7 +70,7 @@ describe('trainingSchema', () => {
 
   it('fails when a waiver agreement is missing, naming the section', () => {
     const fields = baseFields(dobForAge(18));
-    delete (fields as Record<string, unknown>)['agree-risks'];
+    delete (fields as Record<string, unknown>)['agree_risks'];
     const result = v.safeParse(trainingSchema, fields);
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -102,12 +102,12 @@ describe('trainingSchema', () => {
   });
 });
 
-// The waiver's per-section `agree-<id>` fields (built by schema.ts's own
+// The waiver's per-section `agree_<id>` fields (built by schema.ts's own
 // `waiverAgreementFields`) only accept a real boolean, never the raw posted string a checkbox
 // sends without SvelteKit's `b:` name prefix. WaiverText.svelte's checkbox is hand-authored
 // (its field name is generated at runtime, so it cannot go through `RemoteFormField.as(...)`,
 // which would add the prefix automatically), so this is the schema-side half of that contract;
-// components.test.ts asserts the rendered `name="b:agree-<id>"` half.
+// components.test.ts asserts the rendered `name="b:agree_<id>"` half.
 describe('waiver agreement fields require a real boolean, not the raw posted "on" string', () => {
   it('accepts a checked section once it has coerced to the real boolean true', () => {
     const result = v.safeParse(trainingSchema, baseFields(dobForAge(18)));
@@ -115,7 +115,7 @@ describe('waiver agreement fields require a real boolean, not the raw posted "on
   });
 
   it('rejects a checked section still carrying the raw posted string "on" (the shape a checkbox posts without the b: name prefix)', () => {
-    const fields = { ...baseFields(dobForAge(18)), 'agree-risks': 'on' };
+    const fields = { ...baseFields(dobForAge(18)), 'agree_risks': 'on' };
     const result = v.safeParse(trainingSchema, fields);
     expect(result.success).toBe(false);
   });

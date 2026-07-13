@@ -57,7 +57,7 @@ function optionalEmailField(message: string) {
   );
 }
 
-/** One required agreement checkbox per waiver section, named `agree-<id>`. */
+/** One required agreement checkbox per waiver section, named `agree_<id>` (underscored: hyphens are invalid remote-form field paths). */
 function waiverAgreementField(sectionTitle: string) {
   return v.pipe(
     v.optional(v.boolean(), false),
@@ -102,7 +102,7 @@ const athleteDobField = v.pipe(
 );
 
 const waiverAgreementFields = Object.fromEntries(
-  WAIVER_SECTIONS.map((section) => [`agree-${section.id}`, waiverAgreementField(section.title)]),
+  WAIVER_SECTIONS.map((section) => [`agree_${section.id}`, waiverAgreementField(section.title)]),
 );
 
 const sharedFields = {

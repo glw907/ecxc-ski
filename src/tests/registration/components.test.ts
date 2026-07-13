@@ -75,7 +75,7 @@ const { default: WaiverText } = await import('$theme/components/WaiverText.svelt
 const { default: RegistrationForm } = await import('$theme/components/RegistrationForm.svelte');
 
 describe('WaiverText', () => {
-  it('renders one required agreement checkbox per waiver section, posted as b:agree-<id>', () => {
+  it('renders one required agreement checkbox per waiver section, posted as b:agree_<id>', () => {
     const { body } = render(WaiverText);
 
     // The `b:` prefix is load-bearing, not decorative: SvelteKit's convert_formdata only
@@ -84,7 +84,7 @@ describe('WaiverText', () => {
     // contract from the schema side.
     for (const section of WAIVER_SECTIONS) {
       expect(body).toContain(`id="agree-${section.id}"`);
-      expect(body).toContain(`name="b:agree-${section.id}"`);
+      expect(body).toContain(`name="b:agree_${section.id}"`);
     }
     const checkboxCount = (body.match(/type="checkbox"/g) ?? []).length;
     expect(checkboxCount).toBe(WAIVER_SECTIONS.length);

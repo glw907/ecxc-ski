@@ -3,7 +3,7 @@ Renders the site's waiver (waiver/waiver.ts's `WAIVER_SECTIONS`) inline, in full
 trap, no accordion, since a family reads or prints the whole thing in place. Each section is
 a `<section>` carrying a semantic `<h3>`, a plain-terms summary set in the alert-structural
 chrome (the site's calmest tier, a readability aid rather than a warning), the operative
-legal text, and one required agreement checkbox posted as `b:agree-<section.id>`, matching
+legal text, and one required agreement checkbox posted as `b:agree_<section.id>` (underscore: SvelteKit parses remote-form field names as identifier paths, and a hyphen is an invalid path segment that kills hydration), matching
 the posted field name `registration/schema.ts`'s `waiverAgreementFields` expects.
 
 The `b:` name prefix is required, not decorative: it is the same prefix
@@ -45,7 +45,7 @@ wrapper, since `.prose` styles no form control.
       </div>
 
       <div class="waiver-agree">
-        <input type="checkbox" class="checkbox" id="agree-{section.id}" name="b:agree-{section.id}" required />
+        <input type="checkbox" class="checkbox" id="agree-{section.id}" name="b:agree_{section.id}" required />
         <label for="agree-{section.id}">I have read and agree to the {section.title} section.</label>
       </div>
     </section>

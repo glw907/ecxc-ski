@@ -36,7 +36,7 @@ the text already being a second, independent channel.
    * schema.ts), so it structurally carries every field below with the identical wrapper
    * type; the cast below just tells TypeScript what registration.remote.ts's own
    * `ParsedRegistrationFields` interface already asserts by hand for the same reason
-   * (valibot's runtime-built `agree-<id>` keys defeat literal key inference either way).
+   * (valibot's runtime-built `agree_<id>` keys defeat literal key inference either way).
    */
   interface SharedRegistrationFields {
     athleteFullName: RemoteFormField<string>;

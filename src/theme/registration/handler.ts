@@ -22,9 +22,9 @@ const RECORD_EMAIL_FAILURE_MESSAGE =
 /**
  * The posted, validated shape both forms share, hand-written rather than inferred from
  * `trainingSchema`/`campSchema` (`v.InferOutput` loses literal key typing on the schema's
- * `agree-<id>` fields, generated at runtime from `WAIVER_SECTIONS`; see schema.ts's own
+ * `agree_<id>` fields, generated at runtime from `WAIVER_SECTIONS`; see schema.ts's own
  * `SharedParsedFields`, which this mirrors). A real parsed submission carries more fields
- * (one `agree-<id>` boolean per waiver section) than this interface names; that is fine, since
+ * (one `agree_<id>` boolean per waiver section) than this interface names; that is fine, since
  * a variable's excess properties never trigger TypeScript's excess-property check.
  */
 export interface ParsedRegistrationFields {

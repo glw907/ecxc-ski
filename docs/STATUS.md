@@ -17,7 +17,15 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-No dev-side action is queued. What remains is Geoff's own: a real magic-link login and the full
+**Registration forms + digital waiver pass, in flight (2026-07-13).** Plan:
+`docs/superpowers/plans/2026-07-13-registration-forms.md` (spec:
+`docs/superpowers/specs/2026-07-13-registration-forms-design.md`). Training and Talkeetna
+Camp each get a registration form sharing one code-owned digital waiver; submissions append
+to a Google Sheet (ASC service account, reused) and email the signed record. Blocked
+externally on Geoff: `gcloud auth login` (Sheets API enablement) and his personal Google
+address for the roster-Sheet share.
+
+Before this pass, no other dev-side action was queued. What remains is Geoff's own: a real magic-link login and the full
 authed `/admin` checklist against the deployed Worker (the local sandbox can only prove the D1
 session mechanism past the guard, not the GitHub App round trip), the waiver's attorney review,
 the CrewLAB confirmations, and the old `cairn-ecnordic-auth` D1 decommission. The `note`-tier

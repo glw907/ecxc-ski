@@ -81,3 +81,24 @@ tab, the record email reached `CONTACT_EMAIL`, and the parent copy reached the a
 - **Waiver checkboxes are `b:agree_<id>` (underscore).** SvelteKit remote-form field names are
   parsed as identifier paths; a hyphen is an invalid path segment that throws at hydration and
   silently breaks the whole form island. This bit us live once already.
+- **The Turnstile field is `turnstileToken`, not Cloudflare's default `cf-turnstile-response`.**
+  This was a real production bug, not just a harness detail, found and fixed 2026-07-13: the same
+  identifier-path parser above (`@sveltejs/kit`'s `form-utils.js`, `convert_formdata`/
+  `split_path`) runs over *every* posted `FormData` key, not just ones declared through
+  `.as(...)`, and it throws synchronously client-side, before any request is sent, on Turnstile's
+  own default field name (`cf-turnstile-response`, hyphenated). That crash fired for every real
+  submission with JS enabled, on both the registration and contact forms, producing a generic
+  client-rendered 500 with zero network request, ever, no matter how the token was obtained.
+  Fixed by adding `data-response-field-name="turnstileToken"` to both `.cf-turnstile` widget divs
+  and renaming the schema/handler field to match. If this script's dummy-token injection ever
+  needs to change, inject into `turnstileToken`, never the Turnstile default.
+- **A stale `CONTACT_EMAIL` secret silently blocks the whole pipeline.** Found the same day: the
+  registration record email is the pipeline's must-succeed step, sent through a
+  destination-restricted Send Email binding whose `destination_address` is fixed in
+  `wrangler.toml` to `contact@ecxc.ski`. `CONTACT_EMAIL` still carried the pre-rebrand
+  `contact@ecnordic.ski` address, so every send threw `email to contact@ecnordic.ski not allowed`
+  and the submission failed with "Something went wrong saving your registration" even though
+  Turnstile, the schema, and the Sheets append had all already succeeded. `wrangler secret list`
+  only proves the secret exists, never that its value matches the binding; if this pipeline ever
+  fails at the record-email step again, tail the Worker (`npx wrangler tail ecxc --format
+  json`) during a real submission rather than guessing from the generic on-page message.

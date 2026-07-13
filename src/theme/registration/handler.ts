@@ -57,8 +57,8 @@ export interface ParsedRegistrationFields {
   parentSignature: string;
   parentConsent: boolean;
   athleteConsent: boolean;
-  /** Injected by the Turnstile widget, not a rendered field; matches contact.remote.ts. */
-  'cf-turnstile-response': string;
+  /** Injected by the Turnstile widget's renamed field; see schema.ts's `turnstileToken` for why. */
+  turnstileToken: string;
 }
 
 /** The camp form's posted shape: the shared fields plus camp logistics. */
@@ -141,7 +141,7 @@ export async function handleRegistration(
 ): Promise<{ success: true; parentCopySent: boolean }> {
   const { env } = deps;
 
-  const turnstileToken = data['cf-turnstile-response'];
+  const turnstileToken = data.turnstileToken;
   const turnstileSecret = env.TURNSTILE_SECRET_KEY;
   if (!turnstileSecret) {
     // Fail closed: a deploy missing the Turnstile secret must not silently accept every

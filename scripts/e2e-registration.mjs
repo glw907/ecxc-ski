@@ -27,6 +27,19 @@
 //     the submit does nothing and every field looks empty to the remote handler.
 //   - Waiver agreement checkboxes are named b:agree_<id> (underscore). Hyphens are invalid
 //     SvelteKit remote-form field paths and silently break form hydration.
+//   - The Turnstile field is `turnstileToken`, NOT Cloudflare's default `cf-turnstile-response`.
+//     SvelteKit's remote-form client (form-utils.js's `convert_formdata`/`split_path`) parses
+//     EVERY posted FormData key as an identifier path and throws synchronously, client-side,
+//     before any request is sent, on a key containing a hyphen. That bug is not specific to a
+//     headless dummy injection: it fired for every real user's browser too (a genuine production
+//     bug, fixed 2026-07-13 alongside this script by adding `data-response-field-name
+//     ="turnstileToken"` to both `.cf-turnstile` divs and renaming the schema field to match).
+//     A submit against stale code (or a future regression back to the default name) fails
+//     silently the exact way this comment used to describe: checkValidity() true, click fires,
+//     zero POSTs, and the page's error boundary swaps in a client-rendered 500 with no console
+//     error printed by default (catch it via `page.on('pageerror')` or by reading
+//     `document.body.innerText`, since the crash happens inside SvelteKit's own client runtime
+//     before our code ever gets a chance to log anything).
 
 import { chromium } from 'playwright';
 
@@ -86,13 +99,15 @@ for (const box of await form.locator('input[name="b:athleteConsent"], input[name
 }
 
 // With the always-passes test secret set on the Worker, any token verifies; inject a dummy so
-// we do not depend on solving a live challenge headless.
+// we do not depend on solving a live challenge headless. The field is `turnstileToken` (the
+// widget's `data-response-field-name` override), not Cloudflare's default
+// `cf-turnstile-response`; see the header comment for why the default name is unusable here.
 await form.evaluate((f) => {
-  let el = f.querySelector('[name="cf-turnstile-response"]');
+  let el = f.querySelector('[name="turnstileToken"]');
   if (!el) {
     el = document.createElement('input');
     el.type = 'hidden';
-    el.name = 'cf-turnstile-response';
+    el.name = 'turnstileToken';
     f.appendChild(el);
   }
   el.value = 'test-token-e2e';
@@ -106,8 +121,15 @@ try {
   console.log('confirmation:', (await page.textContent('#register .registration-success')).trim().slice(0, 240));
 } catch {
   console.log('RESULT: no success state');
-  const alert = await page.locator('#register [role="alert"]').textContent().catch(() => '');
-  console.log('alert:', (alert || '(empty)').trim().slice(0, 400));
+  // A client-side crash (e.g. the hyphenated-field-name bug this script's header documents)
+  // unmounts #register entirely and swaps in SvelteKit's error boundary, so check for that
+  // before assuming the form is still there with an empty alert.
+  if ((await page.title()).startsWith('500')) {
+    console.log('CLIENT ERROR BOUNDARY (500):', (await page.textContent('body')).trim().slice(0, 400));
+  } else {
+    const alert = await page.locator('#register [role="alert"]').textContent().catch(() => '');
+    console.log('alert:', (alert || '(empty)').trim().slice(0, 400));
+  }
   console.log('POSTs to origin:', posts);
 }
 await browser.close();

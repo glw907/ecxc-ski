@@ -37,7 +37,15 @@ with Cloudflare, not an env read. -->
         <textarea class="textarea h-32 w-full" required {...message.as('text')}></textarea>
       </fieldset>
 
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAADPWAhVwEJvGQqhh"></div>
+      <!-- `data-response-field-name` renames Turnstile's injected hidden field away from its
+           default `cf-turnstile-response`, which crashes SvelteKit's remote-form client on
+           every real submission (a hyphenated field name fails its identifier-path parser
+           before any request is sent); see registration/schema.ts's `turnstileToken`. -->
+      <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAADPWAhVwEJvGQqhh"
+        data-response-field-name="turnstileToken"
+      ></div>
 
       <button type="submit" class="btn btn-primary self-start" disabled={!!sendMessage.pending}>
         {sendMessage.pending ? 'Sending…' : 'Send message'}

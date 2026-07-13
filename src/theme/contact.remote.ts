@@ -29,10 +29,14 @@ export const sendMessage = form(
     name: v.pipe(v.string(), v.trim(), v.nonEmpty('Please enter your name.')),
     email: v.pipe(v.string(), v.trim(), v.email('Please enter a valid email address.')),
     message: v.pipe(v.string(), v.trim(), v.nonEmpty('Please enter a message.')),
-    // Injected by the Turnstile widget, not a rendered field.
-    'cf-turnstile-response': v.optional(v.string(), ''),
+    // Injected by the Turnstile widget via its `data-response-field-name` override in
+    // ContactForm.svelte, not a rendered field. The default name, `cf-turnstile-response`,
+    // is unusable: SvelteKit's remote-form client parses every posted FormData key as an
+    // identifier path and throws synchronously on a hyphen, before any request is sent, on
+    // every real submission (see registration/schema.ts's `turnstileToken` for the full story).
+    turnstileToken: v.optional(v.string(), ''),
   }),
-  async ({ name, email, message, 'cf-turnstile-response': token }) => {
+  async ({ name, email, message, turnstileToken: token }) => {
     const { platform, getClientAddress } = getRequestEvent();
 
     const secret = platform?.env?.TURNSTILE_SECRET_KEY;

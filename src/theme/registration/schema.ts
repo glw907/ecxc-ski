@@ -153,8 +153,15 @@ const sharedFields = {
       'Please check the box confirming the athlete agrees to sign electronically.',
     ),
   ),
-  // Injected by the Turnstile widget, not a rendered field; matches contact.remote.ts.
-  'cf-turnstile-response': v.optional(v.string(), ''),
+  // Injected by the Turnstile widget via its `data-response-field-name` override, not a
+  // rendered field; matches contact.remote.ts. The default field name Turnstile would use,
+  // `cf-turnstile-response`, is unusable here: SvelteKit's remote-form client parses every
+  // posted FormData key as an identifier path (`form-utils.js`'s `split_path`, the same
+  // grammar that forces `agree_<id>` to use an underscore below) and throws synchronously,
+  // client-side, before any request is sent, on a key containing a hyphen. That crash isn't
+  // a corner case; it fires for every real submission, so the widget's own attribute renames
+  // the field instead of the schema working around Turnstile's default.
+  turnstileToken: v.optional(v.string(), ''),
   ...waiverAgreementFields,
 };
 

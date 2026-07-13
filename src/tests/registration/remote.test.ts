@@ -100,7 +100,7 @@ function baseFields(): ParsedRegistrationFields {
     parentSignature: 'Pat Parent',
     parentConsent: true,
     athleteConsent: true,
-    'cf-turnstile-response': '',
+    turnstileToken: '',
   };
 }
 

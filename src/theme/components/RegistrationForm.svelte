@@ -586,7 +586,15 @@ the text already being a second, independent channel.
       </fieldset>
 
       <div class="registration-submit">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADPWAhVwEJvGQqhh"></div>
+        <!-- `data-response-field-name` renames Turnstile's injected hidden field away from its
+             default `cf-turnstile-response`: SvelteKit's remote-form client throws on any posted
+             field name containing a hyphen (see schema.ts's `turnstileToken` comment), so the
+             default name crashes every real submission before a request is ever sent. -->
+        <div
+          class="cf-turnstile"
+          data-sitekey="0x4AAAAAADPWAhVwEJvGQqhh"
+          data-response-field-name="turnstileToken"
+        ></div>
 
         <button type="submit" class="btn btn-primary self-start" disabled={!!action.pending}>
           {#if action.pending}

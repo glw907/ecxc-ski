@@ -20,8 +20,15 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below plus
-the carried manual checks:
+**CrewLAB invite integration (spec approved-direction, plan pending).** Fold CrewLAB onboarding
+into the existing forms, no new ones: registration gains an athlete invite-contact fieldset
+(email/cell, one required), a parent opt-in, and an optional second-parent invite pair;
+supporters route through the contact form; the public join link comes off the site (four
+content files). Spec: `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md`.
+Geoff sanctioned Fable-level work for the flow quality. Next action: Geoff reviews the spec,
+then write the implementation plan.
+
+Also carried, Geoff's own, from the pre-publish checklist below plus the manual checks:
 
 - Confirm the registration test emails arrived (the record email in the CONTACT_EMAIL inbox and
   the parent copy for the `TEST ROW - DELETE ME` submission), then delete them. The pipeline is

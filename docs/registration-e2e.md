@@ -50,6 +50,12 @@ The one mechanism nothing else exercises is the **parent-copy send through the u
 3. **A parent email you control**, so the confirmation copy lands somewhere you can check and
    delete. Pass it with `E2E_PARENT_EMAIL`; it defaults to `geoff-login@907.life`.
 
+4. **Optional: `GOOGLE_SA_KEY_B64` sourced in the environment** (`source ~/.local/secrets`), the
+   same registration service-account key the Worker uses. With it, the script reads the roster
+   tab back after a successful submit and prints `SHEET VERIFY: PASS`/`FAIL` for the CrewLAB
+   invite cells (see below); without it, that check is skipped with a note and the run still
+   proves the submit path end to end.
+
 ## Run
 
 ```bash
@@ -57,9 +63,18 @@ node scripts/e2e-registration.mjs camp https://ecxc.ski        # camp form (the 
 node scripts/e2e-registration.mjs training https://ecxc.ski    # training form
 ```
 
-A pass prints `RESULT: SUCCESS state reached` plus the on-page confirmation. Then verify the
-side effects by hand: the row landed in the roster spreadsheet's `Training` / `Talkeetna Camp`
-tab, the record email reached `CONTACT_EMAIL`, and the parent copy reached the address you used.
+A pass prints `RESULT: SUCCESS state reached` plus the on-page confirmation, then (with
+`GOOGLE_SA_KEY_B64` set) `SHEET VERIFY: PASS` once it reads the freshly appended row's five
+CrewLAB invite cells back from the sheet. Then verify the rest by hand: the record email
+reached `CONTACT_EMAIL` with a `CrewLAB invite` section, and the parent copy reached the
+address you used.
+
+**The five CrewLAB invite fields the script now posts, alongside the pre-existing ones:**
+athlete email and cell (`athleteEmail`/`athleteCell`, both filled here though only one is
+required), the parent invite opt-in (`b:parentCrewlabInvite`, checked), and a second-parent
+name/email pair (`secondParentName`/`secondParentEmail`). They land as the last five cells of
+the roster row and as a `CrewLAB invite` section in the record email, per
+`src/theme/registration/schema.ts`'s `CREWLAB_HEADERS`.
 
 ## Clean up every run
 

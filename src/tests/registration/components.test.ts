@@ -1,0 +1,140 @@
+import { describe, expect, it, vi } from 'vitest';
+import { render } from 'svelte/server';
+import { WAIVER_SECTIONS } from '$theme/waiver/waiver';
+
+// RegistrationForm.svelte imports registration.remote.ts, whose top-level `form(...)` calls
+// need a static `$app/server` import to satisfy SvelteKit's remote-function build step;
+// `$app/server` only resolves inside a full SvelteKit dev/build, not under plain vitest
+// (matching remote.test.ts's own mock). The fake `form()` below returns a minimal
+// RemoteForm-shaped object: a `fields` proxy that hands back a working `.as()`/`.value()`/
+// `.allIssues()` field stub for ANY property name, so the component's real field references
+// (including registerCamp's camp-only ones) never throw, without hand-listing every one.
+function makeFieldStub(name: string) {
+  return {
+    as: (type: string, value?: unknown) => {
+      const attrs: Record<string, unknown> = { name };
+      if (type === 'checkbox' || type === 'radio') {
+        attrs.type = type;
+        attrs.checked = false;
+        if (value !== undefined) attrs.value = value;
+      } else if (type !== 'text') {
+        attrs.type = type;
+      }
+      return attrs;
+    },
+    value: () => undefined,
+    set: () => undefined,
+    issues: () => undefined,
+  };
+}
+
+const fieldsStub = new Proxy(
+  {},
+  {
+    get(_target, prop: string | symbol) {
+      if (prop === 'allIssues') return () => [];
+      if (prop === 'issues') return () => undefined;
+      if (typeof prop !== 'string') return undefined;
+      return makeFieldStub(prop);
+    },
+  },
+);
+
+interface FormActionStub {
+  method: string;
+  action: string;
+  fields: typeof fieldsStub;
+  pending: number;
+  result: { success: true; parentCopySent: boolean } | undefined;
+  submitted: boolean;
+}
+
+// The real RemoteForm object keeps `fields`/`pending`/`result`/`submitted` as non-enumerable
+// accessors, so `{...action}` on a `<form>` element (this component's own idiom) spreads only
+// `method`/`action` onto the DOM node; a plain object literal here would make every one of
+// those enumerable instead, and Svelte would try (and fail) to stringify the `fields` proxy
+// as a literal HTML attribute.
+const formActionStub = Object.defineProperties(
+  { method: 'POST', action: '' } as FormActionStub,
+  {
+    fields: { value: fieldsStub, enumerable: false },
+    pending: { value: 0, enumerable: false },
+    result: { value: undefined, enumerable: false },
+    submitted: { value: false, enumerable: false },
+  },
+);
+
+vi.mock('$app/server', () => ({
+  form: () => formActionStub,
+  getRequestEvent: () => {
+    throw new Error('getRequestEvent is not available outside a request; this suite never submits');
+  },
+}));
+
+const { default: WaiverText } = await import('$theme/components/WaiverText.svelte');
+const { default: RegistrationForm } = await import('$theme/components/RegistrationForm.svelte');
+
+describe('WaiverText', () => {
+  it('renders one required agreement checkbox per waiver section, named agree-<id>', () => {
+    const { body } = render(WaiverText);
+
+    for (const section of WAIVER_SECTIONS) {
+      expect(body).toContain(`name="agree-${section.id}"`);
+    }
+    const checkboxCount = (body.match(/type="checkbox"/g) ?? []).length;
+    expect(checkboxCount).toBe(WAIVER_SECTIONS.length);
+  });
+
+  it('labels every summary as a non-operative, plain-terms aid', () => {
+    const { body } = render(WaiverText);
+
+    const label = 'Plain-terms summary, for readability. The full text below is what you are agreeing to.';
+    const occurrences = body.split(label).length - 1;
+    expect(occurrences).toBe(WAIVER_SECTIONS.length);
+  });
+});
+
+describe('RegistrationForm', () => {
+  it('training variant renders every shared fieldset legend and no camp logistics', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    for (const legend of [
+      'Athlete',
+      'Parent or guardian',
+      'Emergency contact',
+      'Insurance',
+      'Medical',
+      'Photo and media release',
+      'Signatures',
+    ]) {
+      expect(body).toContain(legend);
+    }
+    expect(body).not.toContain('Camp logistics');
+    expect(body).not.toContain('id="carpoolSeats"');
+  });
+
+  it('camp variant renders the camp logistics fieldset and the seats input', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'camp' } });
+
+    expect(body).toContain('Camp logistics');
+    expect(body).toContain('id="carpoolSeats"');
+  });
+
+  it.each(['training', 'camp'] as const)(
+    '%s variant renders the photo-release radios and both signature inputs',
+    (variant) => {
+      const { body } = render(RegistrationForm, { props: { variant } });
+
+      expect(body).toContain('id="photoRelease-grant"');
+      expect(body).toContain('id="photoRelease-deny"');
+      expect(body).toContain('id="athleteSignature"');
+      expect(body).toContain('id="parentSignature"');
+    },
+  );
+
+  it.each(['training', 'camp'] as const)('%s variant does not show the success copy on first render', (variant) => {
+    const { body } = render(RegistrationForm, { props: { variant } });
+
+    expect(body).not.toContain('You are registered');
+  });
+});

@@ -20,7 +20,15 @@ const routes = createPublicRoutes({
   assetsEnabled: mediaEnabled,
 });
 
-export const entries: EntryGenerator = () => routes.entries();
+// 'training' and 'talkeetna' are still pages-concept entries (so `site.byPermalink` and
+// `site.all()` still resolve/list them), but their own bespoke routes
+// (src/routes/(site)/training, src/routes/(site)/talkeetna) render them now, since each hosts a
+// live registration form that cannot prerender. Prerendering them again here through this
+// catch-all would try to emit the same output paths a second time and fail the build.
+const SHADOWED_PAGE_ENTRIES = new Set(['training', 'talkeetna']);
+
+export const entries: EntryGenerator = () =>
+  routes.entries().filter(({ path }) => !SHADOWED_PAGE_ENTRIES.has(path));
 
 export const load: PageServerLoad = async ({ url }) => {
   return routes.entryLoad({ url });

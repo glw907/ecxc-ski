@@ -25,6 +25,7 @@ menus:
     - { label: Home, url: / }
     - { label: About, url: /about }
     - { label: Training, url: /training }
+    - { label: Talkeetna Camp, url: /talkeetna }
     - { label: Volunteers & Coaches, url: /volunteers }
     - { label: CrewLAB, url: /crewlab }
     - { label: Contact, url: /contact }

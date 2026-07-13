@@ -37,6 +37,15 @@
       ]
     },
     {
+      "id": "talkeetna",
+      "concept": "pages",
+      "title": "Talkeetna Camp",
+      "permalink": "/talkeetna",
+      "summary": "Camp is July 21 to 24, 2026, four days and three nights at a lake near Talkeetna. We train twice a day, the kids get the lake and the sauna in between, and the team cooks dinner together. It's free,…",
+      "draft": false,
+      "links": []
+    },
+    {
       "id": "training",
       "concept": "pages",
       "title": "Training",

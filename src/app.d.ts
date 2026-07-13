@@ -19,6 +19,11 @@ declare global {
           SEND_EMAIL: SendEmail;
           CONTACT_EMAIL: string;
           TURNSTILE_SECRET_KEY?: string;
+          // The registration pipeline's own bindings (registration.remote.ts). Both optional:
+          // a deploy missing the Sheets secret still records signatures, per the plan's own
+          // soft-failure design for the Sheets append step.
+          GOOGLE_SA_KEY_B64?: string;
+          REGISTRATION_SHEET_ID?: string;
         };
       context: ExecutionContext;
       caches: CacheStorage & { default: Cache };

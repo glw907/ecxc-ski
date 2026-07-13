@@ -50,6 +50,11 @@ the text already being a second, independent channel.
     homePhone: RemoteFormField<string>;
     cellPhone: RemoteFormField<string>;
     parentEmail: RemoteFormField<string>;
+    athleteEmail: RemoteFormField<string>;
+    athleteCell: RemoteFormField<string>;
+    parentCrewlabInvite: RemoteFormField<boolean>;
+    secondParentName: RemoteFormField<string>;
+    secondParentEmail: RemoteFormField<string>;
     emergencyName: RemoteFormField<string>;
     emergencyRelationship: RemoteFormField<string>;
     emergencyPhone: RemoteFormField<string>;
@@ -282,6 +287,72 @@ the text already being a second, independent channel.
           {...fields.parentEmail.as('text')}
         />
         {@render fieldError('parentEmail', fields.parentEmail)}
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">CrewLAB team app</legend>
+        <p class="fieldset-help">
+          Practice plans and schedule changes live in CrewLAB, our team app. Once your
+          registration goes through, we send the athlete's invite by email or text, whichever
+          works better.
+        </p>
+
+        <label for="athleteEmail">Athlete email</label>
+        <input
+          id="athleteEmail"
+          class="input w-full"
+          autocomplete="email"
+          aria-describedby="athleteEmail-error"
+          {...fields.athleteEmail.as('email')}
+        />
+        {@render fieldError('athleteEmail', fields.athleteEmail)}
+
+        <label for="athleteCell">Athlete cell phone</label>
+        <input
+          id="athleteCell"
+          class="input w-full"
+          autocomplete="tel"
+          aria-describedby="athleteCell-error"
+          {...fields.athleteCell.as('tel')}
+        />
+        {@render fieldError('athleteCell', fields.athleteCell)}
+
+        <label class="crewlab-consent" for="parentCrewlabInvite">
+          <input
+            id="parentCrewlabInvite"
+            class="checkbox"
+            aria-describedby="parentCrewlabInvite-error"
+            {...fields.parentCrewlabInvite.as('checkbox')}
+          />
+          Send me a parent invite too
+        </label>
+        <p class="fieldset-help">
+          Parents confirm the connection to their athlete inside the app after the invite
+          arrives.
+        </p>
+        {@render fieldError('parentCrewlabInvite', fields.parentCrewlabInvite)}
+
+        <p class="fieldset-help">Another parent or guardian who should get their own invite? Optional.</p>
+
+        <label for="secondParentName">Second parent or guardian name</label>
+        <input
+          id="secondParentName"
+          class="input w-full"
+          autocomplete="name"
+          aria-describedby="secondParentName-error"
+          {...fields.secondParentName.as('text')}
+        />
+        {@render fieldError('secondParentName', fields.secondParentName)}
+
+        <label for="secondParentEmail">Second parent or guardian email</label>
+        <input
+          id="secondParentEmail"
+          class="input w-full"
+          autocomplete="email"
+          aria-describedby="secondParentEmail-error"
+          {...fields.secondParentEmail.as('email')}
+        />
+        {@render fieldError('secondParentEmail', fields.secondParentEmail)}
       </fieldset>
 
       <fieldset class="fieldset">
@@ -631,7 +702,8 @@ the text already being a second, independent channel.
 
   .carpool-option,
   .release-option,
-  .signature-consent {
+  .signature-consent,
+  .crewlab-consent {
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
@@ -639,7 +711,8 @@ the text already being a second, independent channel.
     font-size: var(--text-step--1);
   }
 
-  .signature-help {
+  .signature-help,
+  .fieldset-help {
     font-size: var(--text-step--1);
     color: var(--color-muted);
     margin: 0 0 var(--spacing-s);

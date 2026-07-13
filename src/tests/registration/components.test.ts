@@ -13,7 +13,14 @@ function makeFieldStub(name: string) {
   return {
     as: (type: string, value?: unknown) => {
       const attrs: Record<string, unknown> = { name };
-      if (type === 'checkbox' || type === 'radio') {
+      if (type === 'checkbox') {
+        // Matches real RemoteFormField.as('checkbox') behavior (see WaiverText.svelte's own
+        // comment on the same prefix): only a boolean-coerced field carries `b:`, so a
+        // checkbox posts as `b:<name>` while a radio (a plain string picklist value) does not.
+        attrs.name = `b:${name}`;
+        attrs.type = type;
+        attrs.checked = false;
+      } else if (type === 'radio') {
         attrs.type = type;
         attrs.checked = false;
         if (value !== undefined) attrs.value = value;
@@ -106,6 +113,7 @@ describe('RegistrationForm', () => {
     for (const legend of [
       'Athlete',
       'Parent or guardian',
+      'CrewLAB team app',
       'Emergency contact',
       'Insurance',
       'Medical',
@@ -121,8 +129,20 @@ describe('RegistrationForm', () => {
   it('camp variant renders the camp logistics fieldset and the seats input', () => {
     const { body } = render(RegistrationForm, { props: { variant: 'camp' } });
 
+    expect(body).toContain('CrewLAB team app');
     expect(body).toContain('Camp logistics');
     expect(body).toContain('id="carpoolSeats"');
+  });
+
+  it('places the CrewLAB team app fieldset directly after Parent or guardian and before Emergency contact', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    const parentIndex = body.indexOf('Parent or guardian');
+    const crewlabIndex = body.indexOf('CrewLAB team app');
+    const emergencyIndex = body.indexOf('Emergency contact');
+    expect(parentIndex).toBeGreaterThan(-1);
+    expect(crewlabIndex).toBeGreaterThan(parentIndex);
+    expect(emergencyIndex).toBeGreaterThan(crewlabIndex);
   });
 
   it.each(['training', 'camp'] as const)(
@@ -167,10 +187,36 @@ describe('RegistrationForm', () => {
   it('wires each field to its own stable error id via aria-describedby', () => {
     const { body } = render(RegistrationForm, { props: { variant: 'training' } });
 
-    for (const field of ['athleteFullName', 'parentEmail', 'athleteSignature']) {
+    for (const field of [
+      'athleteFullName',
+      'parentEmail',
+      'athleteSignature',
+      'athleteEmail',
+      'athleteCell',
+      'parentCrewlabInvite',
+      'secondParentName',
+      'secondParentEmail',
+    ]) {
       expect(body).toContain(`aria-describedby="${field}-error"`);
       expect(body).toContain(`id="${field}-error"`);
     }
+  });
+
+  it('posts the parent CrewLAB invite checkbox under a b:parentCrewlabInvite name', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    expect(body).toContain('name="b:parentCrewlabInvite"');
+  });
+
+  it('does not mark either CrewLAB contact field required, since only one of the pair is needed', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    const athleteEmailInput = body.match(/<input id="athleteEmail"[^>]*>/)?.[0];
+    const athleteCellInput = body.match(/<input id="athleteCell"[^>]*>/)?.[0];
+    expect(athleteEmailInput).toBeDefined();
+    expect(athleteCellInput).toBeDefined();
+    expect(athleteEmailInput).not.toContain('required');
+    expect(athleteCellInput).not.toContain('required');
   });
 
   it('requires the athlete signature unconditionally', () => {

@@ -24,9 +24,14 @@ the corrected checklist scale) hold on the deployed site at 1440.
 (#22 closed 2026-07-13: Geoff revoked the old public join link the day the invite-only flow
 shipped):
 
-- Magic-link login and the full authed `/admin` checklist on the deployed Worker (the local
-  sandbox proves the guard but not the GitHub App round trip), then the old
-  `cairn-ecnordic-auth` D1 decommission.
+- Magic-link login and the full authed `/admin` checklist on the deployed Worker, then the old
+  `cairn-ecnordic-auth` D1 decommission. **BLOCKED by cairn engine bug #36** (2026-07-13,
+  live-diagnosed): the deployed confirm flow succeeds server-side, but `GET /admin`'s
+  immediate 307 abandons the shell's streamed GitHub token mint and the engine's module-global
+  token cache then serves that dead promise isolate-wide, hanging `/admin/posts`. The
+  rebuild-era "content-list hangs in this sandbox = environment limitation" note was this same
+  bug, misattributed. Handoff: `../cairn-cms/docs/internal/2026-07-13-admin-token-cache-poisoning.md`.
+  Unblocks by upgrading to the fixed cairn release, then running the full authed checklist.
 - Attorney review of the waiver. Delete the two CrewLAB-pass test emails (delivery itself was
   confirmed live 2026-07-13, closing the older carried check).
 

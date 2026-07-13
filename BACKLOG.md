@@ -2,6 +2,21 @@
 
 > Project issue tracker. Managed by `/log-issue`.
 
+## High
+
+- [ ] **#36** Deployed admin login hangs: cairn installation-token cache poisoning `#bug` `#ecxc` *(2026-07-13)*
+  Live-confirmed on ecxc.ski: after a successful magic-link confirm (token confirmed, session
+  created), the browser hangs forever. `GET /admin` starts the shell's streamed `pendingEntries`
+  GitHub mint, answers its 307 immediately, and workerd cancels the in-flight fetch; the
+  engine's module-global token cache then serves that dead promise to every request in the
+  isolate for 55 minutes, so `/admin/posts` never responds (tail: outcome `canceled`, near-zero
+  CPU). Also the real cause of the "content-list round trip hangs in this sandbox" note from
+  the rebuild and 0.84.1 smokes; that was engine behavior, not the sandbox. Engine bug, handed
+  to cairn-cms: `../cairn-cms/docs/internal/2026-07-13-admin-token-cache-poisoning.md`. Close by
+  upgrading to the fixed cairn release and completing the deployed-admin checklist (blocks the
+  pre-publish checklist's magic-link item). Possible interim workaround, untested: after
+  signing in, navigate directly to `/admin/posts` on a fresh isolate.
+
 ## Medium
 
 - [ ] **#33** Rate-limit the registration endpoints' parent-copy send `#improvement` `#ecxc` *(2026-07-13)*

@@ -4,7 +4,13 @@
 
 ## High
 
-- [ ] **#36** Deployed admin login hangs: cairn installation-token cache poisoning `#bug` `#ecxc` *(2026-07-13)*
+- [x] **#36** Deployed admin login hangs: cairn installation-token cache poisoning `#bug` `#ecxc` *(2026-07-13, resolved 2026-07-13)*
+  RESOLVED: cairn 0.84.2 fixes the engine (the cache stores only a resolved token, never the
+  in-flight mint promise; regression test pins the never-settling case). This site bumped to
+  ^0.84.2 and deployed (version 62ff5ce4), then probed live in the exact poisoning order with a
+  smoke session: authed `GET /admin` 307 in 0.86s, `GET /admin/posts` 200 in 0.72s (the request
+  that used to hang), repeat 200, homepage 200, smoke row deleted. Remaining human step: Geoff's
+  own magic-link click on the deployed admin, which the pre-publish checklist already carries.
   Live-confirmed on ecxc.ski: after a successful magic-link confirm (token confirmed, session
   created), the browser hangs forever. `GET /admin` starts the shell's streamed `pendingEntries`
   GitHub mint, answers its 307 immediately, and workerd cancels the in-flight fetch; the

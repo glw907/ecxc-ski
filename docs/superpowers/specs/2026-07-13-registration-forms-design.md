@@ -4,8 +4,8 @@ Date: 2026-07-13. Status: approved design, pending Geoff's spec review.
 
 ## Summary
 
-Replace the single Training page with two pages, Summer Training and Talkeetna Camp, each
-carrying its own registration form. Both forms embed the same program-wide waiver, signed
+Split the training surface into two pages, Training (summer-training focus for now, generic
+URL for future seasons) and Talkeetna Camp, each carrying its own registration form. Both forms embed the same program-wide waiver, signed
 digitally. Each submission appends a row to a private Google Sheet (the working roster),
 emails the full signed record to Geoff (the durable legal copy), and emails a confirmation
 copy to the parent. The print-styled `/waiver` page is retired; the waiver becomes
@@ -17,7 +17,7 @@ digital-only.
   copy and backlog items #21/#22 get updated to match.
 - System of record: the record email to Geoff. The Google Sheet is the roster view. No D1.
 - Sheets wiring: Google service account + Sheets API, JWT signed in the Worker.
-- Two forms, one shared waiver. Summer Training gets the lighter form; Talkeetna adds camp
+- Two forms, one shared waiver. Training gets the lighter form; Talkeetna adds camp
   logistics (dietary needs, carpool, gear notes).
 - Digital-only. No paper fallback page.
 - The forms must look like the site: design-system tokens, DaisyUI fieldsets, the section
@@ -27,20 +27,26 @@ digital-only.
 
 | Surface | Route | What it is |
 |---|---|---|
-| Summer Training | `/summer-training` | Editorial content + registration form |
+| Training | `/training` | Editorial content + registration form. The URL stays generic on purpose (Geoff, 2026-07-13): winter training or Besh Cup support can land here later without a nav or URL change. Current content focus is summer training. |
 | Talkeetna Camp | `/talkeetna` | Camp info (dates, location, logistics) + registration form |
-| Old training page | `/training` | 301 to `/summer-training` |
-| Old waiver page | `/waiver` | 301 to `/summer-training` (the general signing surface) |
+| Old waiver page | `/waiver` | 301 to `/training` (the general signing surface) |
 
-Both new routes are bespoke (like `/contact`), not plain content pages, because they carry
-live forms. Each loads its markdown page entry by slug and renders it above the form, so the
-editorial copy stays admin-editable. The waiver legal text does NOT live in markdown: it is a
-code-owned constant (a TS module), so its SHA-256 hash is stable and every change is a
-deliberate commit. Primary nav (managed in `src/theme/site.config.yaml`) drops Training and
-gains Summer Training and Talkeetna Camp. `src/content/pages/training.md` splits into
-`summer-training.md` and `talkeetna.md` through the brief-first content flow
+Both routes are bespoke (like `/contact`), not plain content pages, because they carry
+live forms; `/training` converts from a plain content page to a bespoke route. Each loads
+its markdown page entry by slug and renders it above the form, so the editorial copy stays
+admin-editable. The waiver legal text does NOT live in markdown: it is a code-owned constant
+(a TS module), so its SHA-256 hash is stable and every change is a deliberate commit.
+Primary nav (managed in `src/theme/site.config.yaml`) keeps Training and gains Talkeetna
+Camp. `src/content/pages/training.md` is rewritten with a summer-training focus and the camp
+material moves to a new `talkeetna.md`, both through the brief-first content flow
 (`content-draft`, `content-review`); briefs carry `[ASK]` markers for camp dates, location,
 and program dates. Content edits re-pin snapshots (`npx vitest run -u`).
+
+Both pages get a first-class design pass, not just working forms (Geoff, 2026-07-13): the
+page compositions follow the design pass's established anatomy (icon-led section headers,
+the framed CTA treatment, the one-token hover vocabulary), the forms use the design system's
+fieldset styling end to end, and the family polish standard applies at every viewport from
+320 to 2560.
 
 ## The forms
 
@@ -109,7 +115,7 @@ A remote function module mirroring `contact.remote.ts` (valibot schema, Turnstil
 
 1. **Google Sheets append.** Service-account JWT (RS256 via WebCrypto, the same dance as the
    GitHub App key) exchanged for an access token; `spreadsheets.values.append` to a
-   per-form tab (`Summer Training`, `Talkeetna Camp`) in one private spreadsheet. One row per
+   per-form tab (`Training`, `Talkeetna Camp`) in one private spreadsheet. One row per
    registration, columns matching the sections above.
 2. **Record email to Geoff** via the existing `SEND_EMAIL` binding (fixed destination). The
    full signed-waiver record. This is the must-succeed write: if the Sheets append failed,
@@ -139,7 +145,7 @@ beyond Geoff and any co-coach he chooses.
 - Unit tests: schema validation (both forms), record assembly, waiver hash stability, the
   failure-ordering behavior (Sheets fails, record email still sends, flagged).
 - Mocked Sheets and email bindings; no live Google calls in tests.
-- Snapshot re-pin for content changes; redirect tests for `/training` and `/waiver`.
+- Snapshot re-pin for content changes; a redirect test for `/waiver`.
 - The full gate: `npm run check` 0/0, `npm test` exit 0, `npm run build`.
 - Family responsive standard on both new pages: composed at 320 to 2560, computed-style
   contrast probes on form controls and the submit CTA.

@@ -108,6 +108,98 @@ describe('trainingSchema', () => {
   });
 });
 
+// The eight parent-group fields are individually optional at the field level, then re-required
+// one at a time by a forward check once the athlete computes as a minor (ageNow(athleteDob) <
+// 18, including the NaN-safe default for a missing/unparseable dob). '1990-01-01' is the
+// schema's own minimum accepted dob (athleteDobField's own lower-bound check), so it doubles as
+// a fixed, comfortably-adult date of birth here.
+describe('age-gated parent-guardian fields', () => {
+  const PARENT_FIELD_NAMES = [
+    'parentName',
+    'parentRelationship',
+    'address',
+    'city',
+    'state',
+    'zip',
+    'cellPhone',
+    'parentEmail',
+  ] as const;
+
+  function blankParentFields(dob: string) {
+    return {
+      ...baseFields(dob),
+      parentName: '',
+      parentRelationship: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      cellPhone: '',
+      parentEmail: '',
+      parentSignature: '',
+      parentConsent: false,
+    };
+  }
+
+  it('parses an adult submission with every parent field blank', () => {
+    const result = v.safeParse(trainingSchema, blankParentFields('1990-01-01'));
+    expect(result.success).toBe(true);
+  });
+
+  it('parses an adult camp submission with every parent field blank', () => {
+    const fields = { ...blankParentFields('1990-01-01'), dietary: '', carpool: 'self', gearNotes: '' };
+    expect(v.safeParse(campSchema, fields).success).toBe(true);
+  });
+
+  it('fails a minor submission with every parent field blank, forwarding one issue to each field', () => {
+    const result = v.safeParse(trainingSchema, blankParentFields(dobForAge(8)));
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      for (const name of PARENT_FIELD_NAMES) {
+        const forwarded = result.issues.some((issue) => issue.path?.[0]?.key === name);
+        expect(forwarded).toBe(true);
+      }
+    }
+  });
+
+  it('fails a minor camp submission with every parent field blank the same way', () => {
+    const fields = {
+      ...blankParentFields(dobForAge(8)),
+      dietary: '',
+      carpool: 'self',
+      gearNotes: '',
+    };
+    const result = v.safeParse(campSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      for (const name of PARENT_FIELD_NAMES) {
+        const forwarded = result.issues.some((issue) => issue.path?.[0]?.key === name);
+        expect(forwarded).toBe(true);
+      }
+    }
+  });
+
+  it('still rejects an adult submission with a non-blank but invalid parentEmail', () => {
+    const fields = { ...blankParentFields('1990-01-01'), parentEmail: 'not-an-email' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.issues.map((issue) => issue.message).join(' ');
+      expect(messages).toContain('Please enter a valid email address.');
+    }
+  });
+
+  it('still rejects an adult submission with a non-blank but invalid cellPhone', () => {
+    const fields = { ...blankParentFields('1990-01-01'), cellPhone: '555-1234' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.issues.map((issue) => issue.message).join(' ');
+      expect(messages).toContain('Please enter a 10-digit phone number, like 907-555-1234.');
+    }
+  });
+});
+
 // The waiver's per-section `agree_<id>` fields (built by schema.ts's own
 // `waiverAgreementFields`) only accept a real boolean, never the raw posted string a checkbox
 // sends without SvelteKit's `b:` name prefix. WaiverText.svelte's checkbox is hand-authored

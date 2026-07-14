@@ -70,7 +70,10 @@ summaries now ride that tier.)
   live-region errors), its Turnstile check went fail-closed to match registration, its
   email field lowercases, and contact messages also copy `MAIL_CC` (the var renamed from
   REGISTRATION_CC when it grew past registration), soft-fail. Amy's first live copy
-  arrives with the first real submission on either stream.
+  arrives with the first real submission on either stream. Closing item (Geoff's ask): the
+  Parent or guardian section age-gates on the athlete's DOB at 18, greyed client-side with
+  the requirement mirrored out of the schema server-side, and the record copy falling back
+  parent email → athlete email → skip.
 
 - **CrewLAB invite integration + nav grouping (2026-07-13), SHIPPED and verified live.** Spec:
   `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced

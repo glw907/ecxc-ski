@@ -263,6 +263,38 @@ describe('handleRegistration', () => {
 
     consoleError.mockRestore();
   });
+
+  // An adult athlete's record may carry a blank parent.email (the "Parent or guardian" section
+  // is optional past 18); the athlete's own CrewLAB email is the fallback recipient.
+  it("falls back to the athlete's CrewLAB email when parent.email is blank", async () => {
+    const deps = makeDeps();
+    const emailSend = vi.fn(async (_msg: unknown) => {
+      order.push('parent-copy');
+    });
+    deps.env.EMAIL = { send: emailSend };
+    const fields = { ...baseFields(), parentEmail: '', athleteEmail: 'athlete@example.com' };
+
+    const result = await handleRegistration('training', fields, deps);
+
+    expect(result).toEqual({ success: true, parentCopySent: true });
+    expect(emailSend).toHaveBeenCalledTimes(1);
+    const message = emailSend.mock.calls[0][0] as { to: string };
+    expect(message.to).toBe('athlete@example.com');
+  });
+
+  it('skips the parent copy entirely, with no send attempt, when both parent.email and the athlete CrewLAB email are blank', async () => {
+    const deps = makeDeps();
+    const emailSend = vi.fn(async (_msg: unknown) => {
+      order.push('parent-copy');
+    });
+    deps.env.EMAIL = { send: emailSend };
+    const fields = { ...baseFields(), parentEmail: '', athleteEmail: '' };
+
+    const result = await handleRegistration('training', fields, deps);
+
+    expect(result).toEqual({ success: true, parentCopySent: false });
+    expect(emailSend).not.toHaveBeenCalled();
+  });
 });
 
 describe('handleRegistration coach copy (MAIL_CC)', () => {

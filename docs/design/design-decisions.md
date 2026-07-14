@@ -56,6 +56,13 @@ skill's persistent artifacts.)
   ~350px it scrolls inside the submit card. `.site-main` carries `width: 100%` so a fixed
   descendant can never stretch the auto-sized flex item and scroll the page (the arc's
   root-cause fix for a pre-existing 9px overflow at 390).
+- **Parent section age-gates on the DOB.** An athlete whose entered date of birth computes
+  to 18+ greys out the whole "Parent or guardian" fieldset (native `disabled`, one
+  explanatory help line, typed values preserved against DOB typos) and its `required`
+  attributes drop with it, so the derived asterisks follow. The schema mirrors the gate
+  server-side (fields optional, re-required per-field for minors via forwarded checks; a
+  missing or unparseable DOB defaults to minor). The record copy falls back from the parent
+  email to the athlete's CrewLAB email, then skips.
 - **Contact form: same vocabulary, one card.** Three fields ride the identical recipe
   (card, grid, labels, asterisks, error pattern) restated at contact scale, including the
   submit button inside the single card. The recipe is deliberately copied, not extracted:

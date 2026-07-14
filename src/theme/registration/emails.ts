@@ -151,12 +151,16 @@ export async function sendRecordEmail(
 
 /**
  * Email the parent or guardian their own copy of the signed record, through cairn-cms's
- * unrestricted EMAIL binding. Throws if the binding call fails; the caller decides whether a
- * failed parent copy blocks the submission (per the plan, it does not).
+ * unrestricted EMAIL binding, to the address `to` names. Throws if the binding call fails; the
+ * caller decides whether a failed parent copy blocks the submission (per the plan, it does
+ * not). The caller also decides `to`: an adult athlete's record may carry a blank
+ * `parent.email`, in which case handler.ts falls back to the athlete's own CrewLAB email, or
+ * skips this call entirely when neither address exists.
  */
 export async function sendParentCopy(
   env: { EMAIL: { send(msg: unknown): Promise<void> } },
   record: RegistrationRecord,
+  to: string,
 ): Promise<void> {
   const subject = `Your ECXC registration: ${record.athlete.fullName}`;
   const intro =
@@ -166,7 +170,7 @@ export async function sendParentCopy(
   const text = `${intro}\n\n${recordToText(record)}`;
 
   await env.EMAIL.send({
-    to: record.parent.email,
+    to,
     from: SENDER,
     subject,
     text,

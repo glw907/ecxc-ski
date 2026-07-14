@@ -162,7 +162,7 @@ describe('sendParentCopy', () => {
   it("sends to the parent's submitted email address, from noreply@ecxc.ski", async () => {
     const send = vi.fn().mockResolvedValue(undefined);
 
-    await sendParentCopy({ EMAIL: { send } }, makeRecord('training'));
+    await sendParentCopy({ EMAIL: { send } }, makeRecord('training'), 'parent@example.com');
 
     expect(send).toHaveBeenCalledTimes(1);
     const message = send.mock.calls[0][0] as {
@@ -183,7 +183,7 @@ describe('sendParentCopy', () => {
     const send = vi.fn().mockResolvedValue(undefined);
     const record = makeRecord('camp');
 
-    await sendParentCopy({ EMAIL: { send } }, record);
+    await sendParentCopy({ EMAIL: { send } }, record, 'parent@example.com');
 
     const message = send.mock.calls[0][0] as { text: string };
     for (const header of SHEET_HEADERS.camp) {
@@ -191,9 +191,20 @@ describe('sendParentCopy', () => {
     }
   });
 
+  it('sends to the `to` address passed in, not necessarily record.parent.email', async () => {
+    const send = vi.fn().mockResolvedValue(undefined);
+
+    await sendParentCopy({ EMAIL: { send } }, makeRecord('training'), 'athlete@example.com');
+
+    const message = send.mock.calls[0][0] as { to: string };
+    expect(message.to).toBe('athlete@example.com');
+  });
+
   it('throws when the EMAIL binding rejects', async () => {
     const send = vi.fn().mockRejectedValue(new Error('quota exceeded'));
-    await expect(sendParentCopy({ EMAIL: { send } }, makeRecord('camp'))).rejects.toThrow('quota exceeded');
+    await expect(
+      sendParentCopy({ EMAIL: { send } }, makeRecord('camp'), 'parent@example.com'),
+    ).rejects.toThrow('quota exceeded');
   });
 });
 

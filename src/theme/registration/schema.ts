@@ -151,6 +151,20 @@ const CREWLAB_CONTACT_MESSAGE =
 const SECOND_PARENT_PAIR_MESSAGE =
   "Please give the second parent's name and email together, or leave both blank.";
 
+// The parent-group fields are each individually optional at the field level (below), then
+// re-required one at a time by the forward checks under each schema when the athlete computes
+// as a minor. Each message here is the exact required-field message the field carried before
+// this pass made it optional, so a minor sees the identical wording an adult skips entirely.
+const PARENT_NAME_MESSAGE = "Please enter the parent or guardian's name.";
+const PARENT_RELATIONSHIP_MESSAGE =
+  'Please enter the relationship to the athlete (for example, mother, father, guardian).';
+const PARENT_ADDRESS_MESSAGE = 'Please enter a home address.';
+const PARENT_CITY_MESSAGE = 'Please enter a city.';
+const PARENT_STATE_MESSAGE = 'Please enter a state.';
+const PARENT_ZIP_MESSAGE = 'Please enter a ZIP code.';
+const PARENT_CELL_PHONE_MESSAGE = 'Please enter a cell phone number.';
+const PARENT_EMAIL_MESSAGE = 'Please enter a valid email address.';
+
 /** True once the athlete has at least one CrewLAB contact channel, an email or a cell. */
 function hasAthleteCrewlabContact(input: { athleteEmail: string; athleteCell: string }): boolean {
   return input.athleteEmail.trim() !== '' || input.athleteCell.trim() !== '';
@@ -192,17 +206,20 @@ const waiverAgreementFields = Object.fromEntries(
 const sharedFields = {
   athleteFullName: requiredText("Please enter the athlete's full name."),
   athleteDob: athleteDobField,
-  parentName: requiredText("Please enter the parent or guardian's name."),
-  parentRelationship: requiredText(
-    'Please enter the relationship to the athlete (for example, mother, father, guardian).',
-  ),
-  address: requiredText('Please enter a home address.'),
-  city: requiredText('Please enter a city.'),
-  state: requiredText('Please enter a state.'),
-  zip: requiredText('Please enter a ZIP code.'),
+  // Individually optional: an adult athlete (18+) may submit with the whole "Parent or
+  // guardian" section blank, matching RegistrationForm.svelte's disabled fieldset. Each field
+  // is re-required for a minor by its own v.forward() check further down, reusing the exact
+  // message it carried when it was unconditionally required (see the PARENT_*_MESSAGE
+  // constants above).
+  parentName: optionalText(),
+  parentRelationship: optionalText(),
+  address: optionalText(),
+  city: optionalText(),
+  state: optionalText(),
+  zip: optionalText(),
   homePhone: optionalPhone(),
-  cellPhone: requiredPhone('Please enter a cell phone number.'),
-  parentEmail: requiredEmailField('Please enter a valid email address.'),
+  cellPhone: optionalPhone(),
+  parentEmail: optionalEmailField(PARENT_EMAIL_MESSAGE),
   // CrewLAB invite contacts: where the athlete's team-app invite goes, plus an optional
   // opt-in and second-parent pair. Cross-field requirements (at least one athlete contact;
   // the second-parent pair travels together) live in the schema pipes below, since a single
@@ -293,6 +310,47 @@ export const trainingSchema = v.pipe(
     ),
     ['parentConsent'],
   ),
+  // The parent-group fields (made individually optional above) are re-required one at a time
+  // for a minor athlete; ageNow() on a missing or unparseable dob returns NaN, and `NaN >= 18`
+  // is false, so a blank or bad athleteDob defaults to the minor branch, the safe direction.
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.parentName.trim() !== '', PARENT_NAME_MESSAGE),
+    ['parentName'],
+  ),
+  v.forward(
+    v.check(
+      (input) => ageNow(input.athleteDob) >= 18 || input.parentRelationship.trim() !== '',
+      PARENT_RELATIONSHIP_MESSAGE,
+    ),
+    ['parentRelationship'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.address.trim() !== '', PARENT_ADDRESS_MESSAGE),
+    ['address'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.city.trim() !== '', PARENT_CITY_MESSAGE),
+    ['city'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.state.trim() !== '', PARENT_STATE_MESSAGE),
+    ['state'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.zip.trim() !== '', PARENT_ZIP_MESSAGE),
+    ['zip'],
+  ),
+  v.forward(
+    v.check(
+      (input) => ageNow(input.athleteDob) >= 18 || input.cellPhone.trim() !== '',
+      PARENT_CELL_PHONE_MESSAGE,
+    ),
+    ['cellPhone'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.parentEmail.trim() !== '', PARENT_EMAIL_MESSAGE),
+    ['parentEmail'],
+  ),
   v.forward(v.check((input) => hasAthleteCrewlabContact(input), CREWLAB_CONTACT_MESSAGE), [
     'athleteEmail',
   ]),
@@ -326,6 +384,47 @@ export const campSchema = v.pipe(
       'Please tell us how many seats you can offer to other families.',
     ),
     ['carpoolSeats'],
+  ),
+  // The parent-group fields (made individually optional above) are re-required one at a time
+  // for a minor athlete; ageNow() on a missing or unparseable dob returns NaN, and `NaN >= 18`
+  // is false, so a blank or bad athleteDob defaults to the minor branch, the safe direction.
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.parentName.trim() !== '', PARENT_NAME_MESSAGE),
+    ['parentName'],
+  ),
+  v.forward(
+    v.check(
+      (input) => ageNow(input.athleteDob) >= 18 || input.parentRelationship.trim() !== '',
+      PARENT_RELATIONSHIP_MESSAGE,
+    ),
+    ['parentRelationship'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.address.trim() !== '', PARENT_ADDRESS_MESSAGE),
+    ['address'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.city.trim() !== '', PARENT_CITY_MESSAGE),
+    ['city'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.state.trim() !== '', PARENT_STATE_MESSAGE),
+    ['state'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.zip.trim() !== '', PARENT_ZIP_MESSAGE),
+    ['zip'],
+  ),
+  v.forward(
+    v.check(
+      (input) => ageNow(input.athleteDob) >= 18 || input.cellPhone.trim() !== '',
+      PARENT_CELL_PHONE_MESSAGE,
+    ),
+    ['cellPhone'],
+  ),
+  v.forward(
+    v.check((input) => ageNow(input.athleteDob) >= 18 || input.parentEmail.trim() !== '', PARENT_EMAIL_MESSAGE),
+    ['parentEmail'],
   ),
   v.forward(v.check((input) => hasAthleteCrewlabContact(input), CREWLAB_CONTACT_MESSAGE), [
     'athleteEmail',

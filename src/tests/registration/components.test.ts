@@ -228,4 +228,25 @@ describe('RegistrationForm', () => {
     expect(athleteSignatureInput).toBeDefined();
     expect(athleteSignatureInput).toContain('required');
   });
+
+  // The mocked fields.athleteDob.value() (see makeFieldStub above) always returns undefined, so
+  // this suite never exercises the adult branch of the age gate; it only proves the fieldset
+  // renders enabled, required, and legend-visible by default (no DOB posted yet), matching a
+  // first-load render.
+  it('renders the Parent or guardian fieldset enabled and required by default, with no DOB posted yet', () => {
+    const { body } = render(RegistrationForm, { props: { variant: 'training' } });
+
+    const parentIndex = body.indexOf('Parent or guardian');
+    expect(parentIndex).toBeGreaterThan(-1);
+    expect(body).not.toContain("The athlete is 18 or older, so this section isn't needed.");
+    const fieldsetStart = body.lastIndexOf('<fieldset', parentIndex);
+    const fieldsetOpenTag = body.slice(fieldsetStart, body.indexOf('>', fieldsetStart) + 1);
+    expect(fieldsetOpenTag).not.toContain('disabled');
+
+    for (const field of ['parentName', 'parentRelationship', 'address', 'city', 'state', 'zip', 'cellPhone', 'parentEmail']) {
+      const input = body.match(new RegExp(`<input id="${field}"[^>]*>`))?.[0];
+      expect(input).toBeDefined();
+      expect(input).toContain('required');
+    }
+  });
 });

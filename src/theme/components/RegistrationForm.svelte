@@ -16,6 +16,13 @@ Every input's `name` (via the field's own `.as(...)` spread) matches
 `registration/schema.ts`'s posted field names exactly, since that schema is what
 actually validates the POST body server-side.
 
+Age gate: once the athlete's date of birth computes 18 or older (a local `ageFromDob`
+mirroring schema.ts's own `ageNow` rule, recomputed from the athleteDob input's live
+value on every keystroke), the "Parent or guardian" fieldset disables and its fields'
+`required` attributes drop, matching schema.ts's own age-gated re-requirement of those
+same fields. Typed values are never cleared when the gate toggles, only the
+enabled/required state.
+
 Accessibility: the top-of-form validation summary (`role="alert"`) and the success
 confirmation (`role="status"`) are both mounted from first render (empty until they
 have something to say), so a screen reader's live-region watch is already attached
@@ -84,6 +91,32 @@ the text already being a second, independent channel.
   const action = $derived(variant === 'camp' ? registerCamp : registerTraining);
   const fields = $derived(action.fields as unknown as SharedRegistrationFields);
   const issues = $derived(action.fields.allIssues() ?? []);
+
+  // The "Parent or guardian" section disables and stops being required once the athlete is an
+  // adult, mirroring schema.ts's own age-gated re-requirement of those same fields server-side.
+  // `dobOverride` starts unset so the gate reflects a re-rendered field's own posted value
+  // (`dobDefault`) until the family actually types in the date field, at which point the
+  // oninput handler below takes over, the same pattern `carpoolOverride` uses above.
+  let dobOverride = $state<string | undefined>(undefined);
+  const dobDefault = $derived(fields.athleteDob.value() ?? '');
+
+  /** Age in whole years today; mirrors schema.ts's own `ageNow`/`ageInYears` rule. An
+   *  unparseable or missing dob computes NaN, and `NaN >= 18` is false, so a blank or bad date
+   *  defaults to minor (the parent section stays required), the safe direction. */
+  function ageFromDob(dobIso: string): number {
+    const dob = new Date(dobIso);
+    const now = new Date();
+    let years = now.getUTCFullYear() - dob.getUTCFullYear();
+    const monthDiff = now.getUTCMonth() - dob.getUTCMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && now.getUTCDate() < dob.getUTCDate())) years -= 1;
+    return years;
+  }
+
+  const athleteIsAdult = $derived(ageFromDob(dobOverride ?? dobDefault) >= 18);
+
+  function handleDobInput(event: Event) {
+    dobOverride = (event.target as HTMLInputElement).value;
+  }
 
   // Carpool seats only show and only require a value once a family picks "can drive"; that
   // choice is knowable purely from the radio group itself, unlike the waiver's age-gated
@@ -219,13 +252,17 @@ the text already being a second, independent channel.
             required
             aria-describedby="athleteDob-error"
             {...fields.athleteDob.as('date')}
+            oninput={handleDobInput}
           />
           {@render fieldError('athleteDob', fields.athleteDob)}
         </div>
       </fieldset>
 
-      <fieldset class="fieldset">
+      <fieldset class="fieldset" disabled={athleteIsAdult}>
         <legend class="fieldset-legend">Parent or guardian</legend>
+        {#if athleteIsAdult}
+          <p class="fieldset-help">The athlete is 18 or older, so this section isn't needed.</p>
+        {/if}
 
         <div class="field f-6">
           <label for="parentName">Full name</label>
@@ -233,7 +270,7 @@ the text already being a second, independent channel.
             id="parentName"
             class="input w-full"
             autocomplete="name"
-            required
+            required={!athleteIsAdult}
             aria-describedby="parentName-error"
             {...fields.parentName.as('text')}
           />
@@ -246,7 +283,7 @@ the text already being a second, independent channel.
             id="parentRelationship"
             class="input w-full"
             placeholder="Mother, father, guardian…"
-            required
+            required={!athleteIsAdult}
             aria-describedby="parentRelationship-error"
             {...fields.parentRelationship.as('text')}
           />
@@ -259,7 +296,7 @@ the text already being a second, independent channel.
             id="address"
             class="input w-full"
             autocomplete="street-address"
-            required
+            required={!athleteIsAdult}
             aria-describedby="address-error"
             {...fields.address.as('text')}
           />
@@ -272,7 +309,7 @@ the text already being a second, independent channel.
             id="city"
             class="input w-full"
             autocomplete="address-level2"
-            required
+            required={!athleteIsAdult}
             aria-describedby="city-error"
             {...fields.city.as('text')}
           />
@@ -285,7 +322,7 @@ the text already being a second, independent channel.
             id="state"
             class="input w-full"
             autocomplete="address-level1"
-            required
+            required={!athleteIsAdult}
             aria-describedby="state-error"
             {...fields.state.as('text')}
           />
@@ -299,7 +336,7 @@ the text already being a second, independent channel.
             class="input w-full"
             autocomplete="postal-code"
             inputmode="numeric"
-            required
+            required={!athleteIsAdult}
             aria-describedby="zip-error"
             {...fields.zip.as('text')}
           />
@@ -326,7 +363,7 @@ the text already being a second, independent channel.
             type="tel"
             class="input w-full"
             autocomplete="mobile tel"
-            required
+            required={!athleteIsAdult}
             aria-describedby="cellPhone-error"
             {...fields.cellPhone.as('text')}
           />
@@ -340,7 +377,7 @@ the text already being a second, independent channel.
             type="email"
             class="input w-full"
             autocomplete="email"
-            required
+            required={!athleteIsAdult}
             aria-describedby="parentEmail-error"
             {...fields.parentEmail.as('text')}
           />

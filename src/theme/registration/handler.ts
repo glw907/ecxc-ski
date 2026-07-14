@@ -130,9 +130,13 @@ async function verifyTurnstile(token: string, ip: string, secret: string): Promi
  * rejects before anything is recorded. A Sheets append failure (including the Sheets env simply
  * being unset) never fails the submission; its error rides along in the record email as a
  * flagged block instead. A record-email failure does fail the submission, since that email is
- * the pipeline's must-succeed step. A parent-copy failure only shows up in the return value. The
- * coach copy to `MAIL_CC` is an ops concern only: its failure is logged and otherwise
- * invisible, never surfaced in the return value or the submitter's experience.
+ * the pipeline's must-succeed step. A parent-copy failure only shows up in the return value; an
+ * adult athlete's record may carry a blank `parent.email` (the "Parent or guardian" section is
+ * optional past 18), so the parent copy targets that address, falls back to the athlete's own
+ * CrewLAB email when it is blank, and is skipped entirely (never attempted, `parentCopySent:
+ * false`) when neither address exists. The coach copy to `MAIL_CC` is an ops concern only: its
+ * failure is logged and otherwise invisible, never surfaced in the return value or the
+ * submitter's experience.
  */
 export function handleRegistration(
   kind: 'training',
@@ -202,10 +206,14 @@ export async function handleRegistration(
     invalid(RECORD_EMAIL_FAILURE_MESSAGE);
   }
 
+  // An adult athlete's record may carry a blank parent.email; the athlete's own CrewLAB email
+  // is the fallback recipient, and a blank pair skips the send outright (not a failure worth
+  // logging, just nobody to mail).
   let parentCopySent = false;
-  if (env.EMAIL) {
+  const parentCopyTo = record.parent.email || record.crewlab.athleteEmail;
+  if (env.EMAIL && parentCopyTo) {
     try {
-      await sendParentCopy({ EMAIL: env.EMAIL }, record);
+      await sendParentCopy({ EMAIL: env.EMAIL }, record, parentCopyTo);
       parentCopySent = true;
     } catch (error) {
       console.error('registration parent copy failed', error);

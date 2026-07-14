@@ -3,6 +3,11 @@ description: "East Community Cross Country: year-round training for high school 
 author: ECXC
 locale: en-US
 
+# Tidy, the editor's reviewed AI copy-edit (defaults: claude-sonnet-4-6, objective fixes on,
+# style tier off). Needs ANTHROPIC_API_KEY on the worker; sync.sh routes it.
+tidy:
+  enabled: true
+
 # The curated tag vocabulary ({value,label}): value is the frozen frontmatter token every
 # post carries (formerly settings.postTags, the fixed options list on the tags field), label
 # is the editable display name the admin and any tag-filter UI show.

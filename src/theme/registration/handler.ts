@@ -6,7 +6,7 @@ import { invalid } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
 import { buildRecord, campSchema, toRowValues, trainingSchema, type FormKind } from './schema';
 import { appendRegistrationRow } from './sheets';
-import { sendParentCopy, sendRecordEmail } from './emails';
+import { sendParentCopy, sendRecordCopy, sendRecordEmail } from './emails';
 import { WAIVER_HASH } from '../waiver/waiver';
 
 /** The tab a submission's row lands in, per the plan's own sheet layout. */
@@ -92,6 +92,8 @@ export interface RegistrationEnv {
   CONTACT_EMAIL?: string;
   SEND_EMAIL?: SendCapable;
   EMAIL?: SendCapable;
+  /** Amy's address, cc'd a soft-fail copy of every registration record; unset in dev. */
+  REGISTRATION_CC?: string;
 }
 
 /**
@@ -120,14 +122,16 @@ async function verifyTurnstile(token: string, ip: string, secret: string): Promi
 
 /**
  * Run the registration pipeline for one validated submission: verify Turnstile, assemble the
- * record, append the Sheets row (soft failure), email the record to Geoff (must succeed), then
- * email the parent their copy (soft failure).
+ * record, append the Sheets row (soft failure), email the record to Geoff (must succeed), email
+ * the parent their copy (soft failure), then email Amy her coach copy (soft failure).
  *
  * Order and failure semantics, per the plan: a Turnstile failure or a missing mail binding
  * rejects before anything is recorded. A Sheets append failure (including the Sheets env simply
  * being unset) never fails the submission; its error rides along in the record email as a
  * flagged block instead. A record-email failure does fail the submission, since that email is
- * the pipeline's must-succeed step. A parent-copy failure only shows up in the return value.
+ * the pipeline's must-succeed step. A parent-copy failure only shows up in the return value. The
+ * coach copy to `REGISTRATION_CC` is an ops concern only: its failure is logged and otherwise
+ * invisible, never surfaced in the return value or the submitter's experience.
  */
 export function handleRegistration(
   kind: 'training',
@@ -208,6 +212,14 @@ export async function handleRegistration(
     }
   }
 
+  if (env.REGISTRATION_CC && env.EMAIL) {
+    try {
+      await sendRecordCopy({ EMAIL: env.EMAIL }, env.REGISTRATION_CC, record);
+    } catch (error) {
+      console.error('registration coach copy failed', error);
+    }
+  }
+
   return { success: true, parentCopySent };
 }
 
@@ -234,6 +246,7 @@ export function buildDeps(): RegistrationDeps {
       CONTACT_EMAIL: env?.CONTACT_EMAIL,
       SEND_EMAIL: toSendCapable(env?.SEND_EMAIL),
       EMAIL: toSendCapable(env?.EMAIL),
+      REGISTRATION_CC: env?.REGISTRATION_CC,
     },
     ip: getClientAddress(),
     userAgent: request.headers.get('user-agent') ?? '',

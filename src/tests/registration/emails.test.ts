@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { sendParentCopy, sendRecordEmail } from '$theme/registration/emails';
+import { sendParentCopy, sendRecordCopy, sendRecordEmail } from '$theme/registration/emails';
 import { SHEET_HEADERS, type RegistrationRecord } from '$theme/registration/schema';
 
 /** One `EmailMessage(from, to, raw)` construction, captured by the `cloudflare:email` mock. */
@@ -194,5 +194,47 @@ describe('sendParentCopy', () => {
   it('throws when the EMAIL binding rejects', async () => {
     const send = vi.fn().mockRejectedValue(new Error('quota exceeded'));
     await expect(sendParentCopy({ EMAIL: { send } }, makeRecord('camp'))).rejects.toThrow('quota exceeded');
+  });
+});
+
+describe('sendRecordCopy', () => {
+  it('sends the record to the given address with the registration subject', async () => {
+    const send = vi.fn().mockResolvedValue(undefined);
+
+    await sendRecordCopy({ EMAIL: { send } }, 'amyenkhee@gmail.com', makeRecord('training'));
+
+    expect(send).toHaveBeenCalledTimes(1);
+    const message = send.mock.calls[0][0] as {
+      to: string;
+      from: string;
+      subject: string;
+      text: string;
+      html: string;
+    };
+    expect(message.to).toBe('amyenkhee@gmail.com');
+    expect(message.from).toBe('noreply@ecxc.ski');
+    expect(message.subject).toBe('Registration: Alice Athlete (Training)');
+    expect(message.text).toContain('Alice Athlete');
+    expect(message.text).toContain('deadbeef');
+    expect(message.text).not.toContain('SHEETS APPEND FAILED');
+  });
+
+  it('labels a camp submission with the camp subject', async () => {
+    const send = vi.fn().mockResolvedValue(undefined);
+
+    await sendRecordCopy({ EMAIL: { send } }, 'amyenkhee@gmail.com', makeRecord('camp'));
+
+    const message = send.mock.calls[0][0] as { subject: string; text: string };
+    expect(message.subject).toBe('Registration: Alice Athlete (Talkeetna Camp)');
+    for (const header of SHEET_HEADERS.camp) {
+      expect(message.text).toContain(header);
+    }
+  });
+
+  it('throws when the EMAIL binding rejects', async () => {
+    const send = vi.fn().mockRejectedValue(new Error('quota exceeded'));
+    await expect(
+      sendRecordCopy({ EMAIL: { send } }, 'amyenkhee@gmail.com', makeRecord('training')),
+    ).rejects.toThrow('quota exceeded');
   });
 });

@@ -245,6 +245,113 @@ describe('campSchema', () => {
   });
 });
 
+describe('phone normalization', () => {
+  const PHONE_FORMAT_MESSAGE = 'Please enter a 10-digit phone number, like 907-555-1234.';
+
+  it.each(['(907) 555-1234', '907.555.1234', '+1 907 555 1234', '19075551234'])(
+    'normalizes %s to the canonical XXX-XXX-XXXX form',
+    (raw) => {
+      const fields = { ...baseFields(dobForAge(18)), cellPhone: raw };
+      const result = v.safeParse(trainingSchema, fields);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect((result.output as { cellPhone: string }).cellPhone).toBe('907-555-1234');
+      }
+    },
+  );
+
+  it.each(['call me', '555-1234', '90755512345'])(
+    'rejects %s with the phone format message',
+    (raw) => {
+      const fields = { ...baseFields(dobForAge(18)), cellPhone: raw };
+      const result = v.safeParse(trainingSchema, fields);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const messages = result.issues.map((issue) => issue.message).join(' ');
+        expect(messages).toContain(PHONE_FORMAT_MESSAGE);
+      }
+    },
+  );
+
+  it('passes an optional phone left blank, parsing it to an empty string', () => {
+    const fields = { ...baseFields(dobForAge(18)), homePhone: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { homePhone: string }).homePhone).toBe('');
+    }
+  });
+
+  it('rejects an invalid, non-blank optional phone', () => {
+    const fields = { ...baseFields(dobForAge(18)), homePhone: '555-1234' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.issues.map((issue) => issue.message).join(' ');
+      expect(messages).toContain(PHONE_FORMAT_MESSAGE);
+    }
+  });
+
+  it('normalizes a valid, non-blank optional phone the same as a required one', () => {
+    const fields = { ...baseFields(dobForAge(18)), homePhone: '(907) 555-9876' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { homePhone: string }).homePhone).toBe('907-555-9876');
+    }
+  });
+});
+
+describe('email normalization', () => {
+  it('lowercases a required parent email', () => {
+    const fields = { ...baseFields(dobForAge(18)), parentEmail: 'Geoff.Wright@EXAMPLE.com' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { parentEmail: string }).parentEmail).toBe(
+        'geoff.wright@example.com',
+      );
+    }
+  });
+
+  it('lowercases an optional email field, like the athlete email', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: 'Geoff.Wright@EXAMPLE.com' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { athleteEmail: string }).athleteEmail).toBe(
+        'geoff.wright@example.com',
+      );
+    }
+  });
+
+  it('still parses a blank optional email to an empty string', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteCell: '907-555-0199', athleteEmail: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { athleteEmail: string }).athleteEmail).toBe('');
+    }
+  });
+});
+
+describe('CrewLAB either-contact rule after phone normalization', () => {
+  it('passes with only a valid athlete cell, normalized to canonical form', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: '', athleteCell: '(907) 555-0199' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect((result.output as { athleteCell: string }).athleteCell).toBe('907-555-0199');
+    }
+  });
+
+  it('still fails when both athlete contacts are blank', () => {
+    const fields = { ...baseFields(dobForAge(18)), athleteEmail: '', athleteCell: '' };
+    const result = v.safeParse(trainingSchema, fields);
+    expect(result.success).toBe(false);
+  });
+});
+
 const META = {
   ip: '203.0.113.5',
   userAgent: 'vitest-agent/1.0',

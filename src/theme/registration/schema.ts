@@ -55,11 +55,58 @@ function optionalText() {
   return v.optional(v.pipe(v.string(), v.trim()), '');
 }
 
+/** A required email field: trimmed, lowercased, and checked as a valid address. */
+function requiredEmailField(message: string) {
+  return v.pipe(v.string(), v.trim(), v.toLowerCase(), v.email(message));
+}
+
 /** An optional email field: blank passes, but a non-blank value must be a valid address. */
 function optionalEmailField(message: string) {
   return v.pipe(
-    v.optional(v.pipe(v.string(), v.trim()), ''),
+    v.optional(v.pipe(v.string(), v.trim(), v.toLowerCase()), ''),
     v.check((value) => value === '' || v.EMAIL_REGEX.test(value), message),
+  );
+}
+
+const PHONE_FORMAT_MESSAGE = 'Please enter a 10-digit phone number, like 907-555-1234.';
+
+/**
+ * Strips every non-digit from a phone string, then drops a redundant leading US country code:
+ * an 11-digit result starting with `1` collapses to the 10 digits that follow it.
+ */
+function phoneDigits(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+}
+
+/** True iff a phone string's digits normalize to exactly 10, the only length this schema accepts. */
+function isValidPhone(value: string): boolean {
+  return phoneDigits(value).length === 10;
+}
+
+/** A validated phone string in canonical `XXX-XXX-XXXX` form. */
+function canonicalPhone(value: string): string {
+  const digits = phoneDigits(value);
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+/** A required phone field: trimmed, checked as a 10-digit number, then normalized to `XXX-XXX-XXXX`. */
+function requiredPhone(requiredMessage: string) {
+  return v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty(requiredMessage),
+    v.check(isValidPhone, PHONE_FORMAT_MESSAGE),
+    v.transform(canonicalPhone),
+  );
+}
+
+/** An optional phone field: an absent or blank submission parses to `''`; a non-blank value must be a valid 10-digit number, normalized to `XXX-XXX-XXXX`. */
+function optionalPhone() {
+  return v.pipe(
+    v.optional(v.pipe(v.string(), v.trim()), ''),
+    v.check((value) => value === '' || isValidPhone(value), PHONE_FORMAT_MESSAGE),
+    v.transform((value) => (value === '' ? '' : canonicalPhone(value))),
   );
 }
 
@@ -153,9 +200,9 @@ const sharedFields = {
   city: requiredText('Please enter a city.'),
   state: requiredText('Please enter a state.'),
   zip: requiredText('Please enter a ZIP code.'),
-  homePhone: optionalText(),
-  cellPhone: requiredText('Please enter a cell phone number.'),
-  parentEmail: v.pipe(v.string(), v.trim(), v.email('Please enter a valid email address.')),
+  homePhone: optionalPhone(),
+  cellPhone: requiredPhone('Please enter a cell phone number.'),
+  parentEmail: requiredEmailField('Please enter a valid email address.'),
   // CrewLAB invite contacts: where the athlete's team-app invite goes, plus an optional
   // opt-in and second-parent pair. Cross-field requirements (at least one athlete contact;
   // the second-parent pair travels together) live in the schema pipes below, since a single
@@ -163,7 +210,7 @@ const sharedFields = {
   athleteEmail: optionalEmailField(
     'Please enter a valid email address for the athlete, or leave it blank.',
   ),
-  athleteCell: optionalText(),
+  athleteCell: optionalPhone(),
   parentCrewlabInvite: v.optional(v.boolean(), false),
   secondParentName: optionalText(),
   secondParentEmail: optionalEmailField(
@@ -173,7 +220,7 @@ const sharedFields = {
   emergencyRelationship: requiredText(
     "Please enter the emergency contact's relationship to the athlete.",
   ),
-  emergencyPhone: requiredText("Please enter the emergency contact's phone number."),
+  emergencyPhone: requiredPhone("Please enter the emergency contact's phone number."),
   emergencyEmail: optionalEmailField(
     'Please enter a valid email address for the emergency contact, or leave it blank.',
   ),
@@ -181,7 +228,7 @@ const sharedFields = {
   policyNumber: requiredText('Please enter the insurance policy number.'),
   groupNumber: optionalText(),
   physicianName: optionalText(),
-  physicianPhone: optionalText(),
+  physicianPhone: optionalPhone(),
   medications: requiredText('Please list current medications, or enter "none".'),
   allergies: requiredText('Please list allergies, or enter "none".'),
   conditions: requiredText('Please list any relevant medical conditions, or enter "none".'),

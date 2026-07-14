@@ -265,6 +265,77 @@ describe('handleRegistration', () => {
   });
 });
 
+describe('handleRegistration coach copy (REGISTRATION_CC)', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  function makeDeps(overrides: Partial<RegistrationEnv> = {}): RegistrationDeps {
+    return {
+      env: {
+        TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
+        CONTACT_EMAIL: 'coach@ecxc.ski',
+        SEND_EMAIL: { send: vi.fn(async () => undefined) },
+        EMAIL: { send: vi.fn(async () => undefined) },
+        ...overrides,
+      },
+      ip: '203.0.113.5',
+      userAgent: 'test-agent/1.0',
+      now: () => '2026-07-13T12:00:00.000Z',
+    };
+  }
+
+  beforeEach(() => {
+    captured = [];
+    fetchMock = vi.fn(async (url: string) => {
+      if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  it('sends a coach copy to REGISTRATION_CC through EMAIL when set', async () => {
+    const emailSend = vi.fn(async (msg: { to: string; subject: string; text: string }) => {
+      void msg;
+    });
+    const deps = makeDeps({ REGISTRATION_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
+
+    const result = await handleRegistration('training', baseFields(), deps);
+
+    expect(result).toEqual({ success: true, parentCopySent: true });
+    const coachCall = emailSend.mock.calls.find(([msg]) => msg.to === 'amyenkhee@gmail.com');
+    expect(coachCall).toBeDefined();
+    const message = coachCall?.[0];
+    expect(message?.subject).toBe('Registration: Riley Athlete (Training)');
+    expect(message?.text).toContain('Riley Athlete');
+  });
+
+  it('still returns success when the coach copy send throws, and logs it', async () => {
+    const emailSend = vi.fn(async (msg: { to: string }) => {
+      if (msg.to === 'amyenkhee@gmail.com') throw new Error('coach inbox full');
+    });
+    const deps = makeDeps({ REGISTRATION_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const result = await handleRegistration('training', baseFields(), deps);
+
+    expect(result).toEqual({ success: true, parentCopySent: true });
+    expect(consoleError).toHaveBeenCalledWith('registration coach copy failed', expect.any(Error));
+
+    consoleError.mockRestore();
+  });
+
+  it('sends no coach copy when REGISTRATION_CC is unset', async () => {
+    const emailSend = vi.fn(async () => undefined);
+    const deps = makeDeps({ EMAIL: { send: emailSend } });
+
+    const result = await handleRegistration('training', baseFields(), deps);
+
+    expect(result).toEqual({ success: true, parentCopySent: true });
+    expect(emailSend).toHaveBeenCalledTimes(1); // the parent copy only
+  });
+});
+
 describe('handleRegistration Turnstile enforcement', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 

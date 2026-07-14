@@ -24,6 +24,8 @@ declare global {
           // soft-failure design for the Sheets append step.
           GOOGLE_SA_KEY_B64?: string;
           REGISTRATION_SHEET_ID?: string;
+          // Committed wrangler.toml var: the coach copy of every registration record.
+          REGISTRATION_CC?: string;
         };
       context: ExecutionContext;
       caches: CacheStorage & { default: Cache };

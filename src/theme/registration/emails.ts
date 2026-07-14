@@ -112,6 +112,11 @@ function textToHtml(text: string): string {
   return `<pre>${escapeHtml(text)}</pre>`;
 }
 
+/** The subject line the record email and any staff copy share, so the two cannot drift apart. */
+function recordSubject(record: RegistrationRecord): string {
+  return `Registration: ${record.athlete.fullName} (${FORM_KIND_LABEL[record.kind]})`;
+}
+
 /**
  * Email the complete signed record to Geoff, the system of record for a registration. Sent
  * through the SEND_EMAIL binding, the same fixed-destination mechanism contact.remote.ts uses.
@@ -125,7 +130,7 @@ export async function sendRecordEmail(
   record: RegistrationRecord,
   opts: { sheetsError?: string },
 ): Promise<void> {
-  const subject = `Registration: ${record.athlete.fullName} (${FORM_KIND_LABEL[record.kind]})`;
+  const subject = recordSubject(record);
   const parts: string[] = [];
   if (opts.sheetsError) {
     parts.push(`*** SHEETS APPEND FAILED, back-fill this row by hand ***\n${opts.sheetsError}`);
@@ -161,6 +166,30 @@ export async function sendParentCopy(
 
   await env.EMAIL.send({
     to: record.parent.email,
+    from: SENDER,
+    subject,
+    text,
+    html: textToHtml(text),
+  });
+}
+
+/**
+ * Email the complete record to an additional coach or staff recipient (Amy, who runs camp),
+ * through cairn-cms's unrestricted EMAIL binding. Carries the same subject and body as
+ * `sendRecordEmail` sent to Geoff, with no sheets-failure block, since this copy is a
+ * convenience, not the durable legal record. Throws if the binding call fails; the caller
+ * decides whether a failed coach copy blocks the submission (per the plan, it does not).
+ */
+export async function sendRecordCopy(
+  env: { EMAIL: { send(msg: unknown): Promise<void> } },
+  to: string,
+  record: RegistrationRecord,
+): Promise<void> {
+  const subject = recordSubject(record);
+  const text = recordToText(record);
+
+  await env.EMAIL.send({
+    to,
     from: SENDER,
     subject,
     text,

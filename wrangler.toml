@@ -50,6 +50,8 @@ PUBLIC_ORIGIN = "https://ecxc.ski"
 # The registration roster spreadsheet (Geoff's, shared to the ecxc-sheets service account
 # whose key is the GOOGLE_SA_KEY_B64 secret). Tabs: "Training" and "Talkeetna Camp".
 REGISTRATION_SHEET_ID = "1WUpt5DpYdnOw1umPJeDRnbqWVWW5_55Mqf2H_yHomKM"
+# Amy runs camp; she gets a soft-fail copy of every registration record alongside Geoff's.
+REGISTRATION_CC = "amyenkhee@gmail.com"
 
 [[routes]]
 pattern = "ecxc.ski"

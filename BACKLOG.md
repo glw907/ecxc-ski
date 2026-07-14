@@ -25,17 +25,14 @@
 
 ## Medium
 
-- [ ] **#37** Finish the Resend cutover: verify ecxc.ski in Resend, put the secret, live e2e, drop the CF path `#improvement` `#ecxc` *(2026-07-14)*
-  The 2026-07-14 morning outage (Cloudflare Email Service's account daily sending quota, hit at
-  ~15 total sends because a new sending account starts with a tiny reputation-based cap) drove a
-  transitional dual-transport email layer: every send path (registration record/parent/coach,
-  contact + Amy copy, cairn magic links) prefers Resend when the `RESEND_API_KEY` Worker secret
-  exists and falls back to the CF bindings when it does not. Blocked on the Resend side: the free
-  plan's one domain slot holds aksailingclub.org (Geoff investigating; a separate free Resend
-  account for ecxc would also isolate sending reputation). To close: add ecxc.ski in Resend, add
-  its DKIM/SPF DNS records to the zone, verify, `secret-set.sh`/`sync.sh --worker ecxc` the key
-  per the workstation flow, run the live e2e runbook (`docs/registration-e2e.md`), then strip the
-  CF fallback and the two `[[send_email]]` bindings in a cleanup pass (#35 dies with them).
+- [ ] **#37** Strip the CF email fallback now the Resend cutover is live `#improvement` `#ecxc` *(2026-07-14, cutover done 2026-07-14)*
+  The cutover itself is DONE and live-proven (see STATUS 2026-07-14): ecxc.ski verified in
+  Resend (auto-configured DNS), `RESEND_API_KEY` on the Worker via `sync.sh --worker ecxc`,
+  camp e2e SUCCESS twice with SHEET VERIFY PASS and zero send errors, the missed parent copy
+  resent and `delivered`. What remains is the cleanup pass: strip the CF fallback branches from
+  `src/theme/email-transport.ts`/`buildDeps`/contact/magic-link seams, drop both
+  `[[send_email]]` bindings from wrangler.toml, and close #35 with it (that binding gap dies
+  with the binding). Keep `mimetext` only if anything still needs it (nothing should).
 - [ ] **#38** Reset the Turnstile widget after a failed submission `#bug` `#ecxc` *(2026-07-14)*
   A Turnstile token is single-use: when a submission fails server-side after `siteverify` has
   consumed the token (the 2026-07-14 case: the record email failed on the mail quota), every

@@ -20,16 +20,17 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**Email cutover to Resend (backlog #37), blocked on the Resend domain slot.** The 2026-07-14
-morning mail outage (below) drove a transitional dual-transport layer, deployed: every send
-prefers Resend once the `RESEND_API_KEY` Worker secret exists, and runs the old Cloudflare
-bindings until then. Geoff is resolving the Resend side (the free plan's one domain slot holds
-aksailingclub.org). Then: add ecxc.ski in Resend, add its DNS records, verify,
-`sync.sh --worker ecxc` the key, live e2e per `docs/registration-e2e.md`, and a cleanup pass
-drops the CF path (#35 dies with it). Also open: #38 (Turnstile widget reset after a failed
-submission, the bug that amplified the outage into a member-visible retry loop), and a one-off
-parent-copy resend to the 2026-07-14 camp registrant is armed to fire as soon as any transport
-accepts it.
+**Resend cutover COMPLETE (2026-07-14, same day as the outage below).** Geoff freed the Resend
+domain slot (aksailingclub.org off the account) and added ecxc.ski; auto-configure planted the
+DNS, the domain verified, `sync.sh --worker ecxc` put `RESEND_API_KEY` (routing + registry
+updated in dotfiles), and all outbound ecxc mail now rides Resend. Live-proven: camp e2e ran
+twice against production, `RESULT: SUCCESS` + `SHEET VERIFY: PASS` both times, zero Worker send
+errors in the window (the CF path was still quota-dead, so success itself proves the transport),
+test rows deleted, Turnstile secret rotated back. The 2026-07-14 registrant's missed parent copy
+was resent through Resend and confirmed `delivered`. Residue: the cleanup pass that strips the
+CF fallback + both `[[send_email]]` bindings (#37, #35 dies with it), and #38 (Turnstile widget
+reset after a failed submission, the bug that amplified the outage into a member-visible retry
+loop).
 
 What else remains is Geoff's own, from the pre-publish checklist below
 (#22 closed 2026-07-13: Geoff revoked the old public join link the day the invite-only flow

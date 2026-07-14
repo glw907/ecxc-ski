@@ -19,6 +19,10 @@ declare global {
           SEND_EMAIL: SendEmail;
           CONTACT_EMAIL: string;
           TURNSTILE_SECRET_KEY?: string;
+          // Transitional dual-transport email (src/theme/email-transport.ts): when set, every
+          // send seam (registration, contact, magic links) prefers Resend over the Cloudflare
+          // bindings above. Unset until the Resend sending domain is verified.
+          RESEND_API_KEY?: string;
           // The registration pipeline's own bindings (registration.remote.ts). Both optional:
           // a deploy missing the Sheets secret still records signatures, per the plan's own
           // soft-failure design for the Sheets append step.

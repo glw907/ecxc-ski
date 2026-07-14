@@ -16,14 +16,17 @@ directory = ".svelte-kit/cloudflare"
 binding = "ASSETS"
 not_found_handling = "none"
 
-# The contact form's destination (wired in a later task). destination_address stays the current
-# ecxc.ski domain, not the pre-rename ecnordic.ski address main still carried.
+# The contact form's destination. destination_address stays the current ecxc.ski domain, not the
+# pre-rename ecnordic.ski address main still carried. Transitional (src/theme/email-transport.ts):
+# every send seam prefers Resend over this binding once the RESEND_API_KEY secret is set; both
+# bindings on this page stay in place as the fallback until the Resend sending domain is verified.
 [[send_email]]
 name = "SEND_EMAIL"
 destination_address = "contact@ecxc.ski"
 
-# cairn-cms: unrestricted Email Sending binding for magic links (arbitrary recipients).
-# remote = true so `wrangler dev` sends real mail.
+# cairn-cms: unrestricted Email Sending binding for magic links (arbitrary recipients), and the
+# registration/contact soft-fail copies. remote = true so `wrangler dev` sends real mail. Same
+# transitional note as SEND_EMAIL above: the Resend-first selection falls back to this binding.
 [[send_email]]
 name = "EMAIL"
 remote = true

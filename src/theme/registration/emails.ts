@@ -1,13 +1,8 @@
-// The two outbound registration emails, both built from one RegistrationRecord so the record
-// email (to Geoff, the durable legal copy) and the parent copy can never drift apart. The
-// record email reuses contact.remote.ts's exact send mechanism: SEND_EMAIL is a
-// destination-address-restricted Email Sending binding, so it needs a hand-built MIME message
-// via `mimetext` plus the ambient `cloudflare:email` module's `EmailMessage` class. The parent
-// copy goes through cairn-cms's own EMAIL binding instead, an unrestricted Email Sending
-// binding that cairn's own magic-link sender (dist/email.js's `cloudflareSend`) calls with a
-// plain `{ to, from, subject, html, text }` object, not an `EmailMessage` instance; this module
-// follows that same shape rather than the wrangler.toml comment's own gloss on it.
-import { createMimeMessage } from 'mimetext';
+// The three outbound registration emails, all built from one RegistrationRecord so the record
+// email (to Geoff, the durable legal copy), the parent copy, and the coach copy can never drift
+// apart. All three build a plain email-transport.ts `OutboundMessage` and hand it to the caller's
+// chosen transport (email-transport.ts's `cfSendEmailSender`, `cfEmailSender`, or `resendSender`,
+// selected in handler.ts's `buildDeps`); this module owns none of the wire format, only content.
 import {
   CREWLAB_HEADERS,
   SHEET_HEADERS,
@@ -15,6 +10,7 @@ import {
   type FormKind,
   type RegistrationRecord,
 } from './schema';
+import type { SendCapable } from '../email-transport';
 
 const SENDER = 'noreply@ecxc.ski';
 const SENDER_NAME = 'ECXC Registration';
@@ -102,7 +98,7 @@ function recordToText(record: RegistrationRecord): string {
   return sections.join('\n\n');
 }
 
-/** Escape the four HTML-significant characters `mimetext` and `cloudflare:email` never touch. */
+/** Escape the four HTML-significant characters no transport auto-escapes for us. */
 function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -120,14 +116,13 @@ function recordSubject(record: RegistrationRecord): string {
 
 /**
  * Email the complete signed record to Geoff, the system of record for a registration. Sent
- * through the SEND_EMAIL binding, the same fixed-destination mechanism contact.remote.ts uses.
- * When `opts.sheetsError` is set, the body opens with a flagged block naming the failure so
- * Geoff can back-fill the roster row by hand; the signature was still captured. Throws if the
- * binding is missing or the send itself fails, since this is the must-succeed step of the
- * pipeline.
+ * through the SEND_EMAIL transport, the same must-succeed mechanism contact.remote.ts uses. When
+ * `opts.sheetsError` is set, the body opens with a flagged block naming the failure so Geoff can
+ * back-fill the roster row by hand; the signature was still captured. Throws if the transport is
+ * missing or the send itself fails, since this is the must-succeed step of the pipeline.
  */
 export async function sendRecordEmail(
-  env: { CONTACT_EMAIL: string; SEND_EMAIL: { send(msg: unknown): Promise<void> } },
+  env: { CONTACT_EMAIL: string; SEND_EMAIL: SendCapable },
   record: RegistrationRecord,
   opts: { sheetsError?: string },
 ): Promise<void> {
@@ -139,26 +134,25 @@ export async function sendRecordEmail(
   parts.push(recordToText(record));
   const body = parts.join('\n\n');
 
-  const msg = createMimeMessage();
-  msg.setSender({ name: SENDER_NAME, addr: SENDER });
-  msg.setRecipient(env.CONTACT_EMAIL);
-  msg.setSubject(subject);
-  msg.addMessage({ contentType: 'text/plain', data: body });
-
-  const { EmailMessage } = await import('cloudflare:email');
-  await env.SEND_EMAIL.send(new EmailMessage(SENDER, env.CONTACT_EMAIL, msg.asRaw()));
+  await env.SEND_EMAIL.send({
+    to: env.CONTACT_EMAIL,
+    from: SENDER,
+    fromName: SENDER_NAME,
+    subject,
+    text: body,
+  });
 }
 
 /**
- * Email the parent or guardian their own copy of the signed record, through cairn-cms's
- * unrestricted EMAIL binding, to the address `to` names. Throws if the binding call fails; the
- * caller decides whether a failed parent copy blocks the submission (per the plan, it does
- * not). The caller also decides `to`: an adult athlete's record may carry a blank
- * `parent.email`, in which case handler.ts falls back to the athlete's own CrewLAB email, or
- * skips this call entirely when neither address exists.
+ * Email the parent or guardian their own copy of the signed record, through the EMAIL transport,
+ * to the address `to` names. Throws if the send fails; the caller decides whether a failed
+ * parent copy blocks the submission (per the plan, it does not). The caller also decides `to`:
+ * an adult athlete's record may carry a blank `parent.email`, in which case handler.ts falls
+ * back to the athlete's own CrewLAB email, or skips this call entirely when neither address
+ * exists.
  */
 export async function sendParentCopy(
-  env: { EMAIL: { send(msg: unknown): Promise<void> } },
+  env: { EMAIL: SendCapable },
   record: RegistrationRecord,
   to: string,
 ): Promise<void> {
@@ -180,13 +174,13 @@ export async function sendParentCopy(
 
 /**
  * Email the complete record to an additional coach or staff recipient (Amy, who runs camp),
- * through cairn-cms's unrestricted EMAIL binding. Carries the same subject and body as
- * `sendRecordEmail` sent to Geoff, with no sheets-failure block, since this copy is a
- * convenience, not the durable legal record. Throws if the binding call fails; the caller
- * decides whether a failed coach copy blocks the submission (per the plan, it does not).
+ * through the EMAIL transport. Carries the same subject and body as `sendRecordEmail` sent to
+ * Geoff, with no sheets-failure block, since this copy is a convenience, not the durable legal
+ * record. Throws if the send fails; the caller decides whether a failed coach copy blocks the
+ * submission (per the plan, it does not).
  */
 export async function sendRecordCopy(
-  env: { EMAIL: { send(msg: unknown): Promise<void> } },
+  env: { EMAIL: SendCapable },
   to: string,
   record: RegistrationRecord,
 ): Promise<void> {

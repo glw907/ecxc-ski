@@ -2,37 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendParentCopy, sendRecordCopy, sendRecordEmail } from '$theme/registration/emails';
 import { SHEET_HEADERS, type RegistrationRecord } from '$theme/registration/schema';
 
-/** One `EmailMessage(from, to, raw)` construction, captured by the `cloudflare:email` mock. */
-interface CapturedMessage {
-  from: string;
-  to: string;
-  raw: string;
-}
-
-let captured: CapturedMessage[] = [];
-
-vi.mock('cloudflare:email', () => ({
-  EmailMessage: class {
-    from: string;
-    to: string;
-    raw: string;
-    constructor(from: string, to: string, raw: string) {
-      this.from = from;
-      this.to = to;
-      this.raw = raw;
-      captured.push({ from, to, raw });
-    }
-  },
-}));
-
-/** Decode a raw MIME message's Subject header back to plain text (mimetext always RFC2047s it). */
-function decodeSubject(raw: string): string {
-  const match = raw.match(/^Subject: (.+)$/m);
-  if (!match) return '';
-  const encoded = match[1].trim().match(/^=\?utf-8\?B\?(.+)\?=$/i);
-  return encoded ? Buffer.from(encoded[1], 'base64').toString('utf-8') : match[1].trim();
-}
-
 function makeRecord(kind: 'training' | 'camp'): RegistrationRecord {
   const record: RegistrationRecord = {
     kind,
@@ -88,53 +57,57 @@ describe('sendRecordEmail', () => {
   const sendEmailMock = vi.fn();
   const env = { CONTACT_EMAIL: 'coach@ecxc.ski', SEND_EMAIL: { send: sendEmailMock } };
 
+  /** The plain OutboundMessage sendRecordEmail handed to the transport's send(), decoded from
+   *  the mock's most recent call. */
+  function lastMessage(): { to: string; from: string; fromName?: string; subject: string; text: string } {
+    return sendEmailMock.mock.calls.at(-1)?.[0];
+  }
+
   beforeEach(() => {
-    captured = [];
     sendEmailMock.mockReset();
     sendEmailMock.mockResolvedValue(undefined);
   });
 
-  it('sends from noreply@ecxc.ski to CONTACT_EMAIL with the training subject', async () => {
+  it('sends from noreply@ecxc.ski (as "ECXC Registration") to CONTACT_EMAIL with the training subject', async () => {
     await sendRecordEmail(env, makeRecord('training'), {});
 
     expect(sendEmailMock).toHaveBeenCalledTimes(1);
-    expect(captured).toHaveLength(1);
-    expect(captured[0].from).toBe('noreply@ecxc.ski');
-    expect(captured[0].to).toBe('coach@ecxc.ski');
-    expect(decodeSubject(captured[0].raw)).toBe('Registration: Alice Athlete (Training)');
+    const message = lastMessage();
+    expect(message.from).toBe('noreply@ecxc.ski');
+    expect(message.fromName).toBe('ECXC Registration');
+    expect(message.to).toBe('coach@ecxc.ski');
+    expect(message.subject).toBe('Registration: Alice Athlete (Training)');
   });
 
   it('labels a camp submission with the camp subject', async () => {
     await sendRecordEmail(env, makeRecord('camp'), {});
-    expect(decodeSubject(captured[0].raw)).toBe('Registration: Alice Athlete (Talkeetna Camp)');
+    expect(lastMessage().subject).toBe('Registration: Alice Athlete (Talkeetna Camp)');
   });
 
   it('includes every SHEET_HEADERS label for the record kind in the body', async () => {
     for (const kind of ['training', 'camp'] as const) {
-      captured = [];
       await sendRecordEmail(env, makeRecord(kind), {});
-      const raw = captured[0].raw;
+      const text = lastMessage().text;
       for (const header of SHEET_HEADERS[kind]) {
-        expect(raw).toContain(header);
+        expect(text).toContain(header);
       }
     }
   });
 
   it('carries the waiver hash', async () => {
     await sendRecordEmail(env, makeRecord('training'), {});
-    expect(captured[0].raw).toContain('deadbeef');
+    expect(lastMessage().text).toContain('deadbeef');
   });
 
   it('adds the sheets-failure block only when opts.sheetsError is set', async () => {
     const record = makeRecord('training');
 
     await sendRecordEmail(env, record, {});
-    expect(captured[0].raw).not.toContain('SHEETS APPEND FAILED');
+    expect(lastMessage().text).not.toContain('SHEETS APPEND FAILED');
 
-    captured = [];
     await sendRecordEmail(env, record, { sheetsError: 'append failed: 500 quota exceeded' });
-    expect(captured[0].raw).toContain('*** SHEETS APPEND FAILED, back-fill this row by hand ***');
-    expect(captured[0].raw).toContain('append failed: 500 quota exceeded');
+    expect(lastMessage().text).toContain('*** SHEETS APPEND FAILED, back-fill this row by hand ***');
+    expect(lastMessage().text).toContain('append failed: 500 quota exceeded');
   });
 
   it('throws when the send binding rejects', async () => {
@@ -144,17 +117,17 @@ describe('sendRecordEmail', () => {
 
   it('places the CrewLAB invite group directly after the parent group, with the invite values', async () => {
     await sendRecordEmail(env, makeRecord('training'), {});
-    const raw = captured[0].raw;
+    const text = lastMessage().text;
 
-    const parentIndex = raw.indexOf('Parent or guardian');
-    const crewlabIndex = raw.indexOf('CrewLAB invite');
-    const emergencyIndex = raw.indexOf('Emergency contact');
+    const parentIndex = text.indexOf('Parent or guardian');
+    const crewlabIndex = text.indexOf('CrewLAB invite');
+    const emergencyIndex = text.indexOf('Emergency contact');
 
     expect(parentIndex).toBeGreaterThan(-1);
     expect(crewlabIndex).toBeGreaterThan(parentIndex);
     expect(emergencyIndex).toBeGreaterThan(crewlabIndex);
-    expect(raw).toContain('alice@example.com');
-    expect(raw).toContain('sam@example.com');
+    expect(text).toContain('alice@example.com');
+    expect(text).toContain('sam@example.com');
   });
 });
 

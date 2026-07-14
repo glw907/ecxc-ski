@@ -7,6 +7,7 @@ import { getRequestEvent } from '$app/server';
 import { buildRecord, campSchema, toRowValues, trainingSchema, type FormKind } from './schema';
 import { appendRegistrationRow } from './sheets';
 import { sendParentCopy, sendRecordCopy, sendRecordEmail } from './emails';
+import { cfEmailSender, cfSendEmailSender, resendSender, type SendCapable } from '../email-transport';
 import { WAIVER_HASH } from '../waiver/waiver';
 
 /** The tab a submission's row lands in, per the plan's own sheet layout. */
@@ -72,11 +73,6 @@ export interface ParsedCampFields extends ParsedRegistrationFields {
   carpool: 'needs-ride' | 'can-drive' | 'self';
   carpoolSeats?: number;
   gearNotes: string;
-}
-
-/** A binding whose `send` resolves once the message is handed off, result value ignored. */
-interface SendCapable {
-  send(msg: unknown): Promise<void>;
 }
 
 /**
@@ -233,28 +229,24 @@ export async function handleRegistration(
 }
 
 /**
- * Adapt a real binding's `send` (whose promise may resolve to something other than void, like
- * Cloudflare's SendEmail binding resolving to an EmailSendResult) to the plain
- * `send(msg): Promise<void>` shape `RegistrationEnv` and sheets/emails.ts's own testable env
- * parameters expect. A no-op for a binding that is already missing.
+ * Build the pipeline's deps from the current request, the one seam the two form actions add.
+ * Selects the transport per the site-wide rule (email-transport.ts's header comment): Resend for
+ * both SEND_EMAIL and EMAIL when `RESEND_API_KEY` is set, the existing Cloudflare bindings
+ * otherwise. Never mixed: the same `resend` transport backs both fields when the key is present.
  */
-function toSendCapable(binding: { send(msg: never): Promise<unknown> } | undefined): SendCapable | undefined {
-  if (!binding) return undefined;
-  return { send: (msg: unknown) => binding.send(msg as never).then(() => undefined) };
-}
-
-/** Build the pipeline's deps from the current request, the one seam the two form actions add. */
 export function buildDeps(): RegistrationDeps {
   const { platform, getClientAddress, request } = getRequestEvent();
   const env = platform?.env;
+  const resend = env?.RESEND_API_KEY ? resendSender(env.RESEND_API_KEY) : undefined;
+
   return {
     env: {
       TURNSTILE_SECRET_KEY: env?.TURNSTILE_SECRET_KEY,
       GOOGLE_SA_KEY_B64: env?.GOOGLE_SA_KEY_B64,
       REGISTRATION_SHEET_ID: env?.REGISTRATION_SHEET_ID,
       CONTACT_EMAIL: env?.CONTACT_EMAIL,
-      SEND_EMAIL: toSendCapable(env?.SEND_EMAIL),
-      EMAIL: toSendCapable(env?.EMAIL),
+      SEND_EMAIL: resend ?? (env?.SEND_EMAIL ? cfSendEmailSender(env.SEND_EMAIL) : undefined),
+      EMAIL: resend ?? (env?.EMAIL ? cfEmailSender(env.EMAIL) : undefined),
       MAIL_CC: env?.MAIL_CC,
     },
     ip: getClientAddress(),

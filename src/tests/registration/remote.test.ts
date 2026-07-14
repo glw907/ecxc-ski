@@ -25,31 +25,10 @@ vi.mock('$app/server', () => ({
 // Sheets step still runs the real appendRegistrationRow (a real RSA key, a stubbed global
 // fetch), matching sheets.test.ts's own approach, so "sheets called" is an observable network
 // call rather than something invented for the test. The two email steps run the real
-// sendRecordEmail/sendParentCopy too; only the outer SEND_EMAIL/EMAIL bindings are fakes,
-// matching emails.test.ts's own cloudflare:email mock.
-
-/** One `EmailMessage(from, to, raw)` construction, captured by the `cloudflare:email` mock. */
-interface CapturedMessage {
-  from: string;
-  to: string;
-  raw: string;
-}
-
-let captured: CapturedMessage[] = [];
-
-vi.mock('cloudflare:email', () => ({
-  EmailMessage: class {
-    from: string;
-    to: string;
-    raw: string;
-    constructor(from: string, to: string, raw: string) {
-      this.from = from;
-      this.to = to;
-      this.raw = raw;
-      captured.push({ from, to, raw });
-    }
-  },
-}));
+// sendRecordEmail/sendParentCopy too; only the outer SEND_EMAIL/EMAIL transports are fakes (a
+// plain `{ send: vi.fn() }`), since handleRegistration only ever sees the already-selected
+// SendCapable, never a raw Cloudflare binding (transport selection is buildDeps's job, not
+// exercised here).
 
 /**
  * Build a throwaway base64 service-account key JSON: a real WebCrypto RSA keypair exported to
@@ -116,6 +95,8 @@ function campFields(): ParsedCampFields {
 describe('handleRegistration', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
   let order: string[];
+  /** The plain OutboundMessage the record email's SEND_EMAIL fake most recently received. */
+  let recordEmailMessage: { text: string } | undefined;
 
   /**
    * A record-email/parent-copy env pair that each push a label onto `order` when called.
@@ -129,8 +110,9 @@ describe('handleRegistration', () => {
         TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
         CONTACT_EMAIL: 'coach@ecxc.ski',
         SEND_EMAIL: {
-          send: vi.fn(async (_msg: unknown) => {
+          send: vi.fn(async (msg: { text: string }) => {
             order.push('record-email');
+            recordEmailMessage = msg;
           }),
         },
         EMAIL: {
@@ -147,7 +129,7 @@ describe('handleRegistration', () => {
   }
 
   beforeEach(() => {
-    captured = [];
+    recordEmailMessage = undefined;
     order = [];
     fetchMock = vi.fn(async (url: string) => {
       if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
@@ -203,9 +185,8 @@ describe('handleRegistration', () => {
     const result = await handleRegistration('training', baseFields(), deps);
 
     expect(result).toEqual({ success: true, parentCopySent: true });
-    expect(captured).toHaveLength(1);
-    expect(captured[0].raw).toContain('SHEETS APPEND FAILED');
-    expect(captured[0].raw).toContain('sheets append failed');
+    expect(recordEmailMessage?.text).toContain('SHEETS APPEND FAILED');
+    expect(recordEmailMessage?.text).toContain('sheets append failed');
   });
 
   it('treats a missing Sheets configuration as a capturable error, not a rejection', async () => {
@@ -214,8 +195,8 @@ describe('handleRegistration', () => {
     const result = await handleRegistration('training', baseFields(), deps);
 
     expect(result).toEqual({ success: true, parentCopySent: true });
-    expect(captured[0].raw).toContain('SHEETS APPEND FAILED');
-    expect(captured[0].raw.toLowerCase()).toContain('not configured');
+    expect(recordEmailMessage?.text).toContain('SHEETS APPEND FAILED');
+    expect(recordEmailMessage?.text.toLowerCase()).toContain('not configured');
   });
 
   it('rejects when the record email fails, logs the swallowed error, and never attempts the parent copy', async () => {
@@ -316,7 +297,6 @@ describe('handleRegistration coach copy (MAIL_CC)', () => {
   }
 
   beforeEach(() => {
-    captured = [];
     fetchMock = vi.fn(async (url: string) => {
       if (url === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
         return new Response(JSON.stringify({ success: true }), { status: 200 });
@@ -386,7 +366,6 @@ describe('handleRegistration Turnstile enforcement', () => {
   }
 
   beforeEach(() => {
-    captured = [];
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
   });
@@ -438,13 +417,15 @@ describe('handleRegistration Turnstile enforcement', () => {
       }
       throw new Error(`unexpected fetch: ${url}`);
     });
-    const deps = makeDeps({ TURNSTILE_SECRET_KEY: 'test-secret' });
+    const sendEmail = vi.fn(async (_msg: { text: string }) => undefined);
+    const deps = makeDeps({ TURNSTILE_SECRET_KEY: 'test-secret', SEND_EMAIL: { send: sendEmail } });
 
     const result = await handleRegistration('training', baseFields(), deps);
 
     // Sheets is unconfigured in this deps set, which degrades to a captured error rather than
     // a rejection; reaching that point at all proves Turnstile did not block the submission.
     expect(result).toEqual({ success: true, parentCopySent: true });
-    expect(captured[0].raw).toContain('SHEETS APPEND FAILED');
+    const message = sendEmail.mock.calls[0][0] as { text: string };
+    expect(message.text).toContain('SHEETS APPEND FAILED');
   });
 });

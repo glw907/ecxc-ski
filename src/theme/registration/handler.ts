@@ -7,7 +7,7 @@ import { getRequestEvent } from '$app/server';
 import { buildRecord, campSchema, toRowValues, trainingSchema, type FormKind } from './schema';
 import { appendRegistrationRow } from './sheets';
 import { sendParentCopy, sendRecordCopy, sendRecordEmail } from './emails';
-import { cfEmailSender, cfSendEmailSender, resendSender, type SendCapable } from '../email-transport';
+import { resendSender, type SendCapable } from '../email-transport';
 import { WAIVER_HASH } from '../waiver/waiver';
 
 /** The tab a submission's row lands in, per the plan's own sheet layout. */
@@ -230,9 +230,9 @@ export async function handleRegistration(
 
 /**
  * Build the pipeline's deps from the current request, the one seam the two form actions add.
- * Selects the transport per the site-wide rule (email-transport.ts's header comment): Resend for
- * both SEND_EMAIL and EMAIL when `RESEND_API_KEY` is set, the existing Cloudflare bindings
- * otherwise. Never mixed: the same `resend` transport backs both fields when the key is present.
+ * Resend backs both SEND_EMAIL and EMAIL when `RESEND_API_KEY` is set; otherwise both stay
+ * undefined and the pipeline's own fail-closed check (`'Mail service not configured.'`) rejects
+ * the submission.
  */
 export function buildDeps(): RegistrationDeps {
   const { platform, getClientAddress, request } = getRequestEvent();
@@ -245,8 +245,8 @@ export function buildDeps(): RegistrationDeps {
       GOOGLE_SA_KEY_B64: env?.GOOGLE_SA_KEY_B64,
       REGISTRATION_SHEET_ID: env?.REGISTRATION_SHEET_ID,
       CONTACT_EMAIL: env?.CONTACT_EMAIL,
-      SEND_EMAIL: resend ?? (env?.SEND_EMAIL ? cfSendEmailSender(env.SEND_EMAIL) : undefined),
-      EMAIL: resend ?? (env?.EMAIL ? cfEmailSender(env.EMAIL) : undefined),
+      SEND_EMAIL: resend,
+      EMAIL: resend,
       MAIL_CC: env?.MAIL_CC,
     },
     ip: getClientAddress(),

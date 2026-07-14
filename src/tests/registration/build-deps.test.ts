@@ -10,16 +10,6 @@ vi.mock('$app/server', () => ({
   getRequestEvent: () => getRequestEventMock(),
 }));
 
-vi.mock('cloudflare:email', () => ({
-  EmailMessage: class {
-    constructor(
-      public from: string,
-      public to: string,
-      public raw: string,
-    ) {}
-  },
-}));
-
 function fakeEvent(env: Record<string, unknown>) {
   return {
     platform: { env },
@@ -36,14 +26,10 @@ describe('buildDeps transport selection', () => {
     vi.stubGlobal('fetch', fetchMock);
   });
 
-  it('selects Resend for both SEND_EMAIL and EMAIL when RESEND_API_KEY is set, never touching the CF bindings', async () => {
-    const cfSendEmail = vi.fn();
-    const cfEmail = vi.fn();
+  it('selects Resend for both SEND_EMAIL and EMAIL when RESEND_API_KEY is set', async () => {
     getRequestEventMock.mockReturnValue(
       fakeEvent({
         RESEND_API_KEY: 're_test_key',
-        SEND_EMAIL: { send: cfSendEmail },
-        EMAIL: { send: cfEmail },
         CONTACT_EMAIL: 'coach@ecxc.ski',
       }),
     );
@@ -54,35 +40,11 @@ describe('buildDeps transport selection', () => {
     await deps.env.SEND_EMAIL?.send({ to: 'coach@ecxc.ski', from: 'noreply@ecxc.ski', subject: 'S', text: 'T' });
     await deps.env.EMAIL?.send({ to: 'parent@example.com', from: 'noreply@ecxc.ski', subject: 'S', text: 'T' });
 
-    expect(cfSendEmail).not.toHaveBeenCalled();
-    expect(cfEmail).not.toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenCalledWith('https://api.resend.com/emails', expect.anything());
   });
 
-  it('falls back to the Cloudflare bindings when RESEND_API_KEY is absent', async () => {
-    const cfSendEmail = vi.fn().mockResolvedValue(undefined);
-    const cfEmail = vi.fn().mockResolvedValue(undefined);
-    getRequestEventMock.mockReturnValue(
-      fakeEvent({
-        SEND_EMAIL: { send: cfSendEmail },
-        EMAIL: { send: cfEmail },
-        CONTACT_EMAIL: 'coach@ecxc.ski',
-      }),
-    );
-
-    const { buildDeps } = await import('$theme/registration/handler');
-    const deps = buildDeps();
-
-    await deps.env.SEND_EMAIL?.send({ to: 'coach@ecxc.ski', from: 'noreply@ecxc.ski', subject: 'S', text: 'T' });
-    await deps.env.EMAIL?.send({ to: 'parent@example.com', from: 'noreply@ecxc.ski', subject: 'S', text: 'T' });
-
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(cfSendEmail).toHaveBeenCalledTimes(1); // wrapped as an EmailMessage
-    expect(cfEmail).toHaveBeenCalledWith({ to: 'parent@example.com', from: 'noreply@ecxc.ski', subject: 'S', text: 'T' });
-  });
-
-  it('leaves SEND_EMAIL/EMAIL undefined when neither RESEND_API_KEY nor the CF bindings are configured', async () => {
+  it('leaves SEND_EMAIL/EMAIL undefined when RESEND_API_KEY is absent', async () => {
     getRequestEventMock.mockReturnValue(fakeEvent({ CONTACT_EMAIL: 'coach@ecxc.ski' }));
 
     const { buildDeps } = await import('$theme/registration/handler');

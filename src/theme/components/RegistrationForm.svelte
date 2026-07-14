@@ -32,11 +32,17 @@ error text (`id="<field>-error"`, wired via `aria-describedby`), and the `.as(..
 spread's own `aria-invalid` getter drives a border/outline change on the input itself
 (see the `[aria-invalid='true']` rule below) so an error is never color-only, on top of
 the text already being a second, independent channel.
+
+A Turnstile token is single-use: once `siteverify` consumes it, a retry with the same
+token always fails. Every failed submission (pending goes true then false with the
+issue list non-empty) resets the widget, so a family that hits a transient failure
+(a dropped record email, a spam-check miss) can retry without reloading the page.
 -->
 <script lang="ts">
   import type { RemoteFormField } from '@sveltejs/kit';
   import { registerCamp, registerTraining } from '$theme/registration.remote';
   import WaiverText from './WaiverText.svelte';
+  // window.turnstile is declared ambiently in $theme/turnstile.d.ts.
 
   interface Props {
     variant: 'training' | 'camp';
@@ -169,7 +175,9 @@ the text already being a second, independent channel.
   // Move focus once a submission cycle finishes (pending goes from true to false), to
   // whichever of the two live regions now has something to say. Gating on that transition,
   // rather than on `issues.length` alone, keeps a field's own client-side revalidation while
-  // typing from yanking focus back to the summary mid-correction.
+  // typing from yanking focus back to the summary mid-correction. The same transition resets
+  // the Turnstile widget on a failure, since its token is single-use and every retry with the
+  // stale token would otherwise fail the spam check regardless of what was actually wrong.
   $effect(() => {
     const pending = !!action.pending;
     if (wasPending && !pending) {
@@ -177,6 +185,7 @@ the text already being a second, independent channel.
         successEl?.focus();
       } else if (issues.length > 0) {
         alertEl?.focus();
+        window.turnstile?.reset();
       }
     }
     wasPending = pending;

@@ -5,11 +5,29 @@ the same form vocabulary as `RegistrationForm.svelte`: one quiet card, a 12-colu
 asterisks, and per-field error text alongside the `role="alert"` summary. The Turnstile
 widget's site key is public by design (it ships inside the served HTML, unlike the paired
 secret key, which stays a Worker secret), so it is a plain literal here, the same site key the
-pre-rebuild site already registered with Cloudflare, not an env read. -->
+pre-rebuild site already registered with Cloudflare, not an env read.
+
+A Turnstile token is single-use: once `siteverify` consumes it, a retry with the same token
+always fails. Every failed submission (pending goes true then false with the issue list
+non-empty) resets the widget, matching RegistrationForm.svelte's own rule, so a sender who
+hits a transient failure can retry without reloading the page. -->
 <script lang="ts">
   import { sendMessage } from '$theme/contact.remote';
+  // window.turnstile is declared ambiently in $theme/turnstile.d.ts.
 
   const { name, email, message } = sendMessage.fields;
+  const issues = $derived(sendMessage.fields.allIssues() ?? []);
+
+  // Track the pending -> not-pending transition (not `issues.length` alone) so the widget
+  // resets once per failed submission, not on every reactive re-check of the issue list.
+  let wasPending = $state(false);
+  $effect(() => {
+    const pending = !!sendMessage.pending;
+    if (wasPending && !pending && issues.length > 0) {
+      window.turnstile?.reset();
+    }
+    wasPending = pending;
+  });
 </script>
 
 {#snippet fieldError(id: string, field: { issues: () => { message: string }[] | undefined })}
@@ -23,7 +41,7 @@ pre-rebuild site already registered with Cloudflare, not an env read. -->
     <p class="form-note">Fields marked * are required.</p>
     <form {...sendMessage} class="flex max-w-measure-wide flex-col gap-m">
       <div role="alert" class="flex flex-col gap-s">
-        {#each sendMessage.fields.allIssues() as issue}
+        {#each issues as issue}
           <p class="rounded-field border border-error bg-error/10 px-s py-xs text-step--1 text-error">
             {issue.message}
           </p>

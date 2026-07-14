@@ -1,15 +1,13 @@
 // ECXC's contact form action, a SvelteKit remote function (svelte.config.js opts into
 // `experimental.remoteFunctions`). The must-succeed message to Geoff and the soft-fail copy to
-// Amy both go through email-transport.ts's transport selection: Resend when `RESEND_API_KEY` is
-// set, otherwise the two Cloudflare `[[send_email]]` bindings (SEND_EMAIL, a fixed
-// `destination_address`; EMAIL, unrestricted), matching registration/handler.ts's own rule.
-// CONTACT_EMAIL is a Worker secret, set by name only (`wrangler secret put CONTACT_EMAIL`), not a
-// committed var.
+// Amy both go through email-transport.ts's Resend transport, matching registration/handler.ts's
+// own rule. CONTACT_EMAIL is a Worker secret, set by name only (`wrangler secret put
+// CONTACT_EMAIL`), not a committed var.
 import * as v from 'valibot';
 import { invalid } from '@sveltejs/kit';
 import { form, getRequestEvent } from '$app/server';
 import { textToHtml } from './registration/emails';
-import { cfEmailSender, cfSendEmailSender, resendSender, type SendCapable } from './email-transport';
+import { resendSender, type SendCapable } from './email-transport';
 
 const SENDER = 'noreply@ecxc.ski';
 const SENDER_NAME = 'ECXC Contact';
@@ -51,27 +49,23 @@ export const sendMessage = form(
 
     const contactEmail = platform?.env?.CONTACT_EMAIL;
     const resendApiKey = platform?.env?.RESEND_API_KEY;
-    const resend = resendApiKey ? resendSender(resendApiKey) : undefined;
+    const resend: SendCapable | undefined = resendApiKey ? resendSender(resendApiKey) : undefined;
 
-    const recordTransport: SendCapable | undefined =
-      resend ?? (platform?.env?.SEND_EMAIL ? cfSendEmailSender(platform.env.SEND_EMAIL) : undefined);
-    if (!contactEmail || !recordTransport) {
+    if (!contactEmail || !resend) {
       invalid('Mail service not configured.');
     }
 
     const subject = `Contact from ${name}`;
     const body = `From: ${name} <${email}>\n\n${message}`;
 
-    await recordTransport.send({ to: contactEmail, from: SENDER, fromName: SENDER_NAME, subject, text: body });
+    await resend.send({ to: contactEmail, from: SENDER, fromName: SENDER_NAME, subject, text: body });
 
-    // Amy's copy rides the EMAIL transport, soft-fail so it can never block the message or mask
-    // the must-succeed send above (the registration pipeline's own pattern).
+    // Amy's copy rides the same Resend transport, soft-fail so it can never block the message or
+    // mask the must-succeed send above (the registration pipeline's own pattern).
     const mailCc = platform?.env?.MAIL_CC;
-    const ccTransport: SendCapable | undefined =
-      resend ?? (platform?.env?.EMAIL ? cfEmailSender(platform.env.EMAIL) : undefined);
-    if (mailCc && ccTransport) {
+    if (mailCc) {
       try {
-        await ccTransport.send({ to: mailCc, from: SENDER, subject, text: body, html: textToHtml(body) });
+        await resend.send({ to: mailCc, from: SENDER, subject, text: body, html: textToHtml(body) });
       } catch (error) {
         console.error('contact copy failed', error);
       }

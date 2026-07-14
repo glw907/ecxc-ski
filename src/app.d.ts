@@ -1,5 +1,5 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
-import type { ExecutionContext, SendEmail } from '@cloudflare/workers-types';
+import type { ExecutionContext } from '@cloudflare/workers-types';
 // The binding-shaped types ship from the /sveltekit subpath, so the Platform block intersects
 // them rather than restating every engine binding by hand. CairnMediaBindings adds MEDIA_BUCKET,
 // present because this site turns media on.
@@ -12,16 +12,12 @@ declare global {
     interface Platform {
       env: CairnPlatformBindings &
         CairnMediaBindings & {
-          // The contact form's own bindings (contact.remote.ts): SEND_EMAIL is the
-          // fixed-destination Email Routing binding (wrangler.toml), distinct from cairn's own
-          // unrestricted EMAIL binding. CONTACT_EMAIL and TURNSTILE_SECRET_KEY are Worker
-          // secrets, set by name only.
-          SEND_EMAIL: SendEmail;
+          // The contact form's own destination and gate (contact.remote.ts): Worker secrets,
+          // set by name only.
           CONTACT_EMAIL: string;
           TURNSTILE_SECRET_KEY?: string;
-          // Transitional dual-transport email (src/theme/email-transport.ts): when set, every
-          // send seam (registration, contact, magic links) prefers Resend over the Cloudflare
-          // bindings above. Unset until the Resend sending domain is verified.
+          // src/theme/email-transport.ts's Resend transport, the site's only email transport
+          // (registration, contact, magic links all read this at send time).
           RESEND_API_KEY?: string;
           // The registration pipeline's own bindings (registration.remote.ts). Both optional:
           // a deploy missing the Sheets secret still records signatures, per the plan's own

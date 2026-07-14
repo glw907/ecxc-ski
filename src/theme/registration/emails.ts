@@ -1,8 +1,8 @@
 // The three outbound registration emails, all built from one RegistrationRecord so the record
 // email (to Geoff, the durable legal copy), the parent copy, and the coach copy can never drift
 // apart. All three build a plain email-transport.ts `OutboundMessage` and hand it to the caller's
-// chosen transport (email-transport.ts's `cfSendEmailSender`, `cfEmailSender`, or `resendSender`,
-// selected in handler.ts's `buildDeps`); this module owns none of the wire format, only content.
+// `resendSender` transport (selected in handler.ts's `buildDeps`); this module owns none of the
+// wire format, only content.
 import {
   CREWLAB_HEADERS,
   SHEET_HEADERS,

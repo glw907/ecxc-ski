@@ -265,7 +265,7 @@ describe('handleRegistration', () => {
   });
 });
 
-describe('handleRegistration coach copy (REGISTRATION_CC)', () => {
+describe('handleRegistration coach copy (MAIL_CC)', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   function makeDeps(overrides: Partial<RegistrationEnv> = {}): RegistrationDeps {
@@ -294,11 +294,11 @@ describe('handleRegistration coach copy (REGISTRATION_CC)', () => {
     vi.stubGlobal('fetch', fetchMock);
   });
 
-  it('sends a coach copy to REGISTRATION_CC through EMAIL when set', async () => {
+  it('sends a coach copy to MAIL_CC through EMAIL when set', async () => {
     const emailSend = vi.fn(async (msg: { to: string; subject: string; text: string }) => {
       void msg;
     });
-    const deps = makeDeps({ REGISTRATION_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
+    const deps = makeDeps({ MAIL_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
 
     const result = await handleRegistration('training', baseFields(), deps);
 
@@ -314,7 +314,7 @@ describe('handleRegistration coach copy (REGISTRATION_CC)', () => {
     const emailSend = vi.fn(async (msg: { to: string }) => {
       if (msg.to === 'amyenkhee@gmail.com') throw new Error('coach inbox full');
     });
-    const deps = makeDeps({ REGISTRATION_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
+    const deps = makeDeps({ MAIL_CC: 'amyenkhee@gmail.com', EMAIL: { send: emailSend } });
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     const result = await handleRegistration('training', baseFields(), deps);
@@ -325,7 +325,7 @@ describe('handleRegistration coach copy (REGISTRATION_CC)', () => {
     consoleError.mockRestore();
   });
 
-  it('sends no coach copy when REGISTRATION_CC is unset', async () => {
+  it('sends no coach copy when MAIL_CC is unset', async () => {
     const emailSend = vi.fn(async () => undefined);
     const deps = makeDeps({ EMAIL: { send: emailSend } });
 

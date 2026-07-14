@@ -56,6 +56,10 @@ skill's persistent artifacts.)
   ~350px it scrolls inside the submit card. `.site-main` carries `width: 100%` so a fixed
   descendant can never stretch the auto-sized flex item and scroll the page (the arc's
   root-cause fix for a pre-existing 9px overflow at 390).
+- **Contact form: same vocabulary, one card.** Three fields ride the identical recipe
+  (card, grid, labels, asterisks, error pattern) restated at contact scale, including the
+  submit button inside the single card. The recipe is deliberately copied, not extracted:
+  two forms is below the rule-of-three threshold; a third form triggers the extraction.
 - **Fonts: complete latin subsets.** The rebuild-era Alegreya Sans woff2 subsets were
   missing every capital except A (per-glyph fallback made bold capitals inconsistent,
   surfaced by the waiver's bold run-ins). Replaced with full latin subsets; when

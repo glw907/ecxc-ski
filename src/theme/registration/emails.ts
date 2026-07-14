@@ -107,8 +107,9 @@ function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** Wrap a plain-text body as preformatted HTML, preserving the labeled record's line breaks. */
-function textToHtml(text: string): string {
+/** Wrap a plain-text body as preformatted HTML, preserving its line breaks. Exported for
+ *  contact.remote.ts's own EMAIL-binding send, whose contract requires an html part. */
+export function textToHtml(text: string): string {
   return `<pre>${escapeHtml(text)}</pre>`;
 }
 

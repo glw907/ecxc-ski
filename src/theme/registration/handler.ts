@@ -92,8 +92,9 @@ export interface RegistrationEnv {
   CONTACT_EMAIL?: string;
   SEND_EMAIL?: SendCapable;
   EMAIL?: SendCapable;
-  /** Amy's address, cc'd a soft-fail copy of every registration record; unset in dev. */
-  REGISTRATION_CC?: string;
+  /** Amy's address, cc'd a soft-fail copy of every registration record and contact
+   *  message; unset in dev. */
+  MAIL_CC?: string;
 }
 
 /**
@@ -130,7 +131,7 @@ async function verifyTurnstile(token: string, ip: string, secret: string): Promi
  * being unset) never fails the submission; its error rides along in the record email as a
  * flagged block instead. A record-email failure does fail the submission, since that email is
  * the pipeline's must-succeed step. A parent-copy failure only shows up in the return value. The
- * coach copy to `REGISTRATION_CC` is an ops concern only: its failure is logged and otherwise
+ * coach copy to `MAIL_CC` is an ops concern only: its failure is logged and otherwise
  * invisible, never surfaced in the return value or the submitter's experience.
  */
 export function handleRegistration(
@@ -212,9 +213,9 @@ export async function handleRegistration(
     }
   }
 
-  if (env.REGISTRATION_CC && env.EMAIL) {
+  if (env.MAIL_CC && env.EMAIL) {
     try {
-      await sendRecordCopy({ EMAIL: env.EMAIL }, env.REGISTRATION_CC, record);
+      await sendRecordCopy({ EMAIL: env.EMAIL }, env.MAIL_CC, record);
     } catch (error) {
       console.error('registration coach copy failed', error);
     }
@@ -246,7 +247,7 @@ export function buildDeps(): RegistrationDeps {
       CONTACT_EMAIL: env?.CONTACT_EMAIL,
       SEND_EMAIL: toSendCapable(env?.SEND_EMAIL),
       EMAIL: toSendCapable(env?.EMAIL),
-      REGISTRATION_CC: env?.REGISTRATION_CC,
+      MAIL_CC: env?.MAIL_CC,
     },
     ip: getClientAddress(),
     userAgent: request.headers.get('user-agent') ?? '',

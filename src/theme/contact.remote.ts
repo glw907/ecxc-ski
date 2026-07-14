@@ -10,6 +10,7 @@ import * as v from 'valibot';
 import { invalid } from '@sveltejs/kit';
 import { form, getRequestEvent } from '$app/server';
 import { createMimeMessage } from 'mimetext';
+import { textToHtml } from './registration/emails';
 
 const SENDER = 'noreply@ecxc.ski';
 const SENDER_NAME = 'ECXC Contact';
@@ -27,7 +28,7 @@ async function verifyTurnstile(token: string, ip: string, secret: string): Promi
 export const sendMessage = form(
   v.object({
     name: v.pipe(v.string(), v.trim(), v.nonEmpty('Please enter your name.')),
-    email: v.pipe(v.string(), v.trim(), v.email('Please enter a valid email address.')),
+    email: v.pipe(v.string(), v.trim(), v.toLowerCase(), v.email('Please enter a valid email address.')),
     message: v.pipe(v.string(), v.trim(), v.nonEmpty('Please enter a message.')),
     // Injected by the Turnstile widget via its `data-response-field-name` override in
     // ContactForm.svelte, not a rendered field. The default name, `cf-turnstile-response`,
@@ -39,8 +40,13 @@ export const sendMessage = form(
   async ({ name, email, message, turnstileToken: token }) => {
     const { platform, getClientAddress } = getRequestEvent();
 
+    // Fail closed, matching registration/handler.ts: a deploy missing the Turnstile secret
+    // must not silently accept every submission unchecked.
     const secret = platform?.env?.TURNSTILE_SECRET_KEY;
-    if (secret && !(await verifyTurnstile(token, getClientAddress(), secret))) {
+    if (!secret) {
+      invalid('The contact form is temporarily unavailable. Please try again later.');
+    }
+    if (!(await verifyTurnstile(token, getClientAddress(), secret))) {
       invalid('Spam check failed. Please try again.');
     }
 
@@ -50,14 +56,29 @@ export const sendMessage = form(
       invalid('Mail service not configured.');
     }
 
+    const subject = `Contact from ${name}`;
+    const body = `From: ${name} <${email}>\n\n${message}`;
+
     const msg = createMimeMessage();
     msg.setSender({ name: SENDER_NAME, addr: SENDER });
     msg.setRecipient(contactEmail);
-    msg.setSubject(`Contact from ${name}`);
-    msg.addMessage({ contentType: 'text/plain', data: `From: ${name} <${email}>\n\n${message}` });
+    msg.setSubject(subject);
+    msg.addMessage({ contentType: 'text/plain', data: body });
 
     const { EmailMessage } = await import('cloudflare:email');
     await sendEmail.send(new EmailMessage(SENDER, contactEmail, msg.asRaw()));
+
+    // Amy's copy rides the unrestricted EMAIL binding, soft-fail so it can never block the
+    // message or mask the must-succeed send above (the registration pipeline's own pattern).
+    const mailCc = platform?.env?.MAIL_CC;
+    const emailBinding = platform?.env?.EMAIL;
+    if (mailCc && emailBinding) {
+      try {
+        await emailBinding.send({ to: mailCc, from: SENDER, subject, text: body, html: textToHtml(body) });
+      } catch (error) {
+        console.error('contact copy failed', error);
+      }
+    }
 
     return { success: true };
   },

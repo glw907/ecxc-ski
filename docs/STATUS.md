@@ -56,7 +56,7 @@ summaries now ride that tier.)
   /training's form section: 10,980px → ~8,900px at 1440. Settled decisions and reasoning:
   `docs/design/design-decisions.md`. Backing UX: phones now validate and normalize to
   `XXX-XXX-XXXX` and emails lowercase in the schema (91 registration tests); every record
-  email also copies Amy (`REGISTRATION_CC` var, soft-fail via the EMAIL binding).
+  email also copies Amy (`MAIL_CC` var, soft-fail via the EMAIL binding).
   A Geoff-opted workflow review (3 lenses + adversarial verification, 7 agents) confirmed
   two majors, both fixed: placeholder contrast (3.65:1 → 5.35:1, site-wide rule) and the
   pre-existing mobile horizontal overflow (root cause: `.site-main`'s implicit flex stretch
@@ -65,6 +65,12 @@ summaries now ride that tier.)
   Geoff's eye: the rebuild-era self-hosted Alegreya Sans woff2 subsets were missing every
   capital letter except A (per-glyph fallback made bold capitals inconsistent); replaced
   with complete latin subsets, coverage verified via fontTools cmap + `document.fonts.check`.
+  Tail of the same arc: the contact form joined the vocabulary (one card, name/email row,
+  real label-input association replacing the legend-per-field idiom, derived asterisks,
+  live-region errors), its Turnstile check went fail-closed to match registration, its
+  email field lowercases, and contact messages also copy `MAIL_CC` (the var renamed from
+  REGISTRATION_CC when it grew past registration), soft-fail. Amy's first live copy
+  arrives with the first real submission on either stream.
 
 - **CrewLAB invite integration + nav grouping (2026-07-13), SHIPPED and verified live.** Spec:
   `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced

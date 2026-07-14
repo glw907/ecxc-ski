@@ -35,13 +35,36 @@ shipped):
 - Attorney review of the waiver. Delete the two CrewLAB-pass test emails (delivery itself was
   confirmed live 2026-07-13, closing the older carried check).
 
-Small candidates for a future pass: a live `alert-note` content instance, a site-wide
-varied-phrasing sweep of the repeated contact-us formula (content-review finding, 2026-07-13),
-and the `roster` directive once real photos exist (#19).
+Small candidates for a future pass: a site-wide varied-phrasing sweep of the repeated
+contact-us formula (content-review finding, 2026-07-13) and the `roster` directive once real
+photos exist (#19). (The `alert-note` gap closed 2026-07-13: the waiver's eight plain-terms
+summaries now ride that tier.)
 
 ---
 
 ## History
+
+- **Registration-forms design refinement + font fix + coach copy (2026-07-13), SHIPPED.**
+  A live exploratory arc (the `design-refinement` skill's iterate-with-owner mode, ~11 kept
+  iterations) on the /training and /talkeetna forms: 12-column width-matched field grid
+  (single-column flow, related short fields share rows), quiet cards per field group, the
+  waiver as one bordered document (legal text one step down with its own flow rhythm, since
+  the wrapper divorces it from prose.css's direct-child owl selector), plain-terms summaries
+  on the `alert-note` tier with caption labels, washed-chip agree rows, display-face field
+  labels, derived required-asterisks (`:has(... [required])` so marks cannot drift), linked
+  error summary (GOV.UK pattern), and both in-page registration CTAs demoted to plain links.
+  /training's form section: 10,980px → ~8,900px at 1440. Settled decisions and reasoning:
+  `docs/design/design-decisions.md`. Backing UX: phones now validate and normalize to
+  `XXX-XXX-XXXX` and emails lowercase in the schema (91 registration tests); every record
+  email also copies Amy (`REGISTRATION_CC` var, soft-fail via the EMAIL binding).
+  A Geoff-opted workflow review (3 lenses + adversarial verification, 7 agents) confirmed
+  two majors, both fixed: placeholder contrast (3.65:1 → 5.35:1, site-wide rule) and the
+  pre-existing mobile horizontal overflow (root cause: `.site-main`'s implicit flex stretch
+  let the fixed 300px Turnstile iframe widen the column; `width: 100%` + submit-card
+  containment; 320 and 390 now probe clean). Same arc, site-wide latent defect found by
+  Geoff's eye: the rebuild-era self-hosted Alegreya Sans woff2 subsets were missing every
+  capital letter except A (per-glyph fallback made bold capitals inconsistent); replaced
+  with complete latin subsets, coverage verified via fontTools cmap + `document.fonts.check`.
 
 - **CrewLAB invite integration + nav grouping (2026-07-13), SHIPPED and verified live.** Spec:
   `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced
@@ -336,6 +359,7 @@ table scrolling). The full text of both sections is preserved in this file as of
 | Registration forms + digital waiver | Training + Talkeetna forms, code-owned digital waiver, Sheets + email pipeline | ✓ Deployed 2026-07-13 |
 | cairn 0.84.1 + backlog triage | Upgrade 0.81→0.84.1 gated + smoked; 16 backlog items → 7; favicon set, strict prerender, stale-waiver content sweep | ✓ Done 2026-07-13 |
 | CrewLAB invite integration | Invite-only onboarding through the existing forms; five schema fields, four content pages, nav grouping; live e2e green | ✓ Deployed 2026-07-13 |
+| Registration-forms refinement | Live design arc (field grid, cards, waiver document), phone/email normalization, coach copy, font fix, workflow review | ✓ Deployed 2026-07-13 |
 
 ### Pre-publish checklist (gate before announcing)
 

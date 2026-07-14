@@ -469,3 +469,14 @@
   letter-spacing: var(--tracking-eyebrow);
   font-size: var(--text-step--1);
 }
+
+/* Placeholder legibility, site-wide (registration and contact forms). DaisyUI's default
+   placeholder (base-content at opacity .5) composites to 3.65:1 on the card ground, under the
+   4.5:1 AA floor for normal-size text; the muted ink token measures 5.35:1 on the same ground.
+   Unlayered, so it beats the layered DaisyUI component rule; opacity must be restated because
+   DaisyUI dims via opacity, not color. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}

@@ -166,7 +166,7 @@ describe('RegistrationForm', () => {
   it('renders an h2 heading the form section, so the page runs h1 then h2 then the waiver h3s without a skip', () => {
     const { body } = render(RegistrationForm, { props: { variant: 'training' } });
 
-    expect(body).toContain('<h2>Register</h2>');
+    expect(body).toMatch(/<h2[^>]*>Register<\/h2>/);
   });
 
   it('mounts the failed-submit alert region from first render, empty until there are issues', () => {

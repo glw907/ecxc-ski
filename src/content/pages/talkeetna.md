@@ -55,7 +55,6 @@ Camp has its own registration, separate from summer sign-up, even if your athlet
 
 Donations are welcome at whatever level works for your family, and donating or not changes nothing.
 
-:::cta{label="Register for camp" url="#register"}
-:::
+[Register for camp](#register)
 
 If you want to ask something first, the [contact form](/contact) works for camp too.

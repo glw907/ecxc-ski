@@ -103,8 +103,7 @@ Sign-up and the liability waiver are one form now, at the bottom of this page. Y
 
 If you signed up through CrewLAB in a past summer, we've moved sign-up and the waiver here. CrewLAB is still the team app; coaches post the weekly plan and meeting spots there, and we send the athlete's invite once you've registered. The [CrewLAB page](cairn:pages/crewlab) covers the app itself.
 
-:::cta{label="Register for summer training" url="#register"}
-:::
+[Register for summer training](#register)
 
 ### Your first day
 

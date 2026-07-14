@@ -45,6 +45,10 @@ html {
    of centering independently at a wider band; this is the container the editor preview frame
    reproduces. */
 .site-main {
+  /* width must be definite, not flex auto-stretch: a fixed-size descendant (the Turnstile
+     iframe) can push an auto-stretched flex item wider than its container, scrolling the
+     whole page sideways on narrow viewports. */
+  width: 100%;
   max-width: var(--container-measure);
   margin: 0 auto;
   padding: var(--spacing-l) var(--spacing-m);

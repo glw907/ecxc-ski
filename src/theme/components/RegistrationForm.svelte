@@ -6,6 +6,12 @@ Waymark token layer as `ContactForm.svelte`: DaisyUI's default-bordered inputs, 
 `<fieldset>`/`<legend>` per logical group, the fields' own `.as(...)` bindings for
 value persistence and per-field `aria-invalid`, and the identical Turnstile widget.
 
+Layout: each fieldset is a quiet card (the same chrome as the submit panel) whose
+fields sit on a 12-column grid. The form stays a single column for flow; only
+logically-related short fields share a row (city/state/ZIP, the phone pair,
+policy/group numbers), and a short field alone on its row is width-matched rather
+than stretched. Below 40rem every field is full width.
+
 Every input's `name` (via the field's own `.as(...)` spread) matches
 `registration/schema.ts`'s posted field names exactly, since that schema is what
 actually validates the POST body server-side.
@@ -101,6 +107,28 @@ the text already being a second, independent channel.
     }
   }
 
+  /**
+   * The id of the control a validation issue names, so the error summary can link to it.
+   * Field names double as input ids throughout the form; the waiver agreement checkboxes are
+   * the one exception (posted as agree_<id>, labeled as agree-<id>). Form-level issues and the
+   * Turnstile token (whose widget has no focusable control) return undefined and render as
+   * plain text.
+   */
+  function issueTargetId(issue: { path?: Array<string | number> }): string | undefined {
+    const key = issue.path?.[0];
+    if (typeof key !== 'string' || key === '' || key === 'turnstileToken') return undefined;
+    return key.startsWith('agree_') ? key.replace('agree_', 'agree-') : key;
+  }
+
+  /** Move focus to a summary link's field, GOV.UK error-summary style. */
+  function focusIssueTarget(event: MouseEvent, id: string) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    event.preventDefault();
+    el.scrollIntoView({ block: 'center' });
+    el.focus({ preventScroll: true });
+  }
+
   let alertEl = $state<HTMLElement | undefined>();
   let successEl = $state<HTMLElement | undefined>();
   let wasPending = $state(false);
@@ -149,12 +177,20 @@ the text already being a second, independent channel.
 
   <div hidden={!!action.result?.success}>
     <h2>Register</h2>
+    <p class="form-note">Fields marked * are required.</p>
 
-    <form {...action} class="flex flex-col gap-l">
+    <form {...action} class="flex flex-col gap-m">
       <div role="alert" class="flex flex-col gap-s" bind:this={alertEl} tabindex="-1">
         {#each issues as issue}
+          {@const target = issueTargetId(issue)}
           <p class="rounded-field border border-error bg-error/10 px-s py-xs text-step--1 text-error">
-            {issue.message}
+            {#if target}
+              <a href="#{target}" class="issue-link" onclick={(event) => focusIssueTarget(event, target)}>
+                {issue.message}
+              </a>
+            {:else}
+              {issue.message}
+            {/if}
           </p>
         {/each}
       </div>
@@ -162,131 +198,154 @@ the text already being a second, independent channel.
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Athlete</legend>
 
-        <label for="athleteFullName">Full name</label>
-        <input
-          id="athleteFullName"
-          class="input w-full"
-          autocomplete="name"
-          required
-          aria-describedby="athleteFullName-error"
-          {...fields.athleteFullName.as('text')}
-        />
-        {@render fieldError('athleteFullName', fields.athleteFullName)}
+        <div class="field f-8">
+          <label for="athleteFullName">Full name</label>
+          <input
+            id="athleteFullName"
+            class="input w-full"
+            autocomplete="name"
+            required
+            aria-describedby="athleteFullName-error"
+            {...fields.athleteFullName.as('text')}
+          />
+          {@render fieldError('athleteFullName', fields.athleteFullName)}
+        </div>
 
-        <label for="athleteDob">Date of birth</label>
-        <input
-          id="athleteDob"
-          class="input w-full"
-          required
-          aria-describedby="athleteDob-error"
-          {...fields.athleteDob.as('date')}
-        />
-        {@render fieldError('athleteDob', fields.athleteDob)}
+        <div class="field f-4">
+          <label for="athleteDob">Date of birth</label>
+          <input
+            id="athleteDob"
+            class="input w-full"
+            required
+            aria-describedby="athleteDob-error"
+            {...fields.athleteDob.as('date')}
+          />
+          {@render fieldError('athleteDob', fields.athleteDob)}
+        </div>
       </fieldset>
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Parent or guardian</legend>
 
-        <label for="parentName">Full name</label>
-        <input
-          id="parentName"
-          class="input w-full"
-          autocomplete="name"
-          required
-          aria-describedby="parentName-error"
-          {...fields.parentName.as('text')}
-        />
-        {@render fieldError('parentName', fields.parentName)}
+        <div class="field f-6">
+          <label for="parentName">Full name</label>
+          <input
+            id="parentName"
+            class="input w-full"
+            autocomplete="name"
+            required
+            aria-describedby="parentName-error"
+            {...fields.parentName.as('text')}
+          />
+          {@render fieldError('parentName', fields.parentName)}
+        </div>
 
-        <label for="parentRelationship">Relationship to athlete</label>
-        <input
-          id="parentRelationship"
-          class="input w-full"
-          placeholder="Mother, father, guardian…"
-          required
-          aria-describedby="parentRelationship-error"
-          {...fields.parentRelationship.as('text')}
-        />
-        {@render fieldError('parentRelationship', fields.parentRelationship)}
+        <div class="field f-6">
+          <label for="parentRelationship">Relationship to athlete</label>
+          <input
+            id="parentRelationship"
+            class="input w-full"
+            placeholder="Mother, father, guardian…"
+            required
+            aria-describedby="parentRelationship-error"
+            {...fields.parentRelationship.as('text')}
+          />
+          {@render fieldError('parentRelationship', fields.parentRelationship)}
+        </div>
 
-        <label for="address">Home address</label>
-        <input
-          id="address"
-          class="input w-full"
-          autocomplete="street-address"
-          required
-          aria-describedby="address-error"
-          {...fields.address.as('text')}
-        />
-        {@render fieldError('address', fields.address)}
+        <div class="field f-8">
+          <label for="address">Home address</label>
+          <input
+            id="address"
+            class="input w-full"
+            autocomplete="street-address"
+            required
+            aria-describedby="address-error"
+            {...fields.address.as('text')}
+          />
+          {@render fieldError('address', fields.address)}
+        </div>
 
-        <label for="city">City</label>
-        <input
-          id="city"
-          class="input w-full"
-          autocomplete="address-level2"
-          required
-          aria-describedby="city-error"
-          {...fields.city.as('text')}
-        />
-        {@render fieldError('city', fields.city)}
+        <div class="field f-6">
+          <label for="city">City</label>
+          <input
+            id="city"
+            class="input w-full"
+            autocomplete="address-level2"
+            required
+            aria-describedby="city-error"
+            {...fields.city.as('text')}
+          />
+          {@render fieldError('city', fields.city)}
+        </div>
 
-        <label for="state">State</label>
-        <input
-          id="state"
-          class="input w-full"
-          autocomplete="address-level1"
-          required
-          aria-describedby="state-error"
-          {...fields.state.as('text')}
-        />
-        {@render fieldError('state', fields.state)}
+        <div class="field f-3">
+          <label for="state">State</label>
+          <input
+            id="state"
+            class="input w-full"
+            autocomplete="address-level1"
+            required
+            aria-describedby="state-error"
+            {...fields.state.as('text')}
+          />
+          {@render fieldError('state', fields.state)}
+        </div>
 
-        <label for="zip">ZIP code</label>
-        <input
-          id="zip"
-          class="input w-full"
-          autocomplete="postal-code"
-          required
-          aria-describedby="zip-error"
-          {...fields.zip.as('text')}
-        />
-        {@render fieldError('zip', fields.zip)}
+        <div class="field f-3">
+          <label for="zip">ZIP code</label>
+          <input
+            id="zip"
+            class="input w-full"
+            autocomplete="postal-code"
+            inputmode="numeric"
+            required
+            aria-describedby="zip-error"
+            {...fields.zip.as('text')}
+          />
+          {@render fieldError('zip', fields.zip)}
+        </div>
 
-        <label for="homePhone">Home phone (optional)</label>
-        <input
-          id="homePhone"
-          type="tel"
-          class="input w-full"
-          autocomplete="tel"
-          aria-describedby="homePhone-error"
-          {...fields.homePhone.as('text')}
-        />
-        {@render fieldError('homePhone', fields.homePhone)}
+        <div class="field f-6">
+          <label for="homePhone">Home phone (optional)</label>
+          <input
+            id="homePhone"
+            type="tel"
+            class="input w-full"
+            autocomplete="home tel"
+            aria-describedby="homePhone-error"
+            {...fields.homePhone.as('text')}
+          />
+          {@render fieldError('homePhone', fields.homePhone)}
+        </div>
 
-        <label for="cellPhone">Cell phone</label>
-        <input
-          id="cellPhone"
-          type="tel"
-          class="input w-full"
-          autocomplete="tel"
-          required
-          aria-describedby="cellPhone-error"
-          {...fields.cellPhone.as('text')}
-        />
-        {@render fieldError('cellPhone', fields.cellPhone)}
+        <div class="field f-6">
+          <label for="cellPhone">Cell phone</label>
+          <input
+            id="cellPhone"
+            type="tel"
+            class="input w-full"
+            autocomplete="mobile tel"
+            required
+            aria-describedby="cellPhone-error"
+            {...fields.cellPhone.as('text')}
+          />
+          {@render fieldError('cellPhone', fields.cellPhone)}
+        </div>
 
-        <label for="parentEmail">Email</label>
-        <input
-          id="parentEmail"
-          type="email"
-          class="input w-full"
-          autocomplete="email"
-          required
-          aria-describedby="parentEmail-error"
-          {...fields.parentEmail.as('text')}
-        />
-        {@render fieldError('parentEmail', fields.parentEmail)}
+        <div class="field f-6">
+          <label for="parentEmail">Email</label>
+          <input
+            id="parentEmail"
+            type="email"
+            class="input w-full"
+            autocomplete="email"
+            required
+            aria-describedby="parentEmail-error"
+            {...fields.parentEmail.as('text')}
+          />
+          {@render fieldError('parentEmail', fields.parentEmail)}
+        </div>
       </fieldset>
 
       <fieldset class="fieldset">
@@ -301,25 +360,29 @@ the text already being a second, independent channel.
           least one of the two.
         </p>
 
-        <label for="athleteEmail">Athlete email</label>
-        <input
-          id="athleteEmail"
-          class="input w-full"
-          autocomplete="email"
-          aria-describedby="athleteEmail-error crewlabAthleteHelp"
-          {...fields.athleteEmail.as('email')}
-        />
-        {@render fieldError('athleteEmail', fields.athleteEmail)}
+        <div class="field f-6">
+          <label for="athleteEmail">Athlete email</label>
+          <input
+            id="athleteEmail"
+            class="input w-full"
+            autocomplete="email"
+            aria-describedby="athleteEmail-error crewlabAthleteHelp"
+            {...fields.athleteEmail.as('email')}
+          />
+          {@render fieldError('athleteEmail', fields.athleteEmail)}
+        </div>
 
-        <label for="athleteCell">Athlete cell phone</label>
-        <input
-          id="athleteCell"
-          class="input w-full"
-          autocomplete="tel"
-          aria-describedby="athleteCell-error crewlabAthleteHelp"
-          {...fields.athleteCell.as('tel')}
-        />
-        {@render fieldError('athleteCell', fields.athleteCell)}
+        <div class="field f-6">
+          <label for="athleteCell">Athlete cell phone</label>
+          <input
+            id="athleteCell"
+            class="input w-full"
+            autocomplete="tel"
+            aria-describedby="athleteCell-error crewlabAthleteHelp"
+            {...fields.athleteCell.as('tel')}
+          />
+          {@render fieldError('athleteCell', fields.athleteCell)}
+        </div>
 
         <label class="crewlab-consent" for="parentCrewlabInvite">
           <input
@@ -340,182 +403,217 @@ the text already being a second, independent channel.
           Another parent or guardian who should get their own invite? Optional.
         </p>
 
-        <label for="secondParentName">Second parent or guardian name</label>
-        <input
-          id="secondParentName"
-          class="input w-full"
-          autocomplete="name"
-          aria-describedby="secondParentName-error secondParentHelp"
-          {...fields.secondParentName.as('text')}
-        />
-        {@render fieldError('secondParentName', fields.secondParentName)}
+        <div class="field f-6">
+          <label for="secondParentName">Second parent or guardian name</label>
+          <input
+            id="secondParentName"
+            class="input w-full"
+            autocomplete="name"
+            aria-describedby="secondParentName-error secondParentHelp"
+            {...fields.secondParentName.as('text')}
+          />
+          {@render fieldError('secondParentName', fields.secondParentName)}
+        </div>
 
-        <label for="secondParentEmail">Second parent or guardian email</label>
-        <input
-          id="secondParentEmail"
-          class="input w-full"
-          autocomplete="email"
-          aria-describedby="secondParentEmail-error secondParentHelp"
-          {...fields.secondParentEmail.as('email')}
-        />
-        {@render fieldError('secondParentEmail', fields.secondParentEmail)}
+        <div class="field f-6">
+          <label for="secondParentEmail">Second parent or guardian email</label>
+          <input
+            id="secondParentEmail"
+            class="input w-full"
+            autocomplete="email"
+            aria-describedby="secondParentEmail-error secondParentHelp"
+            {...fields.secondParentEmail.as('email')}
+          />
+          {@render fieldError('secondParentEmail', fields.secondParentEmail)}
+        </div>
       </fieldset>
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Emergency contact</legend>
 
-        <label for="emergencyName">Full name</label>
-        <input
-          id="emergencyName"
-          class="input w-full"
-          required
-          aria-describedby="emergencyName-error"
-          {...fields.emergencyName.as('text')}
-        />
-        {@render fieldError('emergencyName', fields.emergencyName)}
+        <div class="field f-6">
+          <label for="emergencyName">Full name</label>
+          <input
+            id="emergencyName"
+            class="input w-full"
+            required
+            aria-describedby="emergencyName-error"
+            {...fields.emergencyName.as('text')}
+          />
+          {@render fieldError('emergencyName', fields.emergencyName)}
+        </div>
 
-        <label for="emergencyRelationship">Relationship to athlete</label>
-        <input
-          id="emergencyRelationship"
-          class="input w-full"
-          required
-          aria-describedby="emergencyRelationship-error"
-          {...fields.emergencyRelationship.as('text')}
-        />
-        {@render fieldError('emergencyRelationship', fields.emergencyRelationship)}
+        <div class="field f-6">
+          <label for="emergencyRelationship">Relationship to athlete</label>
+          <input
+            id="emergencyRelationship"
+            class="input w-full"
+            required
+            aria-describedby="emergencyRelationship-error"
+            {...fields.emergencyRelationship.as('text')}
+          />
+          {@render fieldError('emergencyRelationship', fields.emergencyRelationship)}
+        </div>
 
-        <label for="emergencyPhone">Phone</label>
-        <input
-          id="emergencyPhone"
-          type="tel"
-          class="input w-full"
-          required
-          aria-describedby="emergencyPhone-error"
-          {...fields.emergencyPhone.as('text')}
-        />
-        {@render fieldError('emergencyPhone', fields.emergencyPhone)}
+        <div class="field f-6">
+          <label for="emergencyPhone">Phone</label>
+          <input
+            id="emergencyPhone"
+            type="tel"
+            class="input w-full"
+            required
+            aria-describedby="emergencyPhone-error"
+            {...fields.emergencyPhone.as('text')}
+          />
+          {@render fieldError('emergencyPhone', fields.emergencyPhone)}
+        </div>
 
-        <label for="emergencyEmail">Email (optional)</label>
-        <input
-          id="emergencyEmail"
-          type="email"
-          class="input w-full"
-          aria-describedby="emergencyEmail-error"
-          {...fields.emergencyEmail.as('text')}
-        />
-        {@render fieldError('emergencyEmail', fields.emergencyEmail)}
+        <div class="field f-6">
+          <label for="emergencyEmail">Email (optional)</label>
+          <input
+            id="emergencyEmail"
+            type="email"
+            class="input w-full"
+            aria-describedby="emergencyEmail-error"
+            {...fields.emergencyEmail.as('text')}
+          />
+          {@render fieldError('emergencyEmail', fields.emergencyEmail)}
+        </div>
       </fieldset>
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Insurance & physician</legend>
 
-        <label for="insuranceProvider">Health insurance provider</label>
-        <input
-          id="insuranceProvider"
-          class="input w-full"
-          required
-          aria-describedby="insuranceProvider-error"
-          {...fields.insuranceProvider.as('text')}
-        />
-        {@render fieldError('insuranceProvider', fields.insuranceProvider)}
+        <div class="field f-6">
+          <label for="insuranceProvider">Health insurance provider</label>
+          <input
+            id="insuranceProvider"
+            class="input w-full"
+            required
+            aria-describedby="insuranceProvider-error"
+            {...fields.insuranceProvider.as('text')}
+          />
+          {@render fieldError('insuranceProvider', fields.insuranceProvider)}
+        </div>
 
-        <label for="policyNumber">Policy number</label>
-        <input
-          id="policyNumber"
-          class="input w-full"
-          required
-          aria-describedby="policyNumber-error"
-          {...fields.policyNumber.as('text')}
-        />
-        {@render fieldError('policyNumber', fields.policyNumber)}
+        <div class="field f-3">
+          <label for="policyNumber">Policy number</label>
+          <input
+            id="policyNumber"
+            class="input w-full"
+            required
+            aria-describedby="policyNumber-error"
+            {...fields.policyNumber.as('text')}
+          />
+          {@render fieldError('policyNumber', fields.policyNumber)}
+        </div>
 
-        <label for="groupNumber">Group number (optional)</label>
-        <input
-          id="groupNumber"
-          class="input w-full"
-          aria-describedby="groupNumber-error"
-          {...fields.groupNumber.as('text')}
-        />
-        {@render fieldError('groupNumber', fields.groupNumber)}
+        <div class="field f-3">
+          <label for="groupNumber">Group number (optional)</label>
+          <input
+            id="groupNumber"
+            class="input w-full"
+            aria-describedby="groupNumber-error"
+            {...fields.groupNumber.as('text')}
+          />
+          {@render fieldError('groupNumber', fields.groupNumber)}
+        </div>
 
-        <label for="physicianName">Physician name (optional)</label>
-        <input
-          id="physicianName"
-          class="input w-full"
-          aria-describedby="physicianName-error"
-          {...fields.physicianName.as('text')}
-        />
-        {@render fieldError('physicianName', fields.physicianName)}
+        <div class="field f-6">
+          <label for="physicianName">Physician name (optional)</label>
+          <input
+            id="physicianName"
+            class="input w-full"
+            aria-describedby="physicianName-error"
+            {...fields.physicianName.as('text')}
+          />
+          {@render fieldError('physicianName', fields.physicianName)}
+        </div>
 
-        <label for="physicianPhone">Physician phone (optional)</label>
-        <input
-          id="physicianPhone"
-          type="tel"
-          class="input w-full"
-          aria-describedby="physicianPhone-error"
-          {...fields.physicianPhone.as('text')}
-        />
-        {@render fieldError('physicianPhone', fields.physicianPhone)}
+        <div class="field f-6">
+          <label for="physicianPhone">Physician phone (optional)</label>
+          <input
+            id="physicianPhone"
+            type="tel"
+            class="input w-full"
+            aria-describedby="physicianPhone-error"
+            {...fields.physicianPhone.as('text')}
+          />
+          {@render fieldError('physicianPhone', fields.physicianPhone)}
+        </div>
       </fieldset>
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Medical</legend>
 
-        <label for="medications">Current medications</label>
-        <textarea
-          id="medications"
-          class="textarea w-full"
-          placeholder="None"
-          required
-          aria-describedby="medications-error"
-          {...fields.medications.as('text')}
-        ></textarea>
-        {@render fieldError('medications', fields.medications)}
+        <div class="field f-4">
+          <label for="medications">Current medications</label>
+          <textarea
+            id="medications"
+            class="textarea w-full"
+            rows="2"
+            placeholder="None"
+            required
+            aria-describedby="medications-error"
+            {...fields.medications.as('text')}
+          ></textarea>
+          {@render fieldError('medications', fields.medications)}
+        </div>
 
-        <label for="allergies">Allergies</label>
-        <textarea
-          id="allergies"
-          class="textarea w-full"
-          placeholder="None"
-          required
-          aria-describedby="allergies-error"
-          {...fields.allergies.as('text')}
-        ></textarea>
-        {@render fieldError('allergies', fields.allergies)}
+        <div class="field f-4">
+          <label for="allergies">Allergies</label>
+          <textarea
+            id="allergies"
+            class="textarea w-full"
+            rows="2"
+            placeholder="None"
+            required
+            aria-describedby="allergies-error"
+            {...fields.allergies.as('text')}
+          ></textarea>
+          {@render fieldError('allergies', fields.allergies)}
+        </div>
 
-        <label for="conditions">Relevant medical conditions</label>
-        <textarea
-          id="conditions"
-          class="textarea w-full"
-          placeholder="None"
-          required
-          aria-describedby="conditions-error"
-          {...fields.conditions.as('text')}
-        ></textarea>
-        {@render fieldError('conditions', fields.conditions)}
+        <div class="field f-4">
+          <label for="conditions">Relevant medical conditions</label>
+          <textarea
+            id="conditions"
+            class="textarea w-full"
+            rows="2"
+            placeholder="None"
+            required
+            aria-describedby="conditions-error"
+            {...fields.conditions.as('text')}
+          ></textarea>
+          {@render fieldError('conditions', fields.conditions)}
+        </div>
 
-        <label for="tetanus">Last tetanus shot (optional)</label>
-        <input
-          id="tetanus"
-          class="input w-full"
-          aria-describedby="tetanus-error"
-          {...fields.tetanus.as('date')}
-        />
-        {@render fieldError('tetanus', fields.tetanus)}
+        <div class="field f-4">
+          <label for="tetanus">Last tetanus shot (optional)</label>
+          <input
+            id="tetanus"
+            class="input w-full"
+            aria-describedby="tetanus-error"
+            {...fields.tetanus.as('date')}
+          />
+          {@render fieldError('tetanus', fields.tetanus)}
+        </div>
       </fieldset>
 
       {#if variant === 'camp'}
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Camp logistics</legend>
 
-          <label for="dietary">Dietary needs (optional)</label>
-          <input
-            id="dietary"
-            class="input w-full"
-            aria-describedby="dietary-error"
-            {...registerCamp.fields.dietary.as('text')}
-          />
-          {@render fieldError('dietary', registerCamp.fields.dietary)}
+          <div class="field f-6">
+            <label for="dietary">Dietary needs (optional)</label>
+            <input
+              id="dietary"
+              class="input w-full"
+              aria-describedby="dietary-error"
+              {...registerCamp.fields.dietary.as('text')}
+            />
+            {@render fieldError('dietary', registerCamp.fields.dietary)}
+          </div>
 
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Carpool</legend>
@@ -560,7 +658,7 @@ the text already being a second, independent channel.
                relevant AND drops it out of submission validation when it is not, with no risk
                of an invisible required field blocking a "needs a ride" or "driving ourselves"
                submission. -->
-          <div class="carpool-seats" hidden={carpoolChoice !== 'can-drive'}>
+          <div class="field f-4" hidden={carpoolChoice !== 'can-drive'}>
             <label for="carpoolSeats">Spare seats available</label>
             <input
               id="carpoolSeats"
@@ -574,14 +672,17 @@ the text already being a second, independent channel.
             {@render fieldError('carpoolSeats', registerCamp.fields.carpoolSeats)}
           </div>
 
-          <label for="gearNotes">Gear notes (optional)</label>
-          <textarea
-            id="gearNotes"
-            class="textarea w-full"
-            aria-describedby="gearNotes-error"
-            {...registerCamp.fields.gearNotes.as('text')}
-          ></textarea>
-          {@render fieldError('gearNotes', registerCamp.fields.gearNotes)}
+          <div class="field">
+            <label for="gearNotes">Gear notes (optional)</label>
+            <textarea
+              id="gearNotes"
+              class="textarea w-full"
+              rows="2"
+              aria-describedby="gearNotes-error"
+              {...registerCamp.fields.gearNotes.as('text')}
+            ></textarea>
+            {@render fieldError('gearNotes', registerCamp.fields.gearNotes)}
+          </div>
         </fieldset>
       {/if}
 
@@ -619,47 +720,51 @@ the text already being a second, independent channel.
           If the athlete is 18 or older, they sign for themselves and the parent signature is optional.
         </p>
 
-        <label for="athleteSignature">Athlete signature (type your full name)</label>
-        <input
-          id="athleteSignature"
-          class="input w-full"
-          required
-          aria-describedby="athleteSignature-error"
-          {...fields.athleteSignature.as('text')}
-        />
-        {@render fieldError('athleteSignature', fields.athleteSignature)}
-
-        <label class="signature-consent" for="athleteConsent">
+        <div class="field f-6">
+          <label for="athleteSignature">Athlete signature (type your full name)</label>
           <input
-            id="athleteConsent"
-            class="checkbox"
+            id="athleteSignature"
+            class="input w-full"
             required
-            aria-describedby="athleteConsent-error"
-            {...fields.athleteConsent.as('checkbox')}
+            aria-describedby="athleteSignature-error"
+            {...fields.athleteSignature.as('text')}
           />
-          I agree that typing my name here is my electronic signature.
-        </label>
-        {@render fieldError('athleteConsent', fields.athleteConsent)}
+          {@render fieldError('athleteSignature', fields.athleteSignature)}
 
-        <label for="parentSignature">Parent or guardian signature (type your full name)</label>
-        <input
-          id="parentSignature"
-          class="input w-full"
-          aria-describedby="parentSignature-error"
-          {...fields.parentSignature.as('text')}
-        />
-        {@render fieldError('parentSignature', fields.parentSignature)}
+          <label class="signature-consent" for="athleteConsent">
+            <input
+              id="athleteConsent"
+              class="checkbox"
+              required
+              aria-describedby="athleteConsent-error"
+              {...fields.athleteConsent.as('checkbox')}
+            />
+            I agree that typing my name here is my electronic signature.
+          </label>
+          {@render fieldError('athleteConsent', fields.athleteConsent)}
+        </div>
 
-        <label class="signature-consent" for="parentConsent">
+        <div class="field f-6">
+          <label for="parentSignature">Parent or guardian signature (type your full name)</label>
           <input
-            id="parentConsent"
-            class="checkbox"
-            aria-describedby="parentConsent-error"
-            {...fields.parentConsent.as('checkbox')}
+            id="parentSignature"
+            class="input w-full"
+            aria-describedby="parentSignature-error"
+            {...fields.parentSignature.as('text')}
           />
-          I agree that typing my name here is my electronic signature.
-        </label>
-        {@render fieldError('parentConsent', fields.parentConsent)}
+          {@render fieldError('parentSignature', fields.parentSignature)}
+
+          <label class="signature-consent" for="parentConsent">
+            <input
+              id="parentConsent"
+              class="checkbox"
+              aria-describedby="parentConsent-error"
+              {...fields.parentConsent.as('checkbox')}
+            />
+            I agree that typing my name here is my electronic signature.
+          </label>
+          {@render fieldError('parentConsent', fields.parentConsent)}
+        </div>
       </fieldset>
 
       <div class="registration-submit">
@@ -690,6 +795,18 @@ the text already being a second, independent channel.
 </section>
 
 <style>
+  /* The form's own headings sit outside any .prose wrapper, so they restate the site's
+     prose-h2 treatment; without this they render at plain body scale and read as a stray
+     word rather than the section title. */
+  .registration-form h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-step-3);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--spacing-m);
+  }
+
   .registration-form :global(.fieldset-legend) {
     font-family: var(--font-display);
     font-size: var(--text-step--1);
@@ -699,29 +816,128 @@ the text already being a second, independent channel.
     color: var(--color-muted);
   }
 
-  .registration-form label:not(.carpool-option):not(.release-option):not(.signature-consent) {
+  /* Each field group is a quiet card on the same chrome as the submit and success panels,
+     so the form reads as a composed sequence rather than loose fields. Inside, fields sit
+     on a 12-column grid; the `.f-*` spans below place logically-related short fields on a
+     shared row, and everything collapses to full width under 40rem. */
+  .registration-form fieldset.fieldset {
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--spacing-s);
+    background: var(--color-base-100);
+    border: var(--border) solid var(--color-card-border);
+    border-radius: var(--radius-box);
+    padding: var(--spacing-m);
+    padding-block-start: var(--spacing-xs);
+    box-shadow: var(--cairn-shadow);
+  }
+  .registration-form fieldset.fieldset > * {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  /* The nested carpool group stays flat: a card inside a card reads as double chrome. Its
+     legend takes a subordinate cut (sentence case, one weight down) so it reads one level
+     below its parent card's legend rather than as a sibling group. */
+  .registration-form fieldset.fieldset fieldset.fieldset {
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    row-gap: var(--spacing-2xs);
+  }
+  .registration-form fieldset.fieldset fieldset.fieldset .fieldset-legend {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+  }
+  @media (min-width: 40rem) {
+    .registration-form fieldset.fieldset > .f-8 {
+      grid-column: span 8;
+    }
+    .registration-form fieldset.fieldset > .f-6 {
+      grid-column: span 6;
+    }
+    .registration-form fieldset.fieldset > .f-4 {
+      grid-column: span 4;
+    }
+    .registration-form fieldset.fieldset > .f-3 {
+      grid-column: span 3;
+    }
+  }
+
+  /* Bottom-justified so a row's inputs stay aligned when one neighbor's label wraps to a
+     second line (the label hugs its own input; slack collects above it). */
+  .field {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  /* An author display beats the UA's [hidden] rule, so the carpool-seats reveal needs the
+     hidden state restated. */
+  .field[hidden] {
+    display: none;
+  }
+  /* Labels read as controls, not prose: the display face at a hair under step--1 (a
+     proportional cut off the token, so it rides the fluid scale) separates them from the
+     body-face help text and option sentences around them. */
+  .field > label {
     display: block;
-    margin-top: var(--spacing-s);
-    font-size: var(--text-step--1);
+    margin-block-end: var(--spacing-3xs);
+    font-family: var(--font-display);
+    font-size: calc(var(--text-step--1) * 0.92);
+    font-weight: 600;
     color: var(--color-base-content);
   }
 
-  .carpool-option,
-  .release-option,
-  .signature-consent,
-  .crewlab-consent {
+  .registration-form .carpool-option,
+  .registration-form .release-option,
+  .registration-form .signature-consent,
+  .registration-form .crewlab-consent {
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
-    margin-top: var(--spacing-s);
     font-size: var(--text-step--1);
+  }
+  .field .signature-consent {
+    margin-block-start: var(--spacing-2xs);
   }
 
   .signature-help,
-  .fieldset-help {
+  .fieldset-help,
+  .form-note {
     font-size: var(--text-step--1);
     color: var(--color-muted);
+  }
+  .form-note {
     margin: 0 0 var(--spacing-s);
+  }
+
+  /* Required marking derives from the input's own required attribute, so an asterisk can
+     never drift from what the schema actually enforces (the conditional carpool-seats field
+     gains and loses its mark with its required state). Scoped to the first label so a
+     signature block's consent checkbox label stays unmarked. */
+  .field:has(> :is(input, textarea)[required]) > label:first-child::after {
+    content: ' *';
+    color: var(--color-muted);
+  }
+
+  /* Summary errors link to their fields (the GOV.UK error-summary pattern); error ink is
+     inherited so the pill stays one color, the underline carries the affordance. */
+  .issue-link {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  /* Form controls join the site's fireweed focus vocabulary (prose.css's own link ring is
+     2px --color-primary); DaisyUI's default ring is base-content, a one-off gray here. */
+  .registration-form :is(input, textarea):focus-visible {
+    outline-color: var(--color-primary);
+  }
+
+  /* DaisyUI's .textarea floor (min-height: 5rem) defeats the rows attribute; releasing it
+     lets the two-row medical and gear fields sit at their declared height. */
+  .registration-form textarea.textarea {
+    min-height: 0;
   }
 
   /* A field's error text is the primary, non-color-only signal; this border/outline change is
@@ -746,7 +962,7 @@ the text already being a second, independent channel.
   /* The `role="alert"` summary is always mounted (see the @component note above), but with no
      issues it holds only Svelte's own each-block anchor comments; `:empty` still matches (per
      the CSS spec, comment nodes don't count), so this keeps a clean submission from showing a
-     blank gap where the summary would otherwise reserve `gap-l` flex spacing for nothing. */
+     blank gap where the summary would otherwise reserve flex spacing for nothing. */
   .registration-form [role='alert']:empty {
     display: none;
   }
@@ -761,6 +977,9 @@ the text already being a second, independent channel.
     border-radius: var(--radius-box);
     padding: var(--spacing-m);
     box-shadow: var(--cairn-shadow);
+    /* The Turnstile iframe is a fixed 300px that cannot shrink; under ~350px viewports it
+       scrolls inside this card rather than scrolling the whole page sideways. */
+    overflow-x: auto;
   }
 
   .registration-success {

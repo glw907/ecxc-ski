@@ -25,6 +25,26 @@
 
 ## Medium
 
+- [ ] **#37** Finish the Resend cutover: verify ecxc.ski in Resend, put the secret, live e2e, drop the CF path `#improvement` `#ecxc` *(2026-07-14)*
+  The 2026-07-14 morning outage (Cloudflare Email Service's account daily sending quota, hit at
+  ~15 total sends because a new sending account starts with a tiny reputation-based cap) drove a
+  transitional dual-transport email layer: every send path (registration record/parent/coach,
+  contact + Amy copy, cairn magic links) prefers Resend when the `RESEND_API_KEY` Worker secret
+  exists and falls back to the CF bindings when it does not. Blocked on the Resend side: the free
+  plan's one domain slot holds aksailingclub.org (Geoff investigating; a separate free Resend
+  account for ecxc would also isolate sending reputation). To close: add ecxc.ski in Resend, add
+  its DKIM/SPF DNS records to the zone, verify, `secret-set.sh`/`sync.sh --worker ecxc` the key
+  per the workstation flow, run the live e2e runbook (`docs/registration-e2e.md`), then strip the
+  CF fallback and the two `[[send_email]]` bindings in a cleanup pass (#35 dies with them).
+- [ ] **#38** Reset the Turnstile widget after a failed submission `#bug` `#ecxc` *(2026-07-14)*
+  A Turnstile token is single-use: when a submission fails server-side after `siteverify` has
+  consumed the token (the 2026-07-14 case: the record email failed on the mail quota), every
+  retry posts the spent token and dies on "Spam check failed. Please try again." until the
+  member reloads. One member burned ~an hour in this loop, appending four duplicate roster rows.
+  On a failed remote-form result, call `turnstile.reset()` (both registration forms + contact)
+  so the retry mints a fresh token. Consider pairing with a quota-aware failure message so a
+  mail-outage rejection stops inviting immediate identical retries.
+
 - [ ] **#33** Rate-limit the registration endpoints' parent-copy send `#improvement` `#ecxc` *(2026-07-13)*
   The camp/training registration forms email a confirmation to the parent address from the form (the unrestricted `EMAIL` binding), so one solved Turnstile challenge sends one attacker-shaped email from noreply@ecxc.ski to an arbitrary address. Mitigations already in place: Turnstile fails closed, and every send lands the full record in CONTACT_EMAIL, so abuse is visible. Add a per-IP or per-address rate limit (KV or DO) if volume or abuse ever warrants. Security review of the registration-forms pass, 2026-07-13.
 

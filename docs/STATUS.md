@@ -20,7 +20,18 @@ the corrected checklist scale) hold on the deployed site at 1440.
 
 ### Next up
 
-**No queued initiative.** What remains is Geoff's own, from the pre-publish checklist below
+**Email cutover to Resend (backlog #37), blocked on the Resend domain slot.** The 2026-07-14
+morning mail outage (below) drove a transitional dual-transport layer, deployed: every send
+prefers Resend once the `RESEND_API_KEY` Worker secret exists, and runs the old Cloudflare
+bindings until then. Geoff is resolving the Resend side (the free plan's one domain slot holds
+aksailingclub.org). Then: add ecxc.ski in Resend, add its DNS records, verify,
+`sync.sh --worker ecxc` the key, live e2e per `docs/registration-e2e.md`, and a cleanup pass
+drops the CF path (#35 dies with it). Also open: #38 (Turnstile widget reset after a failed
+submission, the bug that amplified the outage into a member-visible retry loop), and a one-off
+parent-copy resend to the 2026-07-14 camp registrant is armed to fire as soon as any transport
+accepts it.
+
+What else remains is Geoff's own, from the pre-publish checklist below
 (#22 closed 2026-07-13: Geoff revoked the old public join link the day the invite-only flow
 shipped):
 
@@ -43,6 +54,24 @@ summaries now ride that tier.)
 ---
 
 ## History
+
+- **Mail-quota outage + dual-transport email layer (2026-07-14), SHIPPED.** Cloudflare Email
+  Service's account-level daily sending quota (reputation-based, tiny for a sending account this
+  new) exhausted at roughly fifteen total sends and blocked the must-succeed registration record
+  email from 05:27 to ~07:20 AK; a camp registrant's first submission failed, her Turnstile-token
+  retries then died on "Spam check failed" (the spent-token loop, now #38), and four duplicate
+  roster rows appended before her 07:20 attempt succeeded with soft-failed parent/coach copies.
+  Diagnosed from Workers Logs (`account daily sending quota exceeded` on every failure) and the
+  roster sheet; duplicates deleted (timestamp-matched, keeper verified); the parent copy is armed
+  to resend automatically once a transport accepts it. Response: a transitional dual-transport
+  layer (`src/theme/email-transport.ts`, commit `00fbdc7`) behind every send seam — registration
+  record/parent/coach, contact + Amy's copy, cairn magic links (`createCairnAdmin`'s
+  `auth.send`) — preferring Resend when `RESEND_API_KEY` is set, falling back to the existing
+  bindings otherwise, so the cutover is one secret-put with no deploy. Gate green (check 0/0,
+  147 tests, build). Blocked on the Resend domain slot (#37; the free plan's single slot holds
+  aksailingclub.org, Geoff investigating). Engine note: cairn-cms exports the `SendMagicLink`
+  types but not `cloudflareSend` itself, so the fallback replicates that one-liner; worth a
+  cairn export request if a second site repeats this.
 
 - **Registration-forms design refinement + font fix + coach copy (2026-07-13), SHIPPED.**
   A live exploratory arc (the `design-refinement` skill's iterate-with-owner mode, ~11 kept

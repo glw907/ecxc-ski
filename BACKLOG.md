@@ -25,23 +25,6 @@
 
 ## Medium
 
-- [ ] **#37** Strip the CF email fallback now the Resend cutover is live `#improvement` `#ecxc` *(2026-07-14, cutover done 2026-07-14)*
-  The cutover itself is DONE and live-proven (see STATUS 2026-07-14): ecxc.ski verified in
-  Resend (auto-configured DNS), `RESEND_API_KEY` on the Worker via `sync.sh --worker ecxc`,
-  camp e2e SUCCESS twice with SHEET VERIFY PASS and zero send errors, the missed parent copy
-  resent and `delivered`. What remains is the cleanup pass: strip the CF fallback branches from
-  `src/theme/email-transport.ts`/`buildDeps`/contact/magic-link seams, drop both
-  `[[send_email]]` bindings from wrangler.toml, and close #35 with it (that binding gap dies
-  with the binding). Keep `mimetext` only if anything still needs it (nothing should).
-- [ ] **#38** Reset the Turnstile widget after a failed submission `#bug` `#ecxc` *(2026-07-14)*
-  A Turnstile token is single-use: when a submission fails server-side after `siteverify` has
-  consumed the token (the 2026-07-14 case: the record email failed on the mail quota), every
-  retry posts the spent token and dies on "Spam check failed. Please try again." until the
-  member reloads. One member burned ~an hour in this loop, appending four duplicate roster rows.
-  On a failed remote-form result, call `turnstile.reset()` (both registration forms + contact)
-  so the retry mints a fresh token. Consider pairing with a quota-aware failure message so a
-  mail-outage rejection stops inviting immediate identical retries.
-
 - [ ] **#33** Rate-limit the registration endpoints' parent-copy send `#improvement` `#ecxc` *(2026-07-13)*
   The camp/training registration forms email a confirmation to the parent address from the form (the unrestricted `EMAIL` binding), so one solved Turnstile challenge sends one attacker-shaped email from noreply@ecxc.ski to an arbitrary address. Mitigations already in place: Turnstile fails closed, and every send lands the full record in CONTACT_EMAIL, so abuse is visible. Add a per-IP or per-address rate limit (KV or DO) if volume or abuse ever warrants. Security review of the registration-forms pass, 2026-07-13.
 
@@ -49,14 +32,26 @@
 
 - [ ] **#34** Registration-roster export hygiene: CSV formula-injection note `#improvement` `#ecxc` *(2026-07-13)*
   The live Sheet is safe (the Worker appends with `valueInputOption=RAW`, so `=`/`+`/`-`/`@` values store as literal text), but an exported CSV reopened in Excel/Sheets can evaluate a leading formula character. Either prefix risky cells with `'` at export time or just don't re-import exports. Security review, 2026-07-13.
-- [ ] **#35** `SEND_EMAIL` lacks `remote = true`, so `wrangler dev` cannot exercise the record email `#improvement` `#ecxc` *(2026-07-13)*
-  The registration pipeline's must-succeed record email simulates locally while the soft parent copy (`EMAIL`, `remote = true`) sends real mail, the inverse of production's trust model. Add `remote = true` to `SEND_EMAIL` when local testing of the critical path matters. Workers review, 2026-07-13.
 - [ ] **#27** Give 907.life the shared web-content method routing `#improvement` `#ecxc` *(2026-06-06)*
   Add a `docs/content-guide.md` and a `.claude/rules/content.md` to the 907.life repo that point at the same shared web-content method (`~/.claude/docs/web-content-method.md`), so the second site gets the same `content-draft`/`content-review` routing by copying two small local files. The method, the two skills, and the widened `prose-guard` lexicon already live in the dotfiles, so 907.life needs only its own voice guide plus the router rule. This is the spec's out-of-scope item "A 907.life content-guide.md that points at the same shared method."
 - [ ] **#19** Defer the `roster` directive until real coach photos exist `#improvement` `#ecxc` *(2026-06-04, path updated 2026-07-13)*
   A `roster` directive (a grid of coach or volunteer headshot cards) waits on real photos. The Volunteers & Coaches page uses the existing `split`/`panel` directives for the bios in the meantime, so the page ships without the roster grid. Add `roster` to the registry (`src/theme/markdown/components.ts`) and convert the Volunteers bios to it once headshots are in hand.
 ## Done
 
+- [x] **#37** Strip the CF email fallback now the Resend cutover is live `#improvement` `#ecxc` *(2026-07-14 → 2026-07-14)*
+  Cutover live-proven same day (STATUS 2026-07-14: e2e SUCCESS twice, SHEET VERIFY PASS, zero
+  send errors), then the cleanup landed: `email-transport.ts` is Resend-only, both
+  `[[send_email]]` bindings gone from wrangler.toml, `mimetext` and the `cloudflare:email`
+  vite externals dropped, `magicLinkSender` fails closed without `RESEND_API_KEY`.
+- [x] **#38** Reset the Turnstile widget after a failed submission `#bug` `#ecxc` *(2026-07-14 → 2026-07-14)*
+  Both registration forms and the contact form now call `window.turnstile?.reset()` on the
+  pending-to-failed transition (the forms' existing `$effect` pattern; ambient type in
+  `src/theme/turnstile.d.ts`), so a retry after any server-side rejection mints a fresh token
+  instead of dying on "Spam check failed" with the spent one (the 2026-07-14 outage's
+  member-visible loop).
+- [x] **#35** `SEND_EMAIL` lacks `remote = true`, so `wrangler dev` cannot exercise the record email `#improvement` `#ecxc` *(2026-07-13 → 2026-07-14)*
+  Died with the binding: the Resend cutover cleanup (#37) removed `SEND_EMAIL` entirely; the
+  record email now rides the Resend HTTP API, which `wrangler dev` exercises like any fetch.
 - [x] **#22** Pre-publish: revoke the old CrewLAB join link; confirm donation collection `#improvement` `#ecxc` *(2026-06-04 → 2026-07-13)*
   Both halves closed the day the invite-only flow shipped: Geoff revoked the old public deep link (`crewlab.app.link/5g7vhhYEn3b`; it no longer admits anyone), and #21's answer confirmed the donations question (camp cost-share + donations run through the app).
 

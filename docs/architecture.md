@@ -105,9 +105,9 @@ the corpus at build time and fails the build on drift.
 `/contact` is the only non-prerendered public route. `src/theme/contact.remote.ts` exports
 `sendMessage = form(schema, handler)`, a SvelteKit remote function (`svelte.config.js` opts into
 `experimental.remoteFunctions`). The Valibot schema validates name/email/message plus the Turnstile
-token; the handler verifies Turnstile, builds a MIME message with `mimetext`, and sends through the
-`SEND_EMAIL` binding (Cloudflare Email Routing's send-to-verified-destination mechanism, distinct
-from cairn's own unrestricted `EMAIL` binding). Secrets: `TURNSTILE_SECRET_KEY`, `CONTACT_EMAIL`.
+token; the handler verifies Turnstile and sends through the Resend API
+(`src/theme/email-transport.ts`, the site's one outbound-mail transport since the 2026-07-14
+cutover). Secrets: `TURNSTILE_SECRET_KEY`, `CONTACT_EMAIL`, `RESEND_API_KEY`.
 
 ---
 

@@ -27,10 +27,11 @@ updated in dotfiles), and all outbound ecxc mail now rides Resend. Live-proven: 
 twice against production, `RESULT: SUCCESS` + `SHEET VERIFY: PASS` both times, zero Worker send
 errors in the window (the CF path was still quota-dead, so success itself proves the transport),
 test rows deleted, Turnstile secret rotated back. The 2026-07-14 registrant's missed parent copy
-was resent through Resend and confirmed `delivered`. Residue: the cleanup pass that strips the
-CF fallback + both `[[send_email]]` bindings (#37, #35 dies with it), and #38 (Turnstile widget
-reset after a failed submission, the bug that amplified the outage into a member-visible retry
-loop).
+was resent through Resend and confirmed `delivered`. The residue closed the same day: the
+cleanup pass stripped the CF fallback and both `[[send_email]]` bindings (#37 done, #35 died
+with the binding, `mimetext` and the `cloudflare:email` vite externals dropped), and both forms
+plus contact now reset the Turnstile widget on a failed submission so a retry mints a fresh
+token (#38 done; the spent-token loop from the outage cannot recur).
 
 What else remains is Geoff's own, from the pre-publish checklist below
 (#22 closed 2026-07-13: Geoff revoked the old public join link the day the invite-only flow

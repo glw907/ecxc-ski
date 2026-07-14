@@ -105,6 +105,6 @@ export const cairn = defineAdapter({
     nav: { configPath: 'src/theme/site.config.yaml', menuName: 'primary', label: 'Navigation', maxDepth: 2 },
     // The preview knob: the (site) layout renders entries inside <main class="site-main">
     // (site.css), so the frame links the same theme/site sheets and reproduces that container.
-    preview: { stylesheets: [themeCss, siteCss], containerClass: 'site-main' },
+    preview: { stylesheets: [themeCss, siteCss], containerClass: 'site-main prose' },
   },
 });

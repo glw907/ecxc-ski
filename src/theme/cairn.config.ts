@@ -48,7 +48,12 @@ export const cairn = defineAdapter({
       fields: fieldset({
         title: fields.text({ label: 'Title', required: true }),
         date: fields.date({ label: 'Date' }),
-        description: fields.textarea({ label: 'Description', required: true }),
+        // Optional on purpose: post lists and feeds fall back to a body excerpt when it is
+        // blank, and requiring it blocked saves for authors who took it to mean the post body.
+        description: fields.textarea({
+          label: 'Summary',
+          help: 'One or two sentences shown in post lists and feeds. Leave blank to use the opening of the post.',
+        }),
         // The taxonomy marker: a closed, vocabulary-sourced picker sourced from site.config.yaml's
         // committed `vocabulary` list, surfacing on ContentSummary.tags and the feed categories.
         tags: fields.multiselect({ label: 'Tags', creatable: true, taxonomy: true }),

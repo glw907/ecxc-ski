@@ -146,6 +146,25 @@ engineered instead:
   broadcasts, DMs, and mentions by SMS but misses ordinary channel chatter until they
   next open the app.
 
+## Adoption strategy: winning "not another app"
+
+The effort fails if it is perceived as one more communications app (Geoff, 2026-07-30).
+The design commits to four claims, each binding on later passes:
+
+- **Never an app.** No store, no signup, no password. The roster already knows every
+  person; athlete onboarding is phone number + texted code. Message it as "the team
+  website got new abilities," never as a platform switch.
+- **A zero-adoption floor.** A family that installs and signs into nothing still gets
+  every broadcast by SMS and parent email. Day one demands no behavior change from
+  anyone; the PWA install is an upgrade sold later at practice, not the price of
+  staying informed.
+- **Net subtraction.** CrewLAB retires, and any parallel Remind list, GroupMe thread,
+  or side text-blast folds in. Hard staff rule for all five coaches: everything flows
+  through the site, nothing forks to a parallel channel. One side-channel makes the
+  site additive again and reopens the battle.
+- **Parents exempt.** Parents never need an account or an install; "do I need to
+  install something?" is answered no, permanently.
+
 ## Constraints
 
 - Cloudflare stack, one Worker, inside the existing ecxc.ski repo and theme.

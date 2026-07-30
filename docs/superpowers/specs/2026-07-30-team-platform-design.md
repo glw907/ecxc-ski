@@ -174,7 +174,10 @@ Four passes, each with its own spec-level detail and implementation plan:
 - SMS provider selection (Twilio vs. a cheaper A2P-capable alternative) and which legal
   entity registers the 10DLC campaign.
 - Whether the level labels on plans, roster groups, and chat channels are one shared
-  vocabulary (probably yes; decide when naming them).
+  vocabulary (probably yes; decide when naming them). Race class is settled as NOT part
+  of it (Geoff, 2026-07-30): class/seed are per-race fields distinct from training
+  groups, so the roster carries both a training-group label and per-race class
+  assignments.
 - Session-cookie length and re-auth behavior on shared family devices.
 - Whether ski-season Zone4 races use the same eight-column entry format as the running
   example, or different classes/columns (check against a ski-race export before pass 4

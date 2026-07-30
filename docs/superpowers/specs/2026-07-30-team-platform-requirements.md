@@ -122,6 +122,9 @@ signed-in coaches and boosters; athletes see coach contacts *(default)*.
 Geoff's bar: the experience should feel as straightforward as WhatsApp. Assessment
 (2026-07-30, sources in the brainstorm record): the in-app feel is achievable with real
 keyboard/viewport polish, and iOS 26 opens home-screen sites as web apps by default.
+The named reference implementation is **Telegram Web** (the one major chat PWA that is
+functionally close to its native app); pass 3 builds with it open side-by-side, and our
+scope is a small slice of it (in-room mechanics for ~75 users, no E2EE/calls/sync).
 Notification delivery on iOS cannot match native reliability (installed-PWA-only push;
 documented silent unsubscribes and missed listeners after restarts), so reliability is
 engineered instead:

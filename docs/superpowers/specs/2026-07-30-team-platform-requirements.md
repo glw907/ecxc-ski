@@ -63,6 +63,18 @@ Race class (below) is deliberately distinct from training group.
 - Coach view: team table of hours by modality per athlete, week and season, grouped
   Comp/Devo, athlete detail one tap deep.
 
+## Daily check-in
+
+- One check-in per day per athlete, independent of training sessions (rest days
+  included): a four-point feeling scale rendered as face buttons (Poor / OK / Good /
+  Great) plus an optional free-text note.
+- Friction bar: two taps from opening the site to answered. No nudges or reminder
+  pushes; coaches encourage the habit at practice.
+- Visibility follows the log rule: coaches see all check-ins (the overtraining and
+  illness signal), an athlete sees only their own. The coach rollup gets a recent
+  team feeling row alongside hours *(default)*.
+- Editable for the current day; past days read-only *(default)*.
+
 ## Plans
 
 - A plan is **weekly and narrative**: prose for a group's week, where days may vary.

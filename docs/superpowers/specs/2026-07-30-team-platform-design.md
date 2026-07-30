@@ -133,11 +133,23 @@ site's own documentation as ECXC policy when pass 3 ships.
 ## Race rosters (Zone4 export)
 
 Coach-only race entry management: create a race, check off which rostered athletes are
-entered, export the entry list in a form Zone4 accepts. To support the export, athlete
-records carry the entry fields Zone4 needs beyond name (DOB and gender come from
-registration; license/membership numbers are new profile fields). The exact Zone4 import
-format (CSV upload vs. paste vs. their entry API, and its precise columns) is a research
-item at plan time, resolved against Zone4's real interface before the schema is frozen.
+entered, assign each a class and seed, export the entry CSV Zone4 accepts.
+
+The format is known from a real export (Geoff's `eastxc.csv`, 2026-07-30; not committed
+because it holds real minors' names). Eight columns:
+
+```
+First Name, Last Name, Grade, Gender, School, Class, Group, Notes
+```
+
+`Grade` is the word (`freshman`…`senior`, may be blank), `School` is constant (`East`),
+`Class` is the race class (`Girls A/B/C/Open`, `Boys A/B/C/Open`), `Group` is the seed
+position within the class (1..n, blank for Open classes), `Notes` is free text
+("Sat only"). No DOB, no license numbers.
+
+Consequences for the schema: athlete profiles gain `grade` and `gender` (both already in
+registration data); a race entry is per-athlete `class` + `seed` + `notes`. Class and
+seed are per-race assignments, though the UI should prefill from the previous race.
 
 ## Not building
 
@@ -164,5 +176,6 @@ Four passes, each with its own spec-level detail and implementation plan:
 - Whether the level labels on plans, roster groups, and chat channels are one shared
   vocabulary (probably yes; decide when naming them).
 - Session-cookie length and re-auth behavior on shared family devices.
-- The Zone4 entry-list format and which license numbers (USSS, NSAA, AK divisional)
-  athlete profiles must hold.
+- Whether ski-season Zone4 races use the same eight-column entry format as the running
+  example, or different classes/columns (check against a ski-race export before pass 4
+  freezes its schema).

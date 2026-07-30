@@ -41,6 +41,13 @@ group conversations"; chat itself a simplified Slack/Discord).
   per device.
 - Visibility: coaches see all logs and all athlete-involving conversations; an athlete
   sees only their own log.
+- Coach roster view (added 2026-07-30): each athlete's emergency contact and parent
+  phone one tap deep, offline-tolerant (five adults, fifty minors, remote trailheads;
+  the data already exists in registration). The same view shows each athlete's
+  registration/waiver status, so an unwaivered kid is visible before they train.
+- Season rollover (added 2026-07-30): rosters archive rather than delete; a new season
+  reassigns groups and adds/retires people while every athlete's log history survives
+  intact across seasons.
 
 ## Training groups
 
@@ -62,6 +69,10 @@ Race class (below) is deliberately distinct from training group.
 - Athlete view: own week and season, hours by modality, time in zone.
 - Coach view: team table of hours by modality per athlete, week and season, grouped
   Comp/Devo, athlete detail one tap deep.
+- Multi-year history: log data is retained across seasons and each athlete gets a
+  year-over-year view (annual hours progression, the development metric the whole
+  model centers on). An optional per-athlete annual hours target draws one line on
+  that view (added 2026-07-30).
 
 ## Daily check-in
 
@@ -93,7 +104,9 @@ Race class (below) is deliberately distinct from training group.
   email for adult audiences.
 - A broadcast also lands as a message in the matching chat channel, so replies thread
   there in front of the group.
-- Every broadcast is recorded with its delivery outcomes.
+- Every broadcast is recorded (message, audience, sender, time). Per-recipient
+  delivery-status tracking is out: push and SMS receipts are unreliable enough that it
+  would overpromise (trimmed 2026-07-30).
 
 ## Chat
 
@@ -101,15 +114,23 @@ Race class (below) is deliberately distinct from training group.
   emoji reactions *(default)*. No threads.
 - Channels are coach-created and audience-typed. Defaults at launch: `#team`, `#comp`,
   `#devo`, `#boosters` *(default)*. Athletes and boosters never share a channel.
-- One-on-one conversations exist for exactly two pairs: **coach ↔ athlete** and
-  **coach ↔ booster**. Every conversation involving an athlete is visible to all
-  coaches; there are no unmonitored spaces involving a minor. Coach ↔ booster DMs are
-  ordinary private adult conversations. No athlete ↔ athlete and no booster ↔ athlete
-  DMs.
-- Attachments: photos and files (race sheets, forms). Coaches can delete any message or
-  attachment. Full history retained.
+- One-on-one conversations exist for exactly one pair: **coach ↔ athlete**, visible to
+  all coaches; there are no unmonitored spaces involving a minor. No athlete ↔ athlete,
+  no booster ↔ athlete, and no in-system coach ↔ booster DMs (adults use the directory
+  and ordinary text/email; trimmed 2026-07-30).
+- v1 is text and links only. Photos and files are the first fast-follow (kids and
+  boosters both want them; see Later). Coaches can delete any message. Full history
+  retained.
 - Notifications: a channel message pushes only on @mention; DMs always push; broadcasts
   always push; everything else is pull.
+
+## Schedule
+
+Schedule truth lives on the site (added 2026-07-30): a public upcoming view carrying
+races (already records for entry management), camp dates, and practice times (slow-
+changing content, editable like any page). If the schedule lives in a pinned PDF or
+gets re-asked in chat weekly, a parallel channel is born and the adoption strategy's
+own rule fails; this section exists to prevent that.
 
 ## Directory
 
@@ -185,14 +206,31 @@ The design commits to four claims, each binding on later passes:
 - Registration (Sheets + email pipeline) is unchanged; the roster is provisioned by
   coaches from registration data, not auto-synced *(default)*.
 
+## Later (named, deliberately not v1)
+
+- **Photos and files in chat**: the first fast-follow after chat ships. Both kids and
+  boosters want them; v1 launching text-only protects October.
+- **Video upload**: coaches video athletes to show technique; a technique-video flow
+  (upload, share with the athlete, maybe annotate) is real future work with its own
+  storage and playback questions. Named here so the media architecture doesn't paint
+  it out; not scoped for v1.
+
 ## Non-goals
 
 Attendance tracking, race results and timing, analytics beyond the stated rollups,
-parent logins, payments, a native app, athlete ↔ athlete DMs, threads, volunteer-slot
-or fundraising features, coach workout assignment, athlete race RSVP.
+parent logins, payments, a native app, athlete ↔ athlete DMs, in-system adult ↔ adult
+DMs, threads, volunteer-slot or fundraising features, coach workout assignment, athlete
+race RSVP, per-recipient broadcast delivery tracking.
+
+## Operations
+
+The platform is an operated product, not a website: someone moderates, someone answers
+"my phone isn't buzzing," someone runs the seasonal onboarding ritual. One of the five
+coaches is the named primary operator (which one is an open item below).
 
 ## Open items
 
+- Which coach is the named primary operator.
 - Session length and re-auth behavior on shared family devices.
 - Whether ski-season Zone4 races use the same eight-column format (verify against a
   ski-race export before the race-roster schema freezes).

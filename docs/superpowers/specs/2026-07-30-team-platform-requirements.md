@@ -117,14 +117,31 @@ signed-in coaches and boosters; athletes see coach contacts *(default)*.
 - The system emails the CSV as an attachment to the race organizer contact; that send
   closes the loop.
 
+## Mobile experience bar
+
+Geoff's bar: the experience should feel as straightforward as WhatsApp. Assessment
+(2026-07-30, sources in the brainstorm record): the in-app feel is achievable with real
+keyboard/viewport polish, and iOS 26 opens home-screen sites as web apps by default.
+Notification delivery on iOS cannot match native reliability (installed-PWA-only push;
+documented silent unsubscribes and missed listeners after restarts), so reliability is
+engineered instead:
+
+- The service worker re-verifies and heals its push subscription on every app open.
+- DMs and @mentions fall back to SMS when the recipient has no live push subscription,
+  same as broadcasts. Ordinary channel chatter never falls back.
+- Installation is a coach-led ritual at practice, not a self-serve ask.
+- The push substrate ships in the identity/log pass, weeks before chat, so real
+  delivery data from the team's actual phones exists before chat depends on it.
+
 ## Delivery substrate
 
 - The site becomes an installable PWA with real web push (modern iOS and Android).
-- One SMS provider (Twilio-class) serves sign-in codes and fallback broadcasts.
-  Requires US A2P 10DLC campaign registration: external approval measured in days to
-  weeks, started early.
+- One SMS provider (Twilio-class) serves sign-in codes and fallback sends. Requires US
+  A2P 10DLC campaign registration: external approval measured in days to weeks, started
+  early.
 - Known adoption risk, accepted: an athlete who never installs the PWA still gets
-  broadcasts by SMS but misses chat mention pushes.
+  broadcasts, DMs, and mentions by SMS but misses ordinary channel chatter until they
+  next open the app.
 
 ## Constraints
 

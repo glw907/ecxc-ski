@@ -1,9 +1,14 @@
 # ECXC team platform: plans, training log, and team comms
 
-Design spec, brainstormed and ratified 2026-07-30. This is the umbrella design for
-replacing ECXC's use of CrewLAB with site-native functionality, decomposed into three
-passes. Each pass gets its own implementation plan; this document is the shared contract
-they build against.
+> **SUPERSEDED (2026-07-30, same day).** This draft was written mid-brainstorm, before
+> requirements gathering finished, and Geoff correctly called it premature. The ratified
+> authority is `2026-07-30-team-platform-requirements.md`; where this file disagrees
+> (single-site architecture, no DMs, three-pass sequencing, license-number speculation),
+> the requirements win. Kept for the build-vs-buy chat assessment and as the brainstorm
+> record; do not build against it.
+
+Design spec, brainstormed 2026-07-30. This was the umbrella design for replacing ECXC's
+use of CrewLAB with site-native functionality, decomposed into three passes.
 
 ## Drivers
 
@@ -119,8 +124,18 @@ Defaults created at launch: `#team`, one per level group, `#boosters`. Coaches c
 more (`#talkeetna-camp`, `#volunteers`) without a deploy.
 
 Full history retained in D1. Mechanically: one Durable Object per channel holding live
-connections, history persisted to D1. An actual room with an actual scrollback, which is
-the "more effective than Remind" bar.
+connections (WebSocket hibernation API; Cloudflare's edge-chat demo is the canonical
+shape), history persisted to D1. An actual room with an actual scrollback, which is the
+"more effective than Remind" bar.
+
+**Build vs. buy (assessed 2026-07-30).** No mature Svelte-native self-hosted chat
+library exists; the real alternatives are hosted SaaS (TalkJS has genuine Svelte docs
+and prebuilt group-chat UI; Stream works via its JS client). Decision: build on DO. At
+roster scale none of chat's hard problems (fan-out at scale, presence, offline sync)
+apply, the v1 cuts keep the UI to a sidebar + message list + input, and building keeps
+custody of minors' messages and the SafeSport shape in ECXC's hands instead of as vendor
+configuration. Named fallback: if pass 3's plan comes out materially heavier than this
+assessment, TalkJS is plan B.
 
 ### SafeSport posture
 

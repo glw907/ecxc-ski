@@ -31,8 +31,10 @@ system of record with the team dimension in every team-owned table from day one.
   rostered cell or by email to a rostered email (amends the requirements' "magic link
   by email" to a uniform code flow; same-session-either-way is preserved. Geoff may
   veto at plan review).
-- **`PLATFORM`** in this plan is the neutral name T0 resolves. Every occurrence is
-  literal find-and-replace once T0 lands.
+- **`PLATFORM` = `xcathletes`** (Geoff's pick 2026-07-30; `xcathletes.org` confirmed
+  available via the .org registry RDAP the same day). T0 registers it; if registration
+  falls through for any reason, T0 picks a replacement and this plan's occurrences are
+  literal find-and-replace.
 
 ## Pass map (this plan details pass 1 only)
 
@@ -68,7 +70,7 @@ system of record with the team dimension in every team-owned table from day one.
 **Outcome:** Every external dependency with lead time is started on day one, in a
 single question batch to Geoff:
 
-1. The neutral **name and domain** (registered, zone on the glw907 Cloudflare account).
+1. **Register `xcathletes.org`** (zone on the glw907 Cloudflare account).
 2. The **email sending domain** decision: the Resend account's single verified-domain
    slot holds ecxc.ski, and the platform must send from its neutral domain (coach
    magic links, member OTP by email). Options Geoff picks from: upgrade Resend, a
@@ -83,6 +85,25 @@ single question batch to Geoff:
 them); domain zone live; 10DLC submission confirmed as filed (not necessarily
 approved); secrets that exist already (Resend key if decided) landed via the age-store
 flow.
+
+---
+
+### Task 0.5: cairn currency review and ecxc upgrade (Geoff's precondition, 2026-07-30)
+
+**Files:** `ecxc-ski/package.json`, `ecxc-ski/docs/STATUS.md` (one History line).
+
+**Outcome:** The initiative starts on current cairn. As of plan time the registry's
+latest is `0.91.1` against ecxc's `^0.84.4`; re-check at execution. Review the cairn
+CHANGELOG across the span against every subpath ecxc imports (the 0.84.1-pass method,
+`docs/status-archive.md` has the worked example) and against the admin-toolkit surface
+this plan's T5 consumes; then upgrade ecxc-ski to the latest release and clear its full
+gate plus the local https admin-guard smoke. The platform (T1/T2) scaffolds directly on
+that same latest release.
+
+**Acceptance:** ecxc-ski on the latest cairn with gate green and the admin smoke
+passing per its recipe; a one-line STATUS History entry records the span; any breaking
+or admin-toolkit-relevant changelog notes are summarized in the execution session for
+T2/T5's benefit.
 
 ---
 

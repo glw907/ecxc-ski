@@ -5,11 +5,47 @@ design spec derives from; when the two disagree, this document wins and the spec
 corrected. Facts here came from Geoff directly; decisions marked *(default)* are
 Claude-proposed defaults he has not overridden and can veto at review.
 
+## Multi-team architecture (added 2026-07-30)
+
+Some athletes train with both ECXC and the East High ski team; Geoff coaches both, and
+East will use this system starting this ski season (Nov–Dec 2026). The model:
+
+- **The log belongs to the athlete; teams are lenses.** One identity (keyed by
+  contact), one training log, one daily check-in, regardless of how many teams an
+  athlete is on. "Sharing data between teams" is achieved by permission, not by
+  copying: a coach sees the full log and check-ins of any athlete on their roster.
+  This is the honest overtraining picture: both teams' coaches see the same 14-hour
+  week instead of each seeing half.
+- **Everything else is team-scoped**: rosters, groups, plans, channels, broadcasts,
+  races, directories. An athlete logs a session without picking a team.
+- **Schema carries the team dimension from day one** (people global; roster membership
+  per team; team id on every team-owned object). ECXC is the first team in the table;
+  East High is the second. Retrofitting this after launch would be a mid-season
+  migration; building it now is a column and a join.
+- **A neutral home (Geoff, 2026-07-30).** Athlete-owned data shared across teams
+  cannot live under one club's flag. The platform is its own application: a separate
+  repo, Worker, D1, and a neutral domain (name is Geoff's pick, an open item), with
+  each team's site handing members into it (e.g., ecxc.ski/team forwards there). The
+  adoption framing survives because what families touch is still "the team's page";
+  the neutral domain is plumbing they pass through, and the zero-signup phone-code
+  entry is unchanged. Hosting stays in Geoff's Cloudflare account for now; formal
+  governance of cross-team minors' data becomes a real question only if the platform
+  outgrows the two teams he coaches (carried with the athletic-director open item).
+- **Consequence to settle in the spec**: plans were slated as an ecxc.ski cairn
+  content type. With the platform neutral, plan hosting must be decided per team
+  (each team's own site vs. the platform itself; East has no site of its own by
+  November).
+- **Direction, not v1**: Geoff wants other teams to be able to adopt the system and
+  share athlete data the same way. v1 builds no self-serve onboarding, per-team
+  branding, or cross-org admin; a third team is its own future initiative.
+
 ## Purpose and success criterion
 
-Replace ECXC's use of CrewLAB with site-native functionality and retire CrewLAB
-entirely. The acceptance bar: by end of October 2026 the team runs on ecxc.ski alone.
-No fall emergency; the running season can proceed without the system.
+Replace ECXC's use of CrewLAB and retire it entirely. The acceptance bar: by end of
+October 2026 the team runs on the platform alone, entered through ecxc.ski.
+No fall emergency; the running season can proceed without the system. East High
+onboards as the second team in early ski season (Nov–Dec 2026), so team-scoped UI must
+work then, not merely be schema-possible.
 
 Drivers, in order: CrewLAB's training log cannot represent XC training (minutes at
 effort levels in structured sessions); both athletes and boosters need a simpler
@@ -200,7 +236,9 @@ The design commits to four claims, each binding on later passes:
 
 ## Constraints
 
-- Cloudflare stack, one Worker, inside the existing ecxc.ski repo and theme.
+- Cloudflare stack. The platform is its own repo and Worker on a neutral domain
+  (neither ECXC's nor East High's brand); team sites keep their own repos and hand
+  members into it. It shares the family design system but is not part of ecxc-ski.
 - ECXC keeps custody of minors' data and messages; no chat SaaS. The SafeSport posture
   (monitored DMs, coaches in every space, retention) is stated as ECXC's own policy.
 - Registration (Sheets + email pipeline) is unchanged; the roster is provisioned by
@@ -231,6 +269,7 @@ coaches is the named primary operator (which one is an open item below).
 ## Open items
 
 - Which coach is the named primary operator.
+- The platform's neutral name and domain (Geoff's pick; neither ECXC nor East High).
 - Session length and re-auth behavior on shared family devices.
 - Whether ski-season Zone4 races use the same eight-column format (verify against a
   ski-race export before the race-roster schema freezes).

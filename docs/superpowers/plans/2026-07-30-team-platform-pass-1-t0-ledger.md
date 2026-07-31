@@ -8,7 +8,11 @@ values into the platform repo's README; until then this file is the record.
 ## Task 0 decisions (Geoff, 2026-07-30)
 
 1. **Domain: `xcathletes.org`, approved.** Available at $8.50 first year, $11.20
-   renewal (registry check 2026-07-30). The Cloudflare Registrar API now supports
+   renewal (registry check 2026-07-30). Kept after checking generic alternatives
+   the same day (`athletedata.org` and `athletelog.org` were open,
+   `trainingdata.org` and `teamtraining.org` taken): the platform is sport-specific
+   by design and the name states the audience, not the asset. Repo name per local
+   convention: `~/Projects/xcathletes-org/`. The Cloudflare Registrar API now supports
    registration (`POST /accounts/{id}/registrar/registrations`), but the managed
    "Cloudflare Admin 2026-07" token has no Registrar scope and cannot self-extend,
    so Geoff registers in the dashboard (Domain Registration, Register Domains,

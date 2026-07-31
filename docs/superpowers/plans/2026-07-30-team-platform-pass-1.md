@@ -32,9 +32,13 @@ system of record with the team dimension in every team-owned table from day one.
   by email" to a uniform code flow; same-session-either-way is preserved. Geoff may
   veto at plan review).
 - **`PLATFORM` = `xcathletes`** (Geoff's pick 2026-07-30; `xcathletes.org` confirmed
-  available via the .org registry RDAP the same day). T0 registers it; if registration
+  available via the .org registry RDAP the same day, re-confirmed against the more
+  generic alternatives the same day and kept). T0 registers it; if registration
   falls through for any reason, T0 picks a replacement and this plan's occurrences are
   literal find-and-replace.
+- **Repo name follows the local convention** (domain with dots as dashes, the
+  aksailingclub-org/ecxc-ski pattern): `~/Projects/xcathletes-org/` (Geoff,
+  2026-07-30).
 
 ## Pass map (this plan details pass 1 only)
 
@@ -120,7 +124,7 @@ T2/T5's benefit.
 
 ### Task 1: Repo scaffold and deploy pipeline
 
-**Files:** New repo `~/Projects/PLATFORM/` (scaffold from the Waymark starter the way
+**Files:** New repo `~/Projects/xcathletes-org/` (scaffold from the Waymark starter the way
 the ecxc rebuild did; crib `wrangler.toml`, GitHub Actions deploy, `src/chassis/` +
 `src/theme/` split, gate scripts from `ecxc-ski`). Create `docs/STATUS.md`,
 `docs/harvest-findings-pass-1.md` (empty shell with the ASC running-log header).

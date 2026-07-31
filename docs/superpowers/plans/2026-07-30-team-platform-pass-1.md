@@ -43,7 +43,12 @@ system of record with the team dimension in every team-owned table from day one.
 3. Plans concept + schedule + broadcast (push/SMS/email fan-out; 10DLC live by now).
 4. Chat (DO channels, monitored coach↔athlete DMs, mentions, reactions).
 5. Race rosters + Zone4 export email; ECXC cutover checklist; CrewLAB retirement.
-6. East High onboarding (second team row, team-scoped UI proof, fast-follows begin).
+6. East High onboarding (second team row, team-scoped UI proof, fast-follows begin;
+   carries Gate 2 of requirements §Governance: published data policy, district
+   check, consent acknowledgment exercised for real cross-team athletes).
+
+(Gate 3 of §Governance, entity custody for a club Geoff doesn't coach, is its own
+future initiative, not a pass on this map.)
 
 ## Global Constraints
 
@@ -60,6 +65,12 @@ system of record with the team dimension in every team-owned table from day one.
   svelte-conventions); no em dashes in code comments.
 - All minors' data: name-only in test fixtures, never real athlete contacts in code,
   tests, or committed seeds.
+- The requirements' §Governance and data security (ratified 2026-07-30) binds every
+  task: the three-class data taxonomy (athlete-owned / club-owned /
+  platform-operational; no table straddles two, class grouping declared in the
+  migration files), no athlete data in any cairn content concept, no PII or OTP
+  codes in Worker logs, and the integration contract (external sites get links,
+  never data; no machine-to-machine API).
 
 ---
 
@@ -123,6 +134,10 @@ placeholder landing page (name + "team platform" one-liner, no marketing copy).
 **Constraints:** Tailwind v4 + DaisyUI v5; the family design system tokens as the
 starting theme (fireweed/spruce is ECXC's, not the platform's; use the chassis-neutral
 defaults and leave brand theming for later). Worker name and D1 names use the T0 name.
+Gate 1 (governance): the repo's GitHub Actions deploy uses a platform-scoped
+Cloudflare token (this Worker + its D1 only; Geoff mints it in the dashboard, see the
+T0 ledger's pending list); the broad "Cloudflare Admin" workstation token never lands
+in this repo's secrets.
 
 **Acceptance:** Full gate green in the new repo; deployed `/healthz` returns 200 over
 the custom domain; GitHub Actions run visible green; STATUS.md states pass 1 in flight
@@ -174,13 +189,23 @@ memberships}.ts`, tests beside them (mirror ASC's store/test layout,
 **Outcome:** `PLATFORM_DB` D1 with `teams`, `people`, `memberships` per the
 requirements' multi-team model: people global; membership per team with role, group
 label, archive timestamp (archive-not-delete rollover); contact uniqueness enforced
-(one cell / one email maps to one person). Seed migration: the ECXC team row and the
-five coaches as people + coach memberships. Phone normalization to E.164 and email
-lowercasing at the store boundary (reuse the shapes ecxc's registration schema proved).
+(one cell / one email maps to one person). Seed migration: the ECXC team row and
+Geoff as the sole seeded coach (T0 amendment; further coaches arrive through T5's
+UI). Phone normalization to E.164 and email lowercasing at the store boundary (reuse
+the shapes ecxc's registration schema proved).
+
+**Gate 1 amendments (requirements §Governance):** migration files declare each
+table's taxonomy class (athlete-owned / club-owned / platform-operational) and no
+table straddles two; `memberships` carries the visibility-consent fields
+(`log_visible_from`, defaulting to the rostering date, and a nullable
+`history_ack_at`; the acknowledgment UI is a later pass, the fields are not); a
+platform-operational `audit_log` table exists, written on roster changes and
+exports, with a store helper later tasks call.
 
 **Acceptance:** Store tests cover create/find-by-contact (both contact kinds),
-duplicate-contact rejection, archive behavior excluded from default roster reads; a
-migration applies clean on a fresh local D1 and on the deployed one; gate green.
+duplicate-contact rejection, archive behavior excluded from default roster reads,
+and the `log_visible_from` default; a migration applies clean on a fresh local D1
+and on the deployed one; gate green.
 
 ---
 
@@ -206,7 +231,10 @@ are 90-day `__Host-` cookies, token hashed at rest.
 
 **Constraints:** Turnstile in front of `requestCode` (fail closed, the ecxc
 registration precedent) so the SMS path cannot be farmed. Secrets via the age-store
-flow.
+flow. Gate 1 (requirements §Governance): production refuses to boot with the dev
+transport selected (config-enforced and covered by a test, not a convention); no
+OTP code or contact PII is ever written to Worker logs, dev transport's local echo
+excepted.
 
 **Acceptance:** Unit tests cover expiry, attempt lockout, throttle, unknown-contact
 opacity, and session round-trip; a deployed e2e (dev transport) signs in a seeded
@@ -229,7 +257,11 @@ screen; server-rendered so it loads on a weak connection).
 
 **Constraints:** Admin routes: cairn's compiled CSS only; route-local layout in scoped
 `<style>` (the ASC constraint). File every engine friction met here in
-`docs/harvest-findings-pass-1.md` as it lands, not at pass close.
+`docs/harvest-findings-pass-1.md` as it lands, not at pass close. T0 amendment:
+adding or editing a coach must also provision that person as a cairn editor (or the
+screen documents the manual allowlist step), since coach admin rides the cairn
+magic-link shell and Geoff seeds alone. Gate 1: every roster add/edit/archive writes
+an `audit_log` row via T3's helper.
 
 **Acceptance:** Playwright-free acceptance via the admin smoke recipe (ecxc's
 https-local pattern): a coach session lists, adds, edits, archives a fixture person;
@@ -268,7 +300,10 @@ ecxc-ski `docs/STATUS.md` (one pointer paragraph), memory refresh.
 reviewer fan-out (svelte-reviewer, cloudflare-workers-reviewer,
 web-auth-security-reviewer on T4 especially), harvest findings folded to cairn-cms,
 platform STATUS states what exists and names pass 2 as next, ecxc-ski STATUS points
-across, deployed smoke re-run, commit + push.
+across, deployed smoke re-run, commit + push. The reviewer fan-out also verifies the
+Gate 1 items from requirements §Governance: taxonomy classes declared and respected,
+consent fields present, scoped CI token in use, dev-transport refusal and no-PII
+logging tested, audit rows written.
 
 **Acceptance:** All reviewers' confirmed findings fixed or logged with reasons; both
 STATUS files updated; the platform repo is the canonical home of its own docs from

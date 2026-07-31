@@ -44,6 +44,26 @@ values into the platform repo's README; until then this file is the record.
    admin precedent (**pending his confirmation**), cell number **pending** (not
    in the contacts store).
 
+## Governance ratification (Geoff, 2026-07-30, "bake it in")
+
+After an adversarial review of the integration and data-security model, Geoff
+ratified the governance foundation. The canonical text is now **requirements
+§Governance and data security** (integration contract, three-class data taxonomy,
+visibility-consent-at-rostering rule, the three gates, named accepted risks); the
+plan's Global Constraints and T1/T3/T4/T5/T7 carry the Gate 1 amendments. The
+review's key findings, for the record: the thin contract makes external sites
+harmless but concentrates value in the platform (the honeypot inversion); the
+two-team-era governance model is Geoff personally, which is why Gate 3 exists; the
+broad workstation Cloudflare token reaching the platform D1 is a named accepted
+risk, partially mitigated by the scoped CI token; and second-club rostering must
+not inherit unconsented history, hence the `log_visible_from`/`history_ack_at`
+fields from day one.
+
+**New pending item for Geoff (with the four above): mint a platform-scoped
+Cloudflare API token** (this Worker + its D1 only) in the dashboard once T1 names
+the Worker, for the platform repo's GitHub Actions secret. The broad "Cloudflare
+Admin" token must never land in that repo.
+
 ## Task 0.5: done (2026-07-30)
 
 ecxc-ski upgraded `@glw907/cairn-cms` `^0.84.4` to `^0.91.1`, commit `ce11b6d`,

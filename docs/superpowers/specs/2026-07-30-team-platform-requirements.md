@@ -265,6 +265,82 @@ parent logins, payments, a native app, athlete ↔ athlete DMs, in-system adult 
 DMs, threads, volunteer-slot or fundraising features, coach workout assignment, athlete
 race RSVP, per-recipient broadcast delivery tracking.
 
+## Governance and data security (ratified 2026-07-30)
+
+Ratified by Geoff after adversarial review (record: the pass 1 T0 ledger in
+`docs/superpowers/plans/`). The model in one sentence: isolation by scope is the v1
+mechanism, the data taxonomy is the permanent foundation, and trust beyond the two
+teams Geoff coaches is bought with governance, not promises.
+
+### The integration contract (external sites)
+
+Team sites sit outside the trust boundary and get links, never data:
+
+- A team site hands members in via a redirect it owns (e.g. ecxc.ski/team forwards to
+  the platform). No SSO, no token passing, no API; sessions live only on the platform
+  origin as `__Host-` cookies. A compromised team site holds nothing but a hyperlink.
+- Team-scoped public content (plans, schedule) renders on the platform under stable
+  per-team URLs; team sites hyperlink to it, never embed or fetch it.
+- Data moves by human action: coaches provision the roster, exports are downloads.
+  No machine-to-machine API in v1; a registration-to-roster sync, if ever wanted,
+  is its own initiative with an explicit API surface.
+- Sender identity: sign-in codes and broadcasts come from the platform's own domain,
+  and team sites say so at the hand-off ("you'll get a code from our team platform").
+
+### The data taxonomy (structural; enforced at schema review)
+
+Three classes. No table straddles two; the class grouping is declared in the
+migration files themselves.
+
+- **Athlete-owned**: training log, daily check-ins. Follows the person across teams,
+  is never part of any club's export, and is deletable at the athlete's (or
+  parent's) request. The export right belongs to the athlete.
+- **Club-owned**: roster memberships, groups, plans, channels and messages, race
+  entries. The club's slice, exportable in full when a club leaves.
+- **Platform-operational**: auth, sessions, delivery records, audit rows. Nobody's
+  product; retained per operations policy.
+
+No athlete data ever lives in a cairn content concept, because cairn's storage is a
+GitHub repository: plans are prose, the roster is D1, and the two never mix.
+
+### Visibility consent at rostering
+
+Rostering grants log visibility forward from the rostering date by default.
+Visibility into an athlete's pre-rostering history requires a one-tap athlete or
+parent acknowledgment. This closes the second-club consent hole (a new coaching
+staff must not inherit years of history the athlete never agreed to show them);
+the schema carries the fields from pass 1 even though the acknowledgment UI can
+arrive with the second tenant.
+
+### The three gates
+
+- **Gate 1 (pass 1, structural, hard to retrofit)**: taxonomy encoded in the schema;
+  the visibility-consent fields; the platform repo's CI deploys with its own scoped
+  Cloudflare token (the broad workstation admin token never lands in the platform
+  repo's secrets); no PII or OTP codes in Worker logs, and production refuses to run
+  with the dev OTP transport, both config-enforced and tested; audit rows written
+  for exports and roster changes; the athlete export right shaped into the schema.
+- **Gate 2 (East High onboarding)**: a published plain-language data policy (what is
+  stored, who sees it, sub-processors by name: Cloudflare, Twilio; retention; how to
+  export or delete), riding the waiver's attorney review; a check of the school
+  district's requirements for third-party team tools; the consent acknowledgment
+  exercised for real cross-team athletes.
+- **Gate 3 (first club Geoff doesn't coach; its own initiative, per Multi-team
+  "Direction, not v1")**: entity custody (a legal home owning a dedicated Cloudflare
+  account), signed data agreements with member clubs, per-club admin isolation
+  proven by test, read-access audit logging, an incident-response commitment, and a
+  decision on the vault split (athlete-owned store separated from per-club
+  databases; the taxonomy keeps that a table-level partition, not row surgery).
+  Until Gate 3 clears, the platform does not take custody of a third club's
+  athletes, and that refusal is itself part of the guarantee.
+
+### Named accepted risks (the two-team era)
+
+Single D1 with logical tenancy in Geoff's personal Cloudflare account; the broad
+workstation admin token can reach the platform D1; R2 disaster snapshots hold
+complete copies in the same account. Accepted while every rostered athlete is on a
+team Geoff coaches; re-examined at each gate.
+
 ## Cairn admin extension and the harvest duty (added 2026-07-30)
 
 The platform is the second system, after the ASC site, to extend the cairn admin

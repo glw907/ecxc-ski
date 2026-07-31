@@ -241,6 +241,11 @@ The design commits to four claims, each binding on later passes:
   members into it. It shares the family design system but is not part of ecxc-ski.
 - ECXC keeps custody of minors' data and messages; no chat SaaS. The SafeSport posture
   (monitored DMs, coaches in every space, retention) is stated as ECXC's own policy.
+- D1 is the system of record (the data's daily work is relational aggregation; decided
+  2026-07-30). Athlete data ownership is expressed as export, not storage topology:
+  every athlete can download their complete history (JSON/CSV) at any time, including
+  after graduating; a departing team can take its slice the same way; and the platform
+  snapshots D1 to R2 on a schedule as independent disaster insurance.
 - Registration (Sheets + email pipeline) is unchanged; the roster is provisioned by
   coaches from registration data, not auto-synced *(default)*.
 

@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",
-    "@glw907/cairn-cms": "^0.84.4",
+    "@glw907/cairn-cms": "^0.91.1",
     "hast-util-to-string": "^3.0.1",
     "rehype-parse": "^9.0.1",
     "rehype-stringify": "^10.0.1",

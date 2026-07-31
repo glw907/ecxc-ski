@@ -2,8 +2,8 @@
 
 ## Current state (2026-07-13)
 
-On `@glw907/cairn-cms ^0.84.1` (upgraded from 0.81.0 on 2026-07-13, full gate and admin-guard
-smoke green), backlog triaged the same day from 16 open items to 7 (see History).
+On `@glw907/cairn-cms ^0.91.1` (upgraded from ^0.84.4 on 2026-07-30, full gate and admin-guard
+smoke green), backlog triaged 2026-07-13 from 16 open items to 7 (see History).
 
 Rebuilt from scratch on the Waymark starter template and deployed to production
 (`https://ecxc.ski`, the pre-rebuild 0.62.2-era app retired). Design waves (CTA-label
@@ -63,6 +63,14 @@ summaries now ride that tier.)
 
 ## History
 
+- **cairn 0.91.1 upgrade (2026-07-30).** Upgraded `@glw907/cairn-cms` ^0.84.4 → ^0.91.1
+  (task 0.5 of the team platform pass 1 plan): the whole span (0.85.0 through 0.91.1) reviewed
+  against all nine subpaths the site imports, no breaking change reached ecxc's own code
+  (neither an embedded concept, a custom `navLayout`/`navFilter`, a declared role vocabulary,
+  nor a direct `AdminShellData`/`AdminData` field read); `npm install` alone closed the upgrade.
+  `npm run check` 0/0 (618 files), `npm test` 141/141 exit 0, `npm run build` green; the local
+  https admin-guard smoke passed exactly per the recipe (no cookie → 303 `/admin/login`; a
+  minted session → 307 `/admin/posts` with a fresh `__Host-cairn_csrf` cookie).
 - **Mail-quota outage + dual-transport email layer (2026-07-14)** — Cloudflare Email Service's
   daily sending quota exhausted and blocked the must-succeed registration email; a transitional
   dual-transport layer shipped, later fully cut over to Resend. Full text: docs/status-archive.md.

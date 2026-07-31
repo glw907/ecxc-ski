@@ -265,6 +265,25 @@ parent logins, payments, a native app, athlete ↔ athlete DMs, in-system adult 
 DMs, threads, volunteer-slot or fundraising features, coach workout assignment, athlete
 race RSVP, per-recipient broadcast delivery tracking.
 
+## Cairn admin extension and the harvest duty (added 2026-07-30)
+
+The platform is the second system, after the ASC site, to extend the cairn admin
+interface, and it carries the same obligations:
+
+- Coach-side admin surfaces build inside `CairnAdminShell` using
+  `@glw907/cairn-cms/admin-toolkit`, following ASC's precedent (`/admin/club/**`,
+  `src/admin-club/`, including its compiled-CSS constraint notes). Platform-local
+  admin components that prove general graduate to the engine's toolkit, the same path
+  ASC's components took.
+- Standing DX-harvest mandate, the ASC pattern verbatim: every pass keeps a
+  `harvest-findings` doc as a running log of cairn contract/DX deficiencies, folded
+  back to cairn-cms at pass close; consumer briefs flow the other way when the
+  platform needs a seam the engine lacks. The second consumer is what hardens the
+  admin-extension seams from anecdote into contract.
+- To settle in the spec: how coach identity relates to cairn editor identity (likely
+  ASC's shape: coaches are cairn editors and coach surfaces ride the admin shell,
+  while athletes and boosters stay on the platform's lightweight contact auth).
+
 ## Operations
 
 The platform is an operated product, not a website: someone moderates, someone answers

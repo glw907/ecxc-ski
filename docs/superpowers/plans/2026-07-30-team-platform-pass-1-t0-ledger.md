@@ -7,18 +7,16 @@ values into the platform repo's README; until then this file is the record.
 
 ## Task 0 decisions (Geoff, 2026-07-30)
 
-1. **Domain: `xcathletes.org`, approved.** Available at $8.50 first year, $11.20
-   renewal (registry check 2026-07-30). Kept after checking generic alternatives
-   the same day (`athletedata.org` and `athletelog.org` were open,
-   `trainingdata.org` and `teamtraining.org` taken): the platform is sport-specific
-   by design and the name states the audience, not the asset. Repo name per local
-   convention: `~/Projects/xcathletes-org/`. The Cloudflare Registrar API now supports
-   registration (`POST /accounts/{id}/registrar/registrations`), but the managed
-   "Cloudflare Admin 2026-07" token has no Registrar scope and cannot self-extend,
-   so Geoff registers in the dashboard (Domain Registration, Register Domains,
-   auto-renew on to match the account's other eight domains). **Pending: Geoff's
-   dashboard registration.** Once the zone exists, DNS is scriptable with the
-   existing token.
+1. **Domain: `xcathletes.org`, REGISTERED (Geoff, 2026-08-01).** Zone active on the
+   glw907 account, id `7c0c4d8aee47be2a777fdb068b78bad1`; DNS is scriptable with
+   the existing token (Zone.DNS Edit covers all zones). Kept after checking
+   generic alternatives (`athletedata.org` and `athletelog.org` were open,
+   `trainingdata.org` and `teamtraining.org` taken): the platform is
+   sport-specific by design and the name states the audience, not the asset.
+   Plural confirmed deliberate. Repo name per local convention:
+   `~/Projects/xcathletes-org/`. (History: the Registrar API supports registration
+   but the managed token deliberately has no Registrar scope, so Geoff registered
+   in the dashboard.)
 2. **Email: Cloudflare Email Service (Email Sending), not Resend.** Geoff pushed
    back on a second Resend account; the facts support him. The 2026-07-14 quota
    outage predates Email Sending's public beta (2026-04-16). Current terms on the
@@ -29,8 +27,15 @@ values into the platform repo's README; until then this file is the record.
    (a Resend cutover remains a config change, the ecxc July playbook); request a
    daily-limit increase when onboarding the sending domain; add a quota check to
    the pass-5 cutover checklist. The managed API token already carries Email
-   Sending scope (REST and binding). **Pending: Geoff's explicit yes** (
-   recommended 2026-07-30, not yet confirmed).
+   Sending scope (REST and binding). **CONFIRMED by Geoff 2026-08-01; decision
+   final.** One setup step remains and it is dashboard-only (probed 2026-08-01:
+   the `email/sending/domains` route exists but the token's Email Sending scope
+   covers sends, not domain management): **Geoff onboards xcathletes.org in
+   Compute → Email Service → Email Sending → Onboard Domain** (auto-plants the
+   cf-bounce MX/SPF/DKIM and DMARC records; verification is minutes on
+   Cloudflare DNS). Request the daily-limit increase from the Email Sending
+   limits page while there, or leave it to the execution session to raise via
+   support once real sends begin.
 3. **SMS: Twilio, Sole Proprietor 10DLC track** (ECXC has no EIN). Sole
    Proprietor caps (roughly 1,000 segments/day on the strictest carrier, 1
    msg/sec) far exceed platform volume. **Pending: Geoff creates the Twilio

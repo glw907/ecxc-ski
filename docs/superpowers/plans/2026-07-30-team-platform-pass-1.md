@@ -141,7 +141,9 @@ defaults and leave brand theming for later). Worker name and D1 names use the T0
 Gate 1 (governance): the repo's GitHub Actions deploy uses a platform-scoped
 Cloudflare token (this Worker + its D1 only; Geoff mints it in the dashboard, see the
 T0 ledger's pending list); the broad "Cloudflare Admin" workstation token never lands
-in this repo's secrets.
+in this repo's secrets. The repo's CLAUDE.md states the casual-user principle in one
+line with a pointer to requirements §The casual-user principle (one canonical text,
+no drift), alongside its pointers to §Governance's taxonomy and the harvest duty.
 
 **Acceptance:** Full gate green in the new repo; deployed `/healthz` returns 200 over
 the custom domain; GitHub Actions run visible green; STATUS.md states pass 1 in flight

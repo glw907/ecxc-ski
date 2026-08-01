@@ -77,6 +77,25 @@ alone closed the upgrade. Gate: check 0/0 (618 files), tests 141/141, build
 green; local https admin-guard smoke passed per recipe. The platform scaffolds
 directly on `^0.91.1`.
 
+## Post-T0.5 addendum (2026-08-01): cairn 0.92.0 and the engine brief
+
+- **cairn 0.92.0 released after T0.5** (registry latest as of 2026-08-01, the
+  design-ratchet release). ecxc is unaffected and stays on `^0.91.1` (the one
+  breaking change is admin-fields' new `register="stacked"` default, and ecxc
+  imports no admin-fields). **T1 scaffolds on the latest release at execution
+  time**, re-checking the registry and reading the incremental changelog beyond
+  0.91.1: 0.92.0 adds the admin-fields register prop (stacked default is what a
+  new build wants) and three advisory cairn-audit geometry rules.
+- **Engine gaps: exactly two, consumer brief filed** at
+  `cairn-cms/docs/internal/2026-08-01-xcathletes-consumer-brief.md` for the
+  proactive engine pass Geoff is organizing. Seam 1: the auth store's editor
+  functions (`insertEditor` etc.) are package-internal with no export subpath, so
+  T5's add-coach-provisions-editor flow uses the manual `ManageEditors` fallback
+  until the export lands (retrofit is one call site). Seam 2: no first-publish
+  stamp or manifest-diff helper, which gates pass 3's announce-on-publish; the
+  engine pass should land it before platform pass 3. Everything else the
+  requirements need was verified present in 0.92.0.
+
 ## cairn 0.85.0-0.91.1 briefing for T2/T5 (from the T0.5 changelog review)
 
 What a from-scratch cairn admin consumer on 0.91.1 should adopt from day one:

@@ -28,14 +28,11 @@ values into the platform repo's README; until then this file is the record.
    daily-limit increase when onboarding the sending domain; add a quota check to
    the pass-5 cutover checklist. The managed API token already carries Email
    Sending scope (REST and binding). **CONFIRMED by Geoff 2026-08-01; decision
-   final.** One setup step remains and it is dashboard-only (probed 2026-08-01:
-   the `email/sending/domains` route exists but the token's Email Sending scope
-   covers sends, not domain management): **Geoff onboards xcathletes.org in
-   Compute → Email Service → Email Sending → Onboard Domain** (auto-plants the
-   cf-bounce MX/SPF/DKIM and DMARC records; verification is minutes on
-   Cloudflare DNS). Request the daily-limit increase from the Email Sending
-   limits page while there, or leave it to the execution session to raise via
-   support once real sends begin.
+   final. Domain ONBOARDED the same day** (Geoff, dashboard; verified 2026-08-01
+   by reading the zone: cf-bounce MX x3, SPF, DKIM, and `p=reject` DMARC all
+   present). xcathletes.org can send. Still worth a daily-limit increase request
+   from the Email Sending limits page before real volume; the execution session
+   carries that if Geoff hasn't.
 3. **SMS: Twilio, Sole Proprietor 10DLC track** (ECXC has no EIN). Sole
    Proprietor caps (roughly 1,000 segments/day on the strictest carrier, 1
    msg/sec) far exceed platform volume. **Pending: Geoff creates the Twilio

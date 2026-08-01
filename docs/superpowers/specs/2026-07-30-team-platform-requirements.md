@@ -143,6 +143,14 @@ Race class (below) is deliberately distinct from training group.
 - Every broadcast is recorded (message, audience, sender, time). Per-recipient
   delivery-status tracking is out: push and SMS receipts are unreliable enough that it
   would overpromise (trimmed 2026-07-30).
+- Public or private is a compose-time choice (Geoff, 2026-08-01). When a coach posts
+  a message they check whether it is public on the website or private to the team.
+  Private is the existing behavior: delivery through the announcement/broadcast
+  channels above. A public post renders on the platform's public site (a team
+  announcements surface, joining plans and the schedule as the third public content
+  kind) and additionally triggers an announcement broadcast by default; the coach
+  can switch the accompanying broadcast off per post *(default)*. Public posts
+  carry no athlete data, per §Governance's taxonomy rule.
 
 ## Chat
 

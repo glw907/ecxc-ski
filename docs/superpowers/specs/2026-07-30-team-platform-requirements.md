@@ -428,6 +428,26 @@ The platform is an operated product, not a website: someone moderates, someone a
 "my phone isn't buzzing," someone runs the seasonal onboarding ritual. One of the five
 coaches is the named primary operator (which one is an open item below).
 
+## User documentation (added 2026-08-02)
+
+Good docs for athletes, coaches, and boosters on how to use the system (Geoff,
+2026-08-02). Shape governed by §The casual-user principle: short, task-shaped
+pages ("log a workout," "install on your phone," "send a broadcast"), never a
+manual; written in the web-content register, one doc set per audience.
+
+- **Athletes**: sign in, install to home screen, log a session, daily check-in,
+  chat basics. **Boosters**: sign in, directory, chat, what arrives by email.
+  **Coaches**: everything member-facing plus roster management, posts and
+  broadcast, race entries, the seasonal onboarding ritual, and the operator
+  duties (§Operations).
+- Athlete and booster docs are public pages on the platform (nobody should need
+  to sign in to read how to sign in) *(default)*. Coach docs ride the cairn
+  admin's existing help surface (the `/admin/help` precedent) *(default)*.
+- Sequencing: each pass ships the docs for what it ships, and the pass-5 ECXC
+  cutover gates on athlete and booster docs being live, since the coach-led
+  onboarding ritual leans on them; East High (pass 6) reuses the same set
+  *(default)*.
+
 ## Open items
 
 - Which coach is the named primary operator.

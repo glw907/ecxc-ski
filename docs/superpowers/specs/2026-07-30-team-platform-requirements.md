@@ -185,6 +185,10 @@ Race class (below) is deliberately distinct from training group.
   small and channel-wide pings are acceptable. It notifies as a mention to every
   member of that channel; per-channel mute still wins, per §Notification control
   *(default)*. The must-reach path remains broadcast, which mute cannot silence.
+  Coaches can turn `@everyone` off per channel if it's being abused (Geoff,
+  2026-08-02): a channel-settings toggle, default on; when off, `@everyone` in that
+  channel renders as plain text for non-coaches and fires nothing. Coaches
+  themselves are never restricted by it *(default)*.
 
 ## Notification control (added 2026-08-01)
 

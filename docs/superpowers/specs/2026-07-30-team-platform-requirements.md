@@ -170,6 +170,40 @@ Race class (below) is deliberately distinct from training group.
 - Notifications: a channel message pushes only on @mention; DMs always push; broadcasts
   always push; everything else is pull.
 
+## Notification control (added 2026-08-01)
+
+The governing principle (Geoff, 2026-08-01): our users are casual and occasional,
+not people who live in Discord or Slack. Defaults therefore carry the whole load,
+and changing one must be painless. Fine-grained notification matrices are
+explicitly out; if a control needs explaining, it is wrong.
+
+- Three tiers, one screen, per team for multi-team members:
+  1. **Announcements** (broadcasts, including Team Announcement posts): never
+     muteable in-app; this is the must-reach tier the zero-adoption floor
+     promises. The only choice is transport: "push when installed, text when not"
+     (default), "always text me," and email for adults.
+  2. **Personal** (DMs and @mentions): on by default everywhere; the one control
+     turns the SMS fallback off *(default)*. DMs never go silently dark.
+  3. **Channel activity**: pull by default (per §Chat); opt-in per-channel
+     notify, per-channel mute, and mute wins over mentions *(default)*.
+- Low-friction mechanics: controls live in context, not in a settings tree (mute
+  sits in the channel header; the transport choice is one tap from the home
+  shell), phrased in plain language ("Text me instead"), and the settings screen
+  never exceeds the three rows *(default)*.
+- Carrier STOP/HELP is designed in, not discovered: 10DLC mandates it, so a STOP
+  lands in a first-class suppression list, never affects push or in-app delivery,
+  and is never invisible. The coach roster view carries a per-person
+  reachability state (live push / SMS-only / email-only / unreachable), the
+  honest replacement for the trimmed per-recipient receipts: transport state is
+  knowable, per-message delivery is not.
+- Resolution order when sending: preference, then push-subscription health, then
+  suppression. Preferences are platform-operational data keyed by person, team,
+  and channel.
+- Sequencing: the announcements transport choice ships with pass 2's push
+  substrate; channel controls arrive with chat in pass 4. Deliberately not v1:
+  quiet hours (revisit once real broadcast habits exist; late-evening texts to
+  minors will eventually annoy a parent), digest emails, read tracking.
+
 ## Schedule
 
 Schedule truth lives on the site (added 2026-07-30): a public upcoming view carrying

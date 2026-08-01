@@ -16,15 +16,22 @@ same day, gated green and confirmed live at 1440.
 
 ### Next up
 
-**Team platform initiative (2026-07-30, requirements ratified).** The CrewLAB
-replacement grew into a standalone multi-team training platform on a neutral domain
-(its own repo/Worker; ECXC tenant 1 by end of October, East High tenant 2 in Nov–Dec).
-Authority: `docs/superpowers/specs/2026-07-30-team-platform-requirements.md`; the
-immediate next action is executing
-`docs/superpowers/plans/2026-07-30-team-platform-pass-1.md` (foundation: repo, cairn
-mount, schema, member auth, roster) in a fresh Opus 5 session, starting with the plan's
-T0 question batch to Geoff. The same-day design draft in specs/ is superseded; the
-requirements doc wins.
+**Team platform initiative: pass 1 executing (T0/T0.5 done 2026-08-02).** The CrewLAB
+replacement is a standalone multi-team training platform at **xcathletes.org** (repo
+`~/Projects/xcathletes-org`, to be created by T1; ECXC tenant 1 by end of October,
+East High tenant 2 in Nov–Dec). Authority:
+`docs/superpowers/specs/2026-07-30-team-platform-requirements.md` (governance,
+casual-user principle, post-category comms, and notification control all ratified and
+folded in). Task 0 is fully closed, Task 0.5 shipped (this repo upgraded to cairn
+^0.91.1 and deployed): domain registered and zone live, Cloudflare Email Sending
+onboarded and DNS-verified, Twilio toll-free bought with verification pending review,
+coach seed settled. The whole record is
+`docs/superpowers/plans/2026-07-30-team-platform-pass-1-t0-ledger.md`. **Immediate
+next action: a fresh Opus 5 session executes Tasks 1–7 of
+`docs/superpowers/plans/2026-07-30-team-platform-pass-1.md`, reading the T0 ledger
+first; the exact resume prompt is in the ledger's closing section.** Only the
+platform-scoped CI token (Geoff, dashboard) trails into T1. The same-day design
+draft in specs/ is superseded; the requirements doc wins.
 
 **Resend cutover COMPLETE (2026-07-14, same day as the outage below).** Geoff freed the Resend
 domain slot (aksailingclub.org off the account) and added ecxc.ski; auto-configure planted the

@@ -51,13 +51,13 @@ values into the platform repo's README; until then this file is the record.
    deliberately NOT in this repo: the execution session reads it from the
    approved KYC profile via `GET trusthub.twilio.com/v1/CustomerProfiles/BU.../
    EntityAssignments` then `EndUsers/IT...` (age-store Twilio creds).
-4. **Coach roster: Geoff only at seed**; the other coaches join through the
-   interface later. Consequence for T5, recorded as a plan amendment: the
-   add-coach flow must also provision the person as a cairn editor (or the
-   screen documents the manual allowlist step), because coach admin rides the
-   cairn magic-link shell. Geoff's editor email is `geoff@907.life` per the ecxc
-   admin precedent (**pending his confirmation**), cell number **pending** (not
-   in the contacts store).
+4. **Coach roster: Geoff only at seed; CLOSED 2026-08-02.** The other coaches
+   join through the interface later. Consequence for T5, recorded as a plan
+   amendment: the add-coach flow must also provision the person as a cairn
+   editor (or the screen documents the manual allowlist step), because coach
+   admin rides the cairn magic-link shell. Editor email **confirmed:
+   `geoff@907.life`**. Roster cell: the phone on the Twilio KYC profile
+   (confirmed; retrieval recipe in item 3, PII deliberately not in this repo).
 
 ## Governance ratification (Geoff, 2026-07-30, "bake it in")
 
@@ -147,3 +147,18 @@ What a from-scratch cairn admin consumer on 0.91.1 should adopt from day one:
   added a snapshot test on the compiled admin sheet's class inventory; a
   consumer starting on 0.91.1 never sees the regression, but the snapshot
   discipline explains any future "missing class" mystery.
+
+## Execution handoff (written at session close, 2026-08-02)
+
+Task 0 and Task 0.5 are complete; nothing in this pass waits on Geoff except the
+platform-scoped CI token (dashboard-minted once T1 names the Worker; the T1
+constraint in the plan carries it). Launch the execution session from
+`~/Projects/ecxc-ski` on Opus 5 with:
+
+> Execute Tasks 1-7 of docs/superpowers/plans/2026-07-30-team-platform-pass-1.md.
+> T0/T0.5 are done; read docs/superpowers/plans/2026-07-30-team-platform-pass-1-t0-ledger.md
+> first for the decisions, live infrastructure, and cairn briefing. Requirements
+> authority: docs/superpowers/specs/2026-07-30-team-platform-requirements.md; where
+> docs disagree, requirements win. Dispatch each task to site-implementer (Sonnet),
+> review the diff, clear the full gate between dispatches. Scaffold the platform on
+> the latest cairn release (re-check the registry; 0.92.0 as of 2026-08-01).

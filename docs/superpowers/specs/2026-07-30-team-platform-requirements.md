@@ -52,6 +52,18 @@ effort levels in structured sessions); both athletes and boosters need a simpler
 interface; the team needs broadcast and group chat ("like Remind, with more effective
 group conversations"; chat itself a simplified Slack/Discord).
 
+## The casual-user principle (platform-wide; Geoff, 2026-08-01)
+
+Named first for notifications, binding everywhere: our users are casual and
+occasional, not people who live in tools. Affordances that reward Discord, Slack,
+or Strava regulars are the wrong instincts here. Every surface follows three
+rules: defaults carry the whole load, so the product must be right for someone
+who never opens a setting; any change a person can make must be painless and
+offered in context, not in a settings tree; and if a control needs explaining,
+it is wrong. The fifteen-second log entry, the two-tap check-in, and the
+three-row notification screen are instances of the same rule, and new features
+get measured against it.
+
 ## People and roles
 
 - **Coach**: 5 people, one flat role. Every coach can broadcast, author plans, manage
@@ -172,10 +184,8 @@ Race class (below) is deliberately distinct from training group.
 
 ## Notification control (added 2026-08-01)
 
-The governing principle (Geoff, 2026-08-01): our users are casual and occasional,
-not people who live in Discord or Slack. Defaults therefore carry the whole load,
-and changing one must be painless. Fine-grained notification matrices are
-explicitly out; if a control needs explaining, it is wrong.
+§The casual-user principle applies here with full force: fine-grained
+notification matrices are explicitly out.
 
 - Three tiers, one screen, per team for multi-team members:
   1. **Announcements** (broadcasts, including Team Announcement posts): never

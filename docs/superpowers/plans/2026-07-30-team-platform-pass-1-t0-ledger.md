@@ -33,15 +33,18 @@ values into the platform repo's README; until then this file is the record.
    present). xcathletes.org can send. Still worth a daily-limit increase request
    from the Email Sending limits page before real volume; the execution session
    carries that if Geoff hasn't.
-3. **SMS: Twilio, Sole Proprietor 10DLC track** (ECXC has no EIN). Sole
-   Proprietor caps (roughly 1,000 segments/day on the strictest carrier, 1
-   msg/sec) far exceed platform volume. **Pending: Geoff creates the Twilio
-   account** (his email, cell verification, payment card, ~$20 to exit trial) and
-   hands over the Account SID and auth token once; they land via the age-store
-   flow (`secret-set.sh`, registry entry, `sync.sh` routing). Then: buy a local
-   number, file the Sole Proprietor brand and campaign (use case: sign-in codes
-   plus team notifications; opt-in: coach-created roster accounts). Approval runs
-   days to weeks; T4 uses the dev transport until it clears.
+3. **SMS: Twilio, account LIVE (2026-08-01).** Account created and funded ($20,
+   out of trial); credentials stored in the age store (`TWILIO_ACCOUNT_SID`,
+   `TWILIO_API_KEY_SID`, `TWILIO_API_KEY_SECRET`; Standard key
+   "xcathletes-platform-2026-08", scope and rotation in the dotfiles registry;
+   worker routing added at T1). **Discovery that changes the number plan: Twilio
+   has zero Alaska local inventory** (907 and statewide both empty,
+   2026-08-01), so a "local team number" is off the table. Recommendation
+   pending Geoff: a **verified toll-free number** instead of Sole Proprietor
+   10DLC with an out-of-state local number; toll-free skips the brand/campaign
+   apparatus and its fees entirely (one free verification, similar days-scale
+   clock, throughput ample). T4 uses the dev transport until verification
+   clears either way.
 4. **Coach roster: Geoff only at seed**; the other coaches join through the
    interface later. Consequence for T5, recorded as a plan amendment: the
    add-coach flow must also provision the person as a cairn editor (or the

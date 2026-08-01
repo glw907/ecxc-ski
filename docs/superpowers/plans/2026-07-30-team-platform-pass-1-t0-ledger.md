@@ -37,14 +37,20 @@ values into the platform repo's README; until then this file is the record.
    out of trial); credentials stored in the age store (`TWILIO_ACCOUNT_SID`,
    `TWILIO_API_KEY_SID`, `TWILIO_API_KEY_SECRET`; Standard key
    "xcathletes-platform-2026-08", scope and rotation in the dotfiles registry;
-   worker routing added at T1). **Discovery that changes the number plan: Twilio
-   has zero Alaska local inventory** (907 and statewide both empty,
-   2026-08-01), so a "local team number" is off the table. Recommendation
-   pending Geoff: a **verified toll-free number** instead of Sole Proprietor
-   10DLC with an out-of-state local number; toll-free skips the brand/campaign
-   apparatus and its fees entirely (one free verification, similar days-scale
-   clock, throughput ample). T4 uses the dev transport until verification
-   clears either way.
+   worker routing added at T1). Twilio had zero Alaska local inventory
+   (2026-08-01), so Geoff ratified the **verified toll-free path** over 10DLC.
+   All filed 2026-08-02: KYC primary customer profile approved under "East
+   Community Cross Country" (bundle `BU2280ff945556bb865b7b7737067a85b7`);
+   **+1 888-609-8679 purchased** (`PN805ee190e4d3c29fe31cb77e7924db8d`,
+   ~$2.15/mo); **toll-free verification PENDING_REVIEW**
+   (`HHc002beb3bcdeefce648a3a57f228e9ff`; use case: sign-in codes + team
+   notifications, WEB_FORM opt-in citing the ecxc.ski registration pages,
+   volume 100/day). Check status:
+   `GET messaging.twilio.com/v1/Tollfree/Verifications/HH...`. T4 uses the dev
+   transport until it clears. Geoff's contact PII (cell, address) is
+   deliberately NOT in this repo: the execution session reads it from the
+   approved KYC profile via `GET trusthub.twilio.com/v1/CustomerProfiles/BU.../
+   EntityAssignments` then `EndUsers/IT...` (age-store Twilio creds).
 4. **Coach roster: Geoff only at seed**; the other coaches join through the
    interface later. Consequence for T5, recorded as a plan amendment: the
    add-coach flow must also provision the person as a cairn editor (or the

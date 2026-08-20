@@ -2,7 +2,7 @@
 // half of the CMS: which repo to commit to, the editable concepts and their fieldset, the render
 // the editor preview mirrors, and the GitHub App identity.
 import { defineAdapter, defineConcept, fieldset, fields, githubApp, parseSiteConfig } from '@glw907/cairn-cms';
-import { normalizeAssets, makeMediaResolver, readCommittedManifest } from '@glw907/cairn-cms/media';
+import { normalizeAssets, buildMediaResolver, readCommittedManifest } from '@glw907/cairn-cms/media';
 import { renderMarkdown, registry } from './render.js';
 import { wrapScrollableTables } from './render/table-scroll.js';
 import { wrapCtaPanels } from './render/cta-panel.js';
@@ -29,7 +29,7 @@ const mediaManifest = readCommittedManifest(
 // admin preview injects its own resolver from the edit page's mediaTargets; this default keeps a
 // published `media:` reference from throwing when no per-call resolver is supplied.
 const resolvedAssets = normalizeAssets({ bucketBinding: 'MEDIA_BUCKET' });
-export const publicMediaResolver = makeMediaResolver(mediaManifest, resolvedAssets);
+export const publicMediaResolver = buildMediaResolver(mediaManifest, resolvedAssets);
 
 // Whether media is configured on, threaded as `assetsEnabled` to the public catch-all route so the
 // engine logs `media.resolver_absent` rather than silently dropping a hero image if a future edit

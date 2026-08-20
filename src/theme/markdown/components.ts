@@ -22,14 +22,14 @@
 import { h } from 'hastscript';
 import type { Element, ElementContent } from 'hast';
 import { defineRegistry, defineComponent, fields, glyph, type ComponentDef } from '@glw907/cairn-cms';
-import { cardShell, headRow, isElement, strAttr, type ComponentContext, type MakeIcon } from '@glw907/cairn-cms/render';
+import { cardShell, headRow, isElement, strAttr, type ComponentContext } from '@glw907/cairn-cms/render';
 import { makeIconRenderer } from '$chassis/render.js';
 import { ICON_PATHS } from './icons.js';
 
 const ecGlyph = (name: string): Element => glyph(name, ICON_PATHS);
 // The chassis wires the icon set into the render helpers; this theme owns only the glyph data
 // (ICON_PATHS) and where each build() function calls makeIcon.
-const makeIcon: MakeIcon = makeIconRenderer(ICON_PATHS);
+const makeIcon = makeIconRenderer(ICON_PATHS);
 
 // A path attribute a program or a cta can point at: an in-page anchor, a site path, a cairn:
 // reference, or a full URL. See the header comment for why this replaces `fields.url` here.

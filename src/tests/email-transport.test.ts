@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { magicLinkSender, resendSender } from '$theme/email-transport';
-import type { AuthEnv, MagicLinkMessage } from '@glw907/cairn-cms';
+import type { CairnEnv, MagicLinkMessage } from '@glw907/cairn-cms';
 
 describe('resendSender', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -110,7 +110,7 @@ describe('magicLinkSender', () => {
   });
 
   it('sends through Resend when RESEND_API_KEY is present', async () => {
-    const env = { RESEND_API_KEY: 're_test_key' } as unknown as AuthEnv;
+    const env = { RESEND_API_KEY: 're_test_key' } as unknown as CairnEnv;
 
     await magicLinkSender(env, message);
 
@@ -128,7 +128,7 @@ describe('magicLinkSender', () => {
   });
 
   it('throws a clear, content-free error when RESEND_API_KEY is absent', async () => {
-    const env = {} as AuthEnv;
+    const env = {} as CairnEnv;
 
     await expect(magicLinkSender(env, message)).rejects.toThrow('RESEND_API_KEY is not configured');
     expect(fetchMock).not.toHaveBeenCalled();

@@ -2,7 +2,7 @@
 
 ## Current state (2026-07-13)
 
-On `@glw907/cairn-cms ^0.91.1` (upgraded from ^0.84.4 on 2026-07-30, full gate and admin-guard
+On `@glw907/cairn-cms ^0.95.0` (upgraded from ^0.93.0 on 2026-08-20, full gate and admin-guard
 smoke green), backlog triaged 2026-07-13 from 16 open items to 7 (see History).
 
 Rebuilt from scratch on the Waymark starter template and deployed to production
@@ -70,6 +70,20 @@ summaries now ride that tier.)
 
 ## History
 
+- **cairn 0.95.0 upgrade (2026-08-20).** Upgraded `@glw907/cairn-cms` ^0.93.0 → ^0.95.0, which
+  crosses 0.94.0's large rename release. Four site-side changes were owed and landed:
+  `makeMediaResolver` → `buildMediaResolver` in `cairn.config.ts`, the dropped `MakeIcon`
+  re-export (the annotation was redundant, since `makeIconRenderer` already declares its return
+  type), `AuthEnv` → `CairnEnv` in the email-transport test, and `@anthropic-ai/sdk@^0.105.0`
+  added as a direct dependency because the engine demoted it to an optional peer and this site
+  runs tidy. Everything else in the 0.94.0 list missed this site: it hand-assembles no admin
+  payload, imports no route factory directly, reads no `event.locals.editor`, and configured no
+  `adminNav`, `requireAccess`, or `createSectionAction`. Two 0.95.0 fixes ride in free through
+  the facade, the admin thumbnail base and the editor chrome following a theme toggle.
+  `npm run check` 0/0 (627 files), `npm test` 141/141, `npm run build` green; the local https
+  admin-guard smoke passed exactly per the recipe (no cookie → 303 `/admin/login`; a minted
+  session → 307 `/admin/posts` with a fresh `__Host-cairn_csrf` cookie; `/admin/posts` 200), and
+  both the new and a stale July smoke session row were deleted from the local D1 file afterward.
 - **cairn 0.91.1 upgrade (2026-07-30).** Upgraded `@glw907/cairn-cms` ^0.84.4 → ^0.91.1
   (task 0.5 of the team platform pass 1 plan): the whole span (0.85.0 through 0.91.1) reviewed
   against all nine subpaths the site imports, no breaking change reached ecxc's own code

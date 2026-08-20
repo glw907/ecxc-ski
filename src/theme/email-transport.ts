@@ -114,7 +114,7 @@ async function sendMagicLinkViaResend(apiKey: string, message: MagicLinkMessage)
 
 /**
  * The magic-link `SendMagicLink` this site mounts (src/chassis/cairn.server.ts): always Resend.
- * `AuthEnv` does not declare `RESEND_API_KEY` (it is a structural subset of the real
+ * `CairnEnv` does not declare `RESEND_API_KEY` (it is a structural subset of the real
  * `platform.env`, per its own doc comment), so it is read through a widening cast; the real env
  * always carries whatever `app.d.ts` declares on `Platform.env`. Throws a plain, content-free
  * error when the secret is missing, so a deploy without it fails loudly (reaching cairn's

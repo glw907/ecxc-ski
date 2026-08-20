@@ -16,22 +16,32 @@ same day, gated green and confirmed live at 1440.
 
 ### Next up
 
-**Team platform initiative: pass 1 executing (T0/T0.5 done 2026-08-02).** The CrewLAB
-replacement is a standalone multi-team training platform at **xcathletes.org** (repo
-`~/Projects/xcathletes-org`, to be created by T1; ECXC tenant 1 by end of October,
-East High tenant 2 in Nov–Dec). Authority:
-`docs/superpowers/specs/2026-07-30-team-platform-requirements.md` (governance,
-casual-user principle, post-category comms, and notification control all ratified and
-folded in). Task 0 is fully closed, Task 0.5 shipped (this repo upgraded to cairn
-^0.91.1 and deployed): domain registered and zone live, Cloudflare Email Sending
-onboarded and DNS-verified, Twilio toll-free bought with verification pending review,
-coach seed settled. The whole record is
-`docs/superpowers/plans/2026-07-30-team-platform-pass-1-t0-ledger.md`. **Immediate
-next action: a fresh Opus 5 session executes Tasks 1–7 of
-`docs/superpowers/plans/2026-07-30-team-platform-pass-1.md`, reading the T0 ledger
-first; the exact resume prompt is in the ledger's closing section.** Only the
-platform-scoped CI token (Geoff, dashboard) trails into T1. The same-day design
-draft in specs/ is superseded; the requirements doc wins.
+**Team platform initiative: pass 1 COMPLETE and deployed (2026-08-20).** The CrewLAB
+replacement is live at **https://xcathletes.org** (repo `~/Projects/xcathletes-org`,
+private). Pass 1 built the foundation: repo and Workers Builds deploy, the cairn admin
+mount with a `plans` concept, the multi-team schema, member OTP sign-in, the coach
+roster admin, and the member shell. It scaffolded on cairn 0.95.0 rather than the
+0.91.1 the plan anticipated, which closed both engine seams the consumer brief had
+filed and replaced Task 4's hand-rolled OTP with the engine's `auth-channel`.
+
+**The platform repo is the canonical home of its own docs from here on.** Its
+`docs/STATUS.md` carries the live state and the six items pass 1 hands forward; this
+paragraph is the pointer, not a second copy. The pass 1 plan, its T0 ledger, and the
+requirements stay here as the initiative's authority:
+`docs/superpowers/specs/2026-07-30-team-platform-requirements.md` wins over everything.
+
+Two things ecxc-ski itself owes the initiative, both later: a hand-off link at
+`ecxc.ski/team` forwarding to the platform (the integration contract is links, never
+data), and retiring CrewLAB at the pass 5 cutover.
+
+Requirements §Governance Gate 1 was corrected on 2026-08-20. It had asked the platform
+repo's CI to deploy with a Cloudflare token scoped to one Worker and its D1; no such
+token can exist, since D1 and Workers Scripts are account permissions with no
+per-resource selector. Proven empirically, then resolved better: the platform deploys
+through Workers Builds and holds no deploy credential at all.
+
+**Next: pass 2** (training log, daily check-in, rollups, push substrate), which
+introduces the first athlete-owned tables. Start from the platform repo's STATUS.
 
 **Resend cutover COMPLETE (2026-07-14, same day as the outage below).** Geoff freed the Resend
 domain slot (aksailingclub.org off the account) and added ecxc.ski; auto-configure planted the

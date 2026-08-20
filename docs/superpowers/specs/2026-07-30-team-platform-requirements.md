@@ -377,11 +377,31 @@ arrive with the second tenant.
 ### The three gates
 
 - **Gate 1 (pass 1, structural, hard to retrofit)**: taxonomy encoded in the schema;
-  the visibility-consent fields; the platform repo's CI deploys with its own scoped
-  Cloudflare token (the broad workstation admin token never lands in the platform
-  repo's secrets); no PII or OTP codes in Worker logs, and production refuses to run
-  with the dev OTP transport, both config-enforced and tested; audit rows written
-  for exports and roster changes; the athlete export right shaped into the schema.
+  the visibility-consent fields; **no Cloudflare deploy credential in the platform
+  repository at all** (corrected 2026-08-20, see below); no PII or OTP codes in Worker
+  logs, and production refuses to run with the dev OTP transport, both config-enforced
+  and tested; audit rows written for exports and roster changes; the athlete export
+  right shaped into the schema.
+
+  **Correction, 2026-08-20.** This gate originally read "the platform repo's CI deploys
+  with its own scoped Cloudflare token (this Worker and its D1 only)". That token cannot
+  exist. Cloudflare's permission groups are scoped to a user, an account, or a zone, and
+  both D1 and Workers Scripts are account permissions with no per-database or per-script
+  resource selector, so any token that can deploy this Worker can also reach every other
+  Worker and every D1 database on the account. Proven empirically the same day: a token
+  minted for this repo alone read all thirteen databases on the account and created and
+  deleted one outside the platform.
+
+  The gate now asks for the thing the original wording was reaching for, and gets more
+  of it. The platform deploys through **Workers Builds**, Cloudflare's own CI, which
+  authenticates through its GitHub app and deploys with a build token Cloudflare holds
+  on its side. No deploy credential lives in the repository, so there is no secret for
+  a compromised workflow or a poisoned dependency to read. The quality gate rides the
+  Cloudflare build command, so a red check still blocks a deploy.
+
+  What this does not fix: the broad workstation token still reaches the platform D1,
+  which §Named accepted risks already names. Genuine isolation needs a separate
+  Cloudflare account, which is Gate 3's entity-custody work.
 - **Gate 2 (East High onboarding)**: a published plain-language data policy (what is
   stored, who sees it, sub-processors by name: Cloudflare, Twilio; retention; how to
   export or delete), riding the waiver's attorney review; a check of the school

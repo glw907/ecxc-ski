@@ -162,3 +162,170 @@ constraint in the plan carries it). Launch the execution session from
 > docs disagree, requirements win. Dispatch each task to site-implementer (Sonnet),
 > review the diff, clear the full gate between dispatches. Scaffold the platform on
 > the latest cairn release (re-check the registry; 0.92.0 as of 2026-08-01).
+
+## T1-T7 execution addendum (2026-08-20)
+
+Written at the start of the execution session. The pass scaffolds on cairn
+**0.95.0** (registry latest; ecxc itself moved to `^0.95.0` the same day), which
+is three releases past the 0.92.0 the T0.5 addendum anticipated. Reviewing
+0.93.0 through 0.95.0 changed two tasks materially and settled several
+scaffolding choices. Requirements still win over both this file and the plan.
+
+### Both engine seams from the consumer brief are CLOSED
+
+- **Seam 1 (editor provisioning) is closed by 0.93.0.** `@glw907/cairn-cms/auth-store`
+  now exports `listEditors`, `insertEditor`, `deleteEditor`, `setEditorRole`,
+  `insertOwnerIfEmpty`, `removeOwnerIfNotLast`, `demoteOwnerIfNotLast`, and
+  `EditorRow`. T5's add-coach flow calls `insertEditor` directly; the manual
+  `ManageEditors` fallback the brief planned for is not needed. Role values carry
+  no DB constraint, so the site's own `defineRoles` vocabulary is the only check.
+- **Seam 2 (first-publish stamp) is out of scope for this pass** and still gates
+  pass 3's announce-on-publish. 0.95.0's entry history and `Backend.listCommits`
+  move toward it but do not close it. It stays on the engine's list.
+
+### T4 rides the engine's auth channel instead of hand-rolling OTP
+
+`@glw907/cairn-cms/auth-channel`'s `createAuthChannel(config)` (0.94.0) is the
+member-auth layer T4 planned to build from scratch. It is a numeric OTP channel
+on the site's own D1 binding, deliberately separate from `AUTH_DB`, and every
+seam T4 needs is a config callback: `deliver(contact, code, ctx)` is the
+transport (contact-kind agnostic, so one function routes SMS and email),
+`lookup(contact)` is T3's `findPersonByContact`, `normalize(raw)` is the E.164
+and lowercase boundary, and `challenge(event, form)` is where `verifyTurnstile`
+from `@glw907/cairn-cms/cloudflare` plugs in. It returns three plain SvelteKit
+actions (`request`, `confirm`, `logout`) plus `resolveSubject` (the guard every
+members route uses) and `revokeSessions`. Codes, nonces, and session tokens are
+all hashed at rest; every action asserts origin and https first.
+
+T4's plan text names `src/lib/server/auth/{otp,sessions,transport}.ts` and its
+own `requestCode`/`verifyCode`/`sessionPerson`. Hand-rolling those against a
+shipped, security-reviewed engine channel would be strictly worse. **T4 becomes
+a configuration and transport task**, and its acceptance criteria transfer: the
+expiry, lockout, throttle, unknown-contact opacity, and session round-trip are
+still proven by test, now against the composed channel.
+
+Reference: `cairn-cms/docs/reference/auth-channel.md`,
+`docs/extend/add-a-second-audience.md`, and the worked example at
+`cairn-cms/examples/showcase/src/members/channel.ts` plus
+`examples/showcase/migrations-members/0000_channel.sql`.
+
+**Accepted deviation from requirements, flagged for Geoff at pass close: the
+sign-in code is EIGHT digits, not six.** Requirements §Identity and access says
+"a six-digit SMS code". The engine clamps `codeLength` to 8-10 and draws
+uniformly over Web Crypto bytes; the floor is deliberate, part of the channel's
+documented guessing-cost bound. Two extra digits is a smaller cost than
+hand-rolling and self-reviewing an OTP implementation, so the platform takes the
+engine's number. Session length is set to the requirements' 90 days (the
+engine's default is 30, its clamp one year).
+
+### Settled scaffolding choices
+
+- **`wrangler.jsonc`, not `wrangler.toml`.** The plan's T1 says crib ecxc's
+  `wrangler.toml`; the current engine scaffold ships jsonc and the 0.95.0
+  changelog names it the scaffold shape. The platform cribs ecxc's content
+  (custom-domain route, observability, vars) translated into jsonc.
+- **`create-cairn-site` is unpublished** (held on first-run defects, per the
+  template README's own WATCH note), so T1 copies `cairn-cms/templates/waymark/`
+  directly. That tree is what the tool would have baked, and it already carries
+  the admin mount, `/healthz`, the dev-backend build fence, and a custom
+  admin-screen precedent at `/admin/signups` that T5 follows.
+- **One migrations directory per database.** `migrations/` stays AUTH_DB's;
+  everything platform-owned (teams, people, memberships, the auth-channel tables,
+  `audit_log`) lives in `migrations-platform/` against `PLATFORM_DB`. The
+  channel's schema is a constant in engine source rather than a shipped
+  migration file, so the site copies it verbatim into its own first migration.
+- **`audit_log` lives in `PLATFORM_DB`**, using the schema the engine ships as
+  `migrations/0002_audit.sql`, copied into `migrations-platform/`. It backs both
+  the cairn admin's own action sink and T5's direct domain-event writes through
+  `createD1AuditSink(db, waitUntil)`. Requirements' no-table-straddles-two rule is
+  a table-level rule, so class-labeled tables sharing one D1 is conforming, and it
+  matches the single-D1 logical tenancy already named as an accepted risk.
+- **`adminNav` is retired** (0.94.0). `editor.navLayout` is the only nav seam,
+  and a site-custom screen is a `NavLayoutEntry` with its own `/admin/<segment>`
+  href. `@glw907/cairn-cms/admin-fields` merged into `/admin-toolkit`, where
+  `TextField`/`SelectField` are now `TextInput`/`SelectInput`.
+- **An access map on a parameterized route must be keyed by the bracket-form
+  route id**, never a concrete path. A path-keyed map fails closed and refuses
+  everyone, owner included.
+- **The dev-backend fence is per-call-site.** A shared exported constant does not
+  fold across module boundaries and ships the whole dev backend into the
+  production Worker. Leave `__CAIRN_DEV_BUILD__` and `$chassis/dev-gate.ts` as
+  the template ships them.
+
+### Live infrastructure created this session (2026-08-20)
+
+Worker `xcathletes`; D1 `cairn-xcathletes-auth`
+(`e9372238-70ea-41b0-97bb-5e67519545b1`, binding `AUTH_DB`); D1
+`xcathletes-platform` (`57c929df-d203-48a3-bfbf-9def775cc93c`, binding
+`PLATFORM_DB`); R2 `xcathletes-media`. Repo `~/Projects/xcathletes-org`,
+GitHub `glw907/xcathletes-org`, private.
+
+### Geoff's answers, 2026-08-20
+
+- **CI token**: Geoff mints the platform-scoped token and pastes it; it lands in
+  the workstation age store with `sync.sh` routing, and the session sets the
+  GitHub secret from there.
+- **GitHub App**: the platform reuses the existing cairn App (id `3847496`,
+  installation `135372268`) rather than creating its own. Geoff adds
+  `glw907/xcathletes-org` to that installation's repository selection.
+  `GITHUB_APP_PRIVATE_KEY_B64` is already in the age store, so nothing else is
+  owed. This overrides T2's "new App install" wording.
+- **Repo visibility**: private, until Gate 2's data policy and the waiver's
+  attorney review land.
+
+### Twilio toll-free verification was REJECTED, not pending
+
+The ledger records `HHc002beb3bcdeefce648a3a57f228e9ff` as PENDING_REVIEW. It
+was rejected on 2026-08-04, error 30445, "Business Information Could Not Be
+Verified - Contact, Email, Address, or URL Is Invalid". The edit window
+(`edit_expiration`) closed 2026-08-12, so a correction needs a fresh submission
+rather than an edit. The filing declared business type SOLE_PROPRIETOR under
+"East Community Cross Country" with `https://ecxc.ski/` as the business website,
+no privacy-policy URL, no terms URL, and `opt_in_image_urls` pointing at the two
+ecxc.ski registration pages rather than at screenshots of the opt-in form. Any
+of those is a plausible cause and the rejection reason does not say which.
+
+This does not block pass 1: T4 uses the dev transport until a verified number
+exists, exactly as the plan already provides. Refiling needs Geoff's judgment on
+business type and on standing up a privacy-policy page, so it is carried as a
+trail item for the pass close rather than acted on here.
+
+## The CI token question, settled 2026-08-20: Workers Builds, no token at all
+
+The T0 pending item asked Geoff to mint a Cloudflare token scoped to "this Worker + its
+D1 only" for the platform repo's GitHub Actions secret. **No such token can exist.**
+Cloudflare's permission groups are scoped to a user, an account, or a zone, and both D1
+and Workers Scripts are account permissions with no per-database or per-script resource
+selector. Any token that can deploy this Worker can also reach every other Worker and
+every D1 database on the account.
+
+This was proven, not inferred. Geoff minted a token (`b3b33cc39f7cd552474247159627f31a`)
+intending it to be platform-scoped. Probed before it was stored anywhere: it read the
+`ecxc` Worker, `cairn-ecxc-auth`, `asc-club`, and all thirteen D1 databases on the
+account, and a write probe created and deleted a throwaway database outside the platform.
+It was never set as a repository secret; the local copy was destroyed and **Geoff deleted
+the token the same day**.
+
+**Resolution, Geoff's call: Workers Builds.** Cloudflare's own CI authenticates through
+its GitHub app and deploys with a build token Cloudflare holds, so no deploy credential
+exists in the platform repository at all. That is Gate 1's actual intent, and it is
+stronger than the scoped token the gate originally asked for, since there is no secret
+for a compromised workflow or a poisoned dependency to read. The quality gate rides the
+Cloudflare build command (`npm run check && npm test && npm run build`), so a red check
+fails the build before the deploy command runs.
+
+Consequences already landed:
+
+- `.github/workflows/deploy.yml` is deleted; the platform has no GitHub Actions at all.
+- `xcathletes-org/docs/deploy.md` documents the reasoning and the exact dashboard build
+  settings.
+- **Requirements §Governance, Gate 1 is corrected in place** with a dated note. The
+  original wording claimed a control Cloudflare cannot provide, which mattered more than
+  usual because Gate 2 publishes a data policy to a school district.
+- The Workers Builds API is not reachable with the managed workstation token (it carries
+  no Builds permission), so connecting the repository is Geoff's dashboard action. Until
+  he does it, the platform has no CI and deploys happen from the workstation.
+
+What this does NOT fix, and should not be read as fixing: the broad workstation token
+still reaches the platform D1. §Named accepted risks already says so. Genuine isolation
+needs a separate Cloudflare account, which is Gate 3's entity-custody work.

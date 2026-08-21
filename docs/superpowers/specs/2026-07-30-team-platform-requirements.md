@@ -71,6 +71,15 @@ get measured against it.
   that involves an athlete.
 - **Athlete**: ~50, nearly all minors. Log training, read plans, chat, receive
   broadcasts.
+- **Summer college athlete** (added 2026-08-20): an athlete membership held by an
+  adult. NCAA athletes do not train with their college teams over the summer, and
+  those who come home to Alaska need a group to train with, so alumni and other
+  college skiers and runners join the club for the summer block. Same role, same
+  surfaces; the differences are that they are adults (adult transport choices and
+  consent rules apply to them as athletes, not only to coaches and boosters), their
+  log must be useful to them and compatible with what their college coach expects to
+  see, and their membership is seasonal by design (archive at summer's end, history
+  intact).
 - **Booster**: ~20 adults. Chat and broadcasts suffice; no structured volunteer or
   fundraising features. A contact directory of boosters and coaches is wanted.
 - **Race organizer**: a contact record (name, email), never an account. Receives the

@@ -25,6 +25,11 @@
 
 ## Medium
 
+- [ ] **#39** Add a devcontainer with pinned Node and wrangler `#improvement` `#ecxc` *(2026-08-30)*
+  Bluefin DX's endorsed tier for SvelteKit/Cloudflare work: the toolchain pins in the repo's
+  `.devcontainer/`, not host mise. Use Docker (not Podman) for the VS Code integration and
+  mind SELinux labels on bind mounts. Research: `~/.dotfiles/bluefin/devenv-research.md`.
+
 - [ ] **#33** Rate-limit the registration endpoints' parent-copy send `#improvement` `#ecxc` *(2026-07-13)*
   The camp/training registration forms email a confirmation to the parent address from the form (the unrestricted `EMAIL` binding), so one solved Turnstile challenge sends one attacker-shaped email from noreply@ecxc.ski to an arbitrary address. Mitigations already in place: Turnstile fails closed, and every send lands the full record in CONTACT_EMAIL, so abuse is visible. Add a per-IP or per-address rate limit (KV or DO) if volume or abuse ever warrants. Security review of the registration-forms pass, 2026-07-13.
 

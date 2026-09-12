@@ -7,10 +7,10 @@ what is specific to this repo.
 
 ## Secrets in this repo
 
-`RESEND_API_KEY` is a local dev secret for this repo, sourced from `~/.bashrc`:
+`RESEND_API_KEY` is a secret for this repo, sourced from `~/.local/secrets`:
 
 ```bash
-RESEND_KEY=$(bash -c 'source ~/.bashrc && echo -n $RESEND_API_KEY')
+RESEND_KEY=$(bash -c 'source ~/.local/secrets && echo -n $RESEND_API_KEY')
 ```
 
 ---

@@ -28,7 +28,7 @@ passes, decommission the old `cairn-ecnordic-auth` D1.
   profile photo is uploaded but unplaced pending a confirmed identity).
 - **Team platform initiative.** The CrewLAB replacement is live at https://xcathletes.org (repo
   `~/Projects/xcathletes-org`, private), and that repo's `docs/STATUS.md` is the canonical live
-  state. Next there is pass 2 (training log, check-in, rollups, push). This repo keeps the
+  state. This repo keeps the
   initiative's authority docs, and
   `docs/superpowers/specs/2026-07-30-team-platform-requirements.md` wins over everything.
   ecxc-ski itself still owes a hand-off link at `ecxc.ski/team` (links, never data) and

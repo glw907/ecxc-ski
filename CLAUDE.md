@@ -19,19 +19,18 @@ theme edit is allowed to reach through.
 
 ## Design work
 
-Design changes follow the family-wide standards in `../cairn-cms/CLAUDE.md` ("The polish and
-fidelity standards", "The responsive standard"): a rebuild may diverge from its pre-rebuild
+Design changes follow the family-wide standards in `../cairn-cms/CLAUDE.md` ("Visual work"): a rebuild may diverge from its pre-rebuild
 look only where it improves, and every viewport from 320 to 2560 gets composed, not merely
 left unbroken. Verify a design claim with a computed-style probe (a canvas round-trip
 normalizes Chromium's `oklch()` computed colors to sRGB for a contrast check), not a
-screenshot alone; `docs/STATUS.md`'s "Live verification" entries are the worked examples.
+screenshot alone.
 `ecxc-theme.css` carries its own load-bearing cascade notes inline, including the
 unlayered-override trap that once erased the CTA button's label and the one-token hover
 vocabulary; read its header comments before editing a cascade-sensitive rule there.
 
 ## Development Workflow
 
-Pass-driven. Any of "continue development," "next pass," "finish pass," or "ship pass" invokes the `site-pass` skill (this repo's own roadmap). The site consumes `@glw907/cairn-cms` from the npm registry by version range; that library is a separate standalone repo with its own roadmap.
+Pass-driven. Any of "continue development," "next pass," "finish pass," or "ship pass" invokes the `site-pass` skill (this repo's own roadmap); `pass-core` carries the process. The site consumes `@glw907/cairn-cms` from the npm registry by version range; that library is a separate standalone repo with its own roadmap.
 
 ## Website Content
 
@@ -93,18 +92,11 @@ npx wrangler secret put CONTACT_EMAIL
 ## Deploy
 
 Push to `main` → GitHub Actions → build + pagefind + wrangler deploy → live in ~2 min.
+Never run `npx wrangler deploy` from the project root in normal work: it overwrites the
+Actions-managed deploy with a stale local build. Emergency only (Actions broken):
+`npm run build && npx pagefind --site .svelte-kit/cloudflare && npx wrangler deploy`.
 
-## The family lessons (from the cairn arc, 2026-07; binding for all design/port work)
+## Visual work
 
-- **The original manifest**: any rebuild/port/redesign enumerates its original
-  exhaustively FIRST (every page, section, image identity + crop, behavior) and verifies
-  against the manifest, never the plan. The `visual-fidelity` skill carries the method.
-- **The verify loop**: fresh-context verifiers grade; builders and fixers never
-  self-confirm; exit only on an independent PASS; the contrast probe on interactive
-  elements is mandatory.
-- **The one-check rule**: nothing deploys without a full-page render read in the main
-  loop; user-facing changes get Geoff's before/after.
-- **Defects are not design**: the original's typos, bugs, responsive failures always fix
-  (graded IMPROVED); our CSS is cleaner than the original's, always.
-- The deep records: cairn-cms docs/internal/2026-07-06-arc-post-mortem.md and the
-  pre-beta-harvest ledger.
+Any rebuild, port, or redesign follows the `visual-fidelity` skill (original manifest,
+independent verify loop, full-page render read before deploy). Invoke it at the start.

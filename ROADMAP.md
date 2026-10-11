@@ -26,6 +26,9 @@ service-account GitHub writes). Covers passes 11–15. Both 907.life and ecnordi
 are planned migration targets once complete.
 Spec: `docs/superpowers/specs/2026-05-13-cairn-requirements.md`
 
+### PR test CI `pr-test-ci`
+Add a pull-request workflow that runs `npm run check && npm test && npm run build` on `pull_request`. Until it lands, the full-suite home is the local close gate (lean pass ruling 11).
+
 ## Someday
 
 ### Migrate 907.life and ecnordic.ski to Cairn `site-migrations`

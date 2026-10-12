@@ -39,3 +39,8 @@ being stable and battle-tested.
 Build aksailingclub.org as a Cairn site package, including content migration from the
 existing Hugo site. The most complex migration; happens last, after cairn-cms is proven
 and site-migrations is complete.
+
+### DC-23 ECXC scoring anchors `dc23-anchors`
+File the ECXC rubric anchors for DC-23. Audience fit 5: "speaks to both audiences at once,
+reading level fits a teen and a parent". Audience fit 3: "serves one audience well and the other
+thinly". Voice fidelity 5: "coach voice, warm and plain". Filing only; no build work.

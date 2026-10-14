@@ -3,7 +3,7 @@
 System architecture for the East Community Cross Country site, rebuilt 2026-07-05/06 on the
 `@glw907/cairn-cms` Waymark starter template. Design decisions (color, type, the directive kit)
 live in `docs/design-language.md`; current build state and the pass log live in `docs/STATUS.md`.
-This file covers the stack, the chassis/theme split, routing, and deployment.
+This file covers the stack, the chassis/theme split, routing, and deployment. Toolchain gotchas are in `docs/dev-notes.md`.
 
 ---
 

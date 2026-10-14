@@ -35,10 +35,10 @@
 
 ## Low
 
-- [ ] **#41** File the DC-23 ECXC scoring anchors `#improvement` `#ecxc` `#initiative:ecxc-rebuild` *(2026-10-14, from the retired roadmap)*
-  File the ECXC rubric anchors for DC-23. Audience fit 5: "speaks to both audiences at once, reading level fits a teen and a parent". Audience fit 3: "serves one audience well and the other thinly". Voice fidelity 5: "coach voice, warm and plain". Filing only; no build work.
 - [ ] **#40** PR test CI `#improvement` `#ecxc` `#initiative:ecxc-rebuild` *(2026-10-14, from the retired roadmap)*
   Add a pull-request workflow that runs `npm run check && npm test && npm run build` on `pull_request`. Until it lands, the full-suite home is the local close gate (lean pass ruling 11).
+- [ ] **#41** File the DC-23 ECXC scoring anchors `#improvement` `#ecxc` `#initiative:ecxc-rebuild` *(2026-10-14, from the retired roadmap)*
+  File the ECXC rubric anchors for DC-23. Audience fit 5: "speaks to both audiences at once, reading level fits a teen and a parent". Audience fit 3: "serves one audience well and the other thinly". Voice fidelity 5: "coach voice, warm and plain". Filing only; no build work.
 - [ ] **#34** Registration-roster export hygiene: CSV formula-injection note `#improvement` `#ecxc` *(2026-07-13)*
   The live Sheet is safe (the Worker appends with `valueInputOption=RAW`, so `=`/`+`/`-`/`@` values store as literal text), but an exported CSV reopened in Excel/Sheets can evaluate a leading formula character. Either prefix risky cells with `'` at export time or just don't re-import exports. Security review, 2026-07-13.
 - [ ] **#27** Give 907.life the shared web-content method routing `#improvement` `#ecxc` *(2026-06-06)*

@@ -43,5 +43,5 @@ passes, decommission the old `cairn-ecnordic-auth` D1.
 - Registration submissions fail closed without `TURNSTILE_SECRET_KEY`, by design.
 - Content edits change the committed manifest: run `npm run cairn:manifest` and commit
   `src/content/.cairn/index.json` with them.
-- Pass process is the global `site-pass` skill; the backlog is `BACKLOG.md`, strategy
-  `ROADMAP.md`.
+- Pass process is the global `site-pass` skill; the backlog is `BACKLOG.md`, and strategy lives in
+  `glw907/initiatives`.

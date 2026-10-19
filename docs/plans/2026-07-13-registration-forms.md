@@ -3,7 +3,7 @@
 > **For agentic workers:** Execute per task; each task states outcome, constraints, and
 > acceptance criteria. The main loop orchestrates via the Workflow tool, reviews each diff,
 > and clears the gate between stages. Spec:
-> `docs/superpowers/specs/2026-07-13-registration-forms-design.md`.
+> `docs/specs/2026-07-13-registration-forms-design.md`.
 
 **Goal:** Two registration forms (Training at `/training`, Talkeetna Camp at `/talkeetna`)
 sharing one digitally signed waiver, appending to a Google Sheet and emailing the signed

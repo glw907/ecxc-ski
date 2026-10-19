@@ -29,4 +29,4 @@ All colors should reference CSS custom properties defined in the `@theme` block 
 
 If you need a new color role, add a token to the `@theme` block in `src/app.css` and its dim override in `[data-theme="dim"]`.
 
-Full token reference: `docs/superpowers/specs/2026-04-07-css-token-system-design.md`
+Full token reference: `docs/specs/2026-04-07-css-token-system-design.md`

@@ -56,7 +56,7 @@ The `/frontend-design` skill will produce a spec document. Review it and request
 
 - [ ] **Step 4: Note the spec file path**
 
-The spec will be saved to `docs/superpowers/specs/YYYY-MM-DD-ecnordic-design.md`. Record the path here for reference in subsequent tasks.
+The spec will be saved to `docs/specs/YYYY-MM-DD-ecnordic-design.md`. Record the path here for reference in subsequent tasks.
 
 ---
 

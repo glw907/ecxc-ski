@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit 2, Svelte 5 (runes), TypeScript, `@glw907/cairn-cms@^0.10.0`, vitest, `@sveltejs/adapter-cloudflare`.
 
-**Design reference:** `docs/superpowers/specs/2026-06-01-ecnordic-pass-1b-delivery-design.md`.
+**Design reference:** `docs/specs/2026-06-01-ecnordic-pass-1b-delivery-design.md`.
 
 ---
 

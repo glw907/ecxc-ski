@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit 2, Svelte 5, TypeScript, `@glw907/cairn-cms ^0.21.0`, vitest. ecnordic is an npm-workspaces member of `/home/glw907/Projects/cairn`.
 
-**Design reference:** `docs/superpowers/specs/2026-06-02-ecnordic-cairn-0.21-migration-design.md` (approved). Plan A (`2026-06-02-ecnordic-cairn-0.21-plan-a-breaking-floor.md`) must be green first.
+**Design reference:** `docs/specs/2026-06-02-ecnordic-cairn-0.21-migration-design.md` (approved). Plan A (`2026-06-02-ecnordic-cairn-0.21-plan-a-breaking-floor.md`) must be green first.
 
 ---
 

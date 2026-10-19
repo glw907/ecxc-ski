@@ -4,7 +4,7 @@
 
 **Goal:** Bring the three carry-over content pages (About, CrewLAB, Volunteers & Coaches) to a finished first draft in the coach voice, fold the Resources page into CrewLAB, and retire Resources, so the only page left for the refresh is the Training hub (Plan 3).
 
-**Architecture:** This is the second of three plans from `docs/superpowers/specs/2026-06-04-site-refresh-design.md`. It is almost entirely content. Pages are filename-routed markdown under `src/content/pages/`, rendered through cairn's public surface and the container directives that Plan 1 landed. Each page is rewritten as a complete file so the prose clears the content guard in one pass. Two verbatim blocks (the origin story on About, the three bios on Volunteers) are placed exactly as written. Contact copy already shipped in Plan 1, so it is out of scope here.
+**Architecture:** This is the second of three plans from `docs/specs/2026-06-04-site-refresh-design.md`. It is almost entirely content. Pages are filename-routed markdown under `src/content/pages/`, rendered through cairn's public surface and the container directives that Plan 1 landed. Each page is rewritten as a complete file so the prose clears the content guard in one pass. Two verbatim blocks (the origin story on About, the three bios on Volunteers) are placed exactly as written. Contact copy already shipped in Plan 1, so it is out of scope here.
 
 **Tech Stack:** SvelteKit 2, Svelte 5 runes, TypeScript, Tailwind 4 + DaisyUI 5, `@glw907/cairn-cms` (`^0.24.0`), vitest.
 
@@ -14,7 +14,7 @@
 
 Read this section before starting any task.
 
-**Source of truth for facts.** The canonical-facts block in the design spec (`docs/superpowers/specs/2026-06-04-site-refresh-design.md`, lines 57 to 124) is the authority for the load-bearing facts: the name, the activity set, eligibility, the schedule, the camp, the access framing, non-affiliation, the inaugural season, the waiver, and the site/CrewLAB boundary. The full target content for each page is written out in the task below, already aligned to those facts. Place the content as given. If you spot a contradiction between this plan and the spec's canonical block, stop and report it rather than guessing.
+**Source of truth for facts.** The canonical-facts block in the design spec (`docs/specs/2026-06-04-site-refresh-design.md`, lines 57 to 124) is the authority for the load-bearing facts: the name, the activity set, eligibility, the schedule, the camp, the access framing, non-affiliation, the inaugural season, the waiver, and the site/CrewLAB boundary. The full target content for each page is written out in the task below, already aligned to those facts. Place the content as given. If you spot a contradiction between this plan and the spec's canonical block, stop and report it rather than guessing.
 
 **Verbatim blocks.** The origin story (About) and the three bios (Volunteers) are quoted from the spec and must be placed character-for-character. Do not reword them, even if a later editorial pass would flag a word in them. They read as written on purpose.
 

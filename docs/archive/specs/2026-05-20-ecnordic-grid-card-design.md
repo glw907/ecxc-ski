@@ -3,7 +3,7 @@
 **Date:** 2026-05-20
 **Status:** Design approved, ready for plan
 **Builds on:** `docs/design-language.md` (the kit, palette, icon rules),
-`docs/superpowers/specs/2026-05-14-ecnordic-design.md` (color tokens, type scale).
+`docs/specs/2026-05-14-ecnordic-design.md` (color tokens, type scale).
 
 ## Problem
 

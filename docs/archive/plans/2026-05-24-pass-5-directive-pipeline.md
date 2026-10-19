@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript · unified/remark/rehype (remark-directive@4, remark-rehype@11, rehype-raw@7, rehype-slug@6, rehype-stringify@10, hastscript@9) · Vitest.
 
-**Spec:** `docs/superpowers/specs/2026-05-24-inline-directives-design.md`
+**Spec:** `docs/specs/2026-05-24-inline-directives-design.md`
 
 **Render contract (target for the HTML this pipeline emits):** the same classes the `ecCard`/`ecCta`/alert/split builders produce. `data-section` attributes are intentionally dropped (no CSS/JS consumes them). Headings carry `rehype-slug` ids. Glyph path data is copied verbatim from the current `ICON`/`PANEL_ICONS` maps so glyphs are byte-identical.
 

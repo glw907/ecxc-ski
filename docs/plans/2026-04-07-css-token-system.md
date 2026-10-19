@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit, Tailwind CSS v4, DaisyUI v5, oklch color space
 
-**Spec:** `docs/superpowers/specs/2026-04-07-css-token-system-design.md`
+**Spec:** `docs/specs/2026-04-07-css-token-system-design.md`
 
 ---
 
@@ -656,7 +656,7 @@ All colors should reference CSS custom properties defined in the `@theme` block 
 
 If you need a new color role, add a token to the `@theme` block in `src/app.css` and its dim override in `[data-theme="dim"]`.
 
-Full token reference: `docs/superpowers/specs/2026-04-07-css-token-system-design.md`
+Full token reference: `docs/specs/2026-04-07-css-token-system-design.md`
 ```
 
 - [ ] **Step 2: Commit**
@@ -767,7 +767,7 @@ Add a "Color Token System" section to the Design System area:
 **Color tokens:** 17 semantic tokens defined in `@theme` (generates both CSS vars and
 Tailwind utilities). Light (silk) values are defaults; `[data-theme="dim"]` overrides for
 dark mode. Tokens use `--color-*` namespace to avoid collision with DaisyUI slots.
-Full token table in `docs/superpowers/specs/2026-04-07-css-token-system-design.md`.
+Full token table in `docs/specs/2026-04-07-css-token-system-design.md`.
 
 **Theme persistence:** Cookie-based (`theme` cookie) with `hooks.server.ts` SSR injection.
 Inline `<script>` in app.html reads cookie → localStorage → prefers-color-scheme as

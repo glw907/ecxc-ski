@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit · Svelte 5 (runes) · TypeScript · Tailwind v4 · DaisyUI v5 · Vitest · hast/hastscript (existing rehype pipeline)
 
-**Spec:** `docs/superpowers/specs/2026-05-24-pass-8-kit-rollout-design.md`
+**Spec:** `docs/specs/2026-05-24-pass-8-kit-rollout-design.md`
 
 ---
 

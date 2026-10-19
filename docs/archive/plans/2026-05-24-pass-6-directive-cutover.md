@@ -10,7 +10,7 @@
 
 **Tech Stack:** SvelteKit · TypeScript · the Pass-5 unified pipeline · DaisyUI v5 / Tailwind v4 (CSS unchanged).
 
-**Spec:** `docs/superpowers/specs/2026-05-24-inline-directives-design.md`
+**Spec:** `docs/specs/2026-05-24-inline-directives-design.md`
 
 **Render-identical contract:** About / Training / CrewLAB must render pixel-identical (screenshot-verified) to the pre-cutover live site. Resources / Volunteers are a deliberate, small migration onto the kit (no identical target). Heading `id`s now come from `rehype-slug` (invisible); `data-section` attributes are gone (no consumer).
 

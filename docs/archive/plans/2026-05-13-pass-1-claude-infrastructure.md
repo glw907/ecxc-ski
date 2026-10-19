@@ -53,8 +53,8 @@ description: >
 
 Cairn-cms development proceeds in numbered passes. Each pass has a
 starter prompt in `docs/STATUS.md`, a plan doc under
-`docs/superpowers/plans/`, and (usually) a spec under
-`docs/superpowers/specs/`. This skill encodes the ritual at both ends.
+`docs/plans/`, and (usually) a spec under
+`docs/specs/`. This skill encodes the ritual at both ends.
 
 ## Starting a pass
 
@@ -63,7 +63,7 @@ starter prompt in `docs/STATUS.md`, a plan doc under
 2. Read the plan doc for the current pass. If none exists and the
    starter prompt lists open questions, brainstorm first (invoke
    `superpowers:brainstorming`) and write a plan at
-   `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`.
+   `docs/plans/YYYY-MM-DD-<topic>.md`.
 3. Execute the plan using `superpowers:subagent-driven-development`.
 
 ## Ending a pass — the consolidation ritual
@@ -93,9 +93,9 @@ record. Keep it factual — decisions, not narration.
 ### 5. Archive plan + spec
 
 ```bash
-git mv docs/superpowers/plans/<this-pass>.md docs/superpowers/archive/plans/
+git mv docs/plans/<this-pass>.md docs/archive/plans/
 # if a spec exists:
-git mv docs/superpowers/specs/<this-pass>-design.md docs/superpowers/archive/specs/
+git mv docs/specs/<this-pass>-design.md docs/archive/specs/
 ```
 
 ### 6. Commit and push
@@ -185,7 +185,7 @@ mdsvex. Note any new deps.
 - [ ] `/svelte-check` — no errors
 - [ ] Update `docs/architecture.md`
 - [ ] Update `docs/STATUS.md` (mark done, write next starter prompt)
-- [ ] Archive plan: `git mv docs/superpowers/plans/<this>.md docs/superpowers/archive/plans/`
+- [ ] Archive plan: `git mv docs/plans/<this>.md docs/archive/plans/`
 - [ ] Commit and push
 ```
 
@@ -287,7 +287,7 @@ Transitioning to Cairn CMS multi-site architecture.
 > ECN content/design/features are out of scope.
 >
 > **Settled (do not re-brainstorm):** See
-> `docs/superpowers/specs/2026-05-13-multi-site-ecnordic-design.md`
+> `docs/specs/2026-05-13-multi-site-ecnordic-design.md`
 > — Option A single-repo approach, VITE_SITE mechanism, file layout,
 > two Worker configs.
 >
@@ -298,8 +298,8 @@ Transitioning to Cairn CMS multi-site architecture.
 
 ## Spec + Plan Locations
 
-`docs/superpowers/specs/2026-05-13-multi-site-ecnordic-design.md`
-`docs/superpowers/plans/2026-05-13-pass-1-claude-infrastructure.md`
+`docs/specs/2026-05-13-multi-site-ecnordic-design.md`
+`docs/plans/2026-05-13-pass-1-claude-infrastructure.md`
 ```
 
 - [ ] **Step 2: Verify line count is ≤60**
@@ -452,8 +452,8 @@ Find the `## Build & Dev` section. Insert a new `## Development Workflow` sectio
 ## Development Workflow
 
 Pass-driven. Each pass has a starter prompt in `docs/STATUS.md`, a
-plan under `docs/superpowers/plans/`, and usually a spec under
-`docs/superpowers/specs/`.
+plan under `docs/plans/`, and usually a spec under
+`docs/specs/`.
 
 Trigger phrases — "continue development," "next pass," "finish pass,"
 "ship pass" — invoke the `cairn-pass` skill. It covers both starting
@@ -465,7 +465,7 @@ consolidation ritual).
   Load at the start of every pass.
 - `docs/architecture.md` — design decisions and system overview.
   Load when planning structural changes.
-- `docs/superpowers/specs/` — feature specs. Load the relevant spec
+- `docs/specs/` — feature specs. Load the relevant spec
   before starting implementation.
 - `BACKLOG.md` — known issues and future work. Check before starting
   a pass — may contain relevant known limitations.
@@ -497,7 +497,7 @@ This is a docs-only pass — skip `/simplify` and `/svelte-check`.
 
 - [ ] Update `docs/architecture.md` — no new design decisions this pass; skip
 - [ ] Verify `docs/STATUS.md` is ≤60 lines and Pass 10 is marked done
-- [ ] Archive plan: `git mv docs/superpowers/plans/2026-05-13-pass-1-claude-infrastructure.md docs/superpowers/archive/plans/`
+- [ ] Archive plan: `git mv docs/plans/2026-05-13-pass-1-claude-infrastructure.md docs/archive/plans/`
 - [ ] Final commit and push:
 
 ```bash

@@ -16,7 +16,7 @@ system of record with the team dimension in every team-owned table from day one.
 **Tech Stack:** SvelteKit, TypeScript, Tailwind v4 + DaisyUI v5, `@glw907/cairn-cms`,
 @sveltejs/adapter-cloudflare, D1, Resend, an SMS provider (T0 selects), vitest.
 
-**Authority:** `docs/superpowers/specs/2026-07-30-team-platform-requirements.md`
+**Authority:** `docs/specs/2026-07-30-team-platform-requirements.md`
 (ratified 2026-07-30). Where this plan and the requirements disagree, requirements win.
 
 ## Settled here (was deferred to the spec)

@@ -4,7 +4,7 @@
 
 **Goal:** Stand up the six-page nav, the editable Home, an `/archives` page, and the shared content directives (`aside`, `figure`, `gallery`), so the later content plans have a complete skeleton to write into.
 
-**Architecture:** This is the first of three plans from `docs/superpowers/specs/2026-06-04-site-refresh-design.md`. It is structure and code, not page prose. Nav is the `primary` menu in `src/lib/site.config.yaml`. Pages are filename-routed markdown under `src/content/pages/`, rendered through cairn's public surface; explicit SvelteKit routes (Home `/`, `/contact`, `/archives`) override the catch-all. Directives are registered in `src/lib/markdown/components.ts` and exercised by vitest.
+**Architecture:** This is the first of three plans from `docs/specs/2026-06-04-site-refresh-design.md`. It is structure and code, not page prose. Nav is the `primary` menu in `src/lib/site.config.yaml`. Pages are filename-routed markdown under `src/content/pages/`, rendered through cairn's public surface; explicit SvelteKit routes (Home `/`, `/contact`, `/archives`) override the catch-all. Directives are registered in `src/lib/markdown/components.ts` and exercised by vitest.
 
 **Tech Stack:** SvelteKit 2, Svelte 5 runes, TypeScript, Tailwind 4 + DaisyUI 5, `@glw907/cairn-cms` (`^0.24.0`), vitest.
 

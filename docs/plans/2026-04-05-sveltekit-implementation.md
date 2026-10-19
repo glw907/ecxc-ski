@@ -1254,7 +1254,7 @@ git commit -m "Add Sveltia CMS config (posts + pages collections)"
 
 ### Pass 6: Tagging feature
 
-See `docs/superpowers/plans/2026-04-06-tagging.md`
+See `docs/plans/2026-04-06-tagging.md`
 
 Adds `getAllTags()` + `getPostsByTag()` to the data layer, makes tags clickable throughout, adds a tags block to the archives page, and builds `/tags/` index and `/tags/[tag]/` detail pages.
 
@@ -1262,7 +1262,7 @@ Adds `getAllTags()` + `getPostsByTag()` to the data layer, makes tags clickable 
 
 ### Pass 7: RSS + JSON Feed
 
-See `docs/superpowers/plans/2026-04-06-rss-json-feed.md`
+See `docs/plans/2026-04-06-rss-json-feed.md`
 
 Extracts all site-specific values into `src/lib/config.ts`, adds `postUrl()` / `tagUrl()` / `formatShortDate()` helpers to `utils.ts`, refactors existing code to use them, adds RSS 2.0 (`/feed.xml`) and JSON Feed 1.1 (`/feed.json`) endpoints via a shared `src/lib/feed.ts` data layer, redesigns the footer with icon links and feed autodiscovery, and installs a hookify rule to prevent future hardcoding.
 

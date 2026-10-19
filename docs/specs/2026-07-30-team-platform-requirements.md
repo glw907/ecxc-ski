@@ -339,7 +339,7 @@ race RSVP, per-recipient broadcast delivery tracking.
 ## Governance and data security (ratified 2026-07-30)
 
 Ratified by Geoff after adversarial review (record: the pass 1 T0 ledger in
-`docs/superpowers/plans/`). The model in one sentence: isolation by scope is the v1
+`docs/plans/`). The model in one sentence: isolation by scope is the v1
 mechanism, the data taxonomy is the permanent foundation, and trust beyond the two
 teams Geoff coaches is bought with governance, not promises.
 

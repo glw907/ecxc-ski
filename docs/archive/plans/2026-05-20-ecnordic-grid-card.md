@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit · Tailwind v4 · DaisyUI v5 · OKLCH tokens. Verification is `npx svelte-check` + a headless build screenshot (no CSS unit-test harness exists in this repo).
 
-**Spec:** `docs/superpowers/specs/2026-05-20-ecnordic-grid-card-design.md`
+**Spec:** `docs/specs/2026-05-20-ecnordic-grid-card-design.md`
 
 ---
 

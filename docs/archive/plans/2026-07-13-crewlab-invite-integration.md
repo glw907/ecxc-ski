@@ -14,7 +14,7 @@ single entry point per constituency. No new forms, routes, modules, secrets, or 
 
 **Tech Stack:** SvelteKit remote forms, valibot, the existing Sheets JWT writer, vitest.
 
-**Spec:** `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md`
+**Spec:** `docs/specs/2026-07-13-crewlab-invite-integration-design.md`
 **Research:** `docs/crewlab-onboarding-research.md`
 
 ## Global Constraints

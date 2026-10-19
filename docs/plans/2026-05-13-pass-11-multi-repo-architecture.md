@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit, TypeScript, Vite (aliases + define), Cloudflare Workers, GitHub Actions
 
-**Spec:** `docs/superpowers/specs/2026-05-13-cairn-cms-multi-repo-architecture.md`
+**Spec:** `docs/specs/2026-05-13-cairn-cms-multi-repo-architecture.md`
 
 > **Editor auth note:** A core goal of Cairn is that editors never need a GitHub
 > account. This pass does NOT implement the Cairn CMS editor interface — that is a
@@ -752,7 +752,7 @@ Before relying on the push trigger, verify the full pipeline manually using `wor
 - [ ] **Commit**
 
   ```bash
-  git add docs/STATUS.md docs/superpowers/plans/2026-05-13-pass-11-multi-repo-architecture.md
+  git add docs/STATUS.md docs/plans/2026-05-13-pass-11-multi-repo-architecture.md
   git commit -m "Pass 11 plan and STATUS.md update"
   ```
 

@@ -253,7 +253,7 @@ Push to \`main\` → GitHub Actions → build + pagefind + wrangler deploy → l
 > URLs, add events data layer, @schedule-x calendar, ICS endpoint, static page
 > routing, standalone contact page, placeholder theme, and first production deploy.
 >
-> **Plan:** \`docs/superpowers/plans/2026-05-14-ecnordic-pass-2-build.md\`
+> **Plan:** \`docs/plans/2026-05-14-ecnordic-pass-2-build.md\`
 >
 > **Approach.** Invoke cairn-pass to start.
 ```

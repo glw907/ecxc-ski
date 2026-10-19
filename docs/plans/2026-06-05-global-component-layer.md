@@ -12,7 +12,7 @@
 
 ## Background the implementer needs
 
-The design spec is at `docs/superpowers/specs/2026-06-05-global-component-layer-design.md`. Read it first.
+The design spec is at `docs/specs/2026-06-05-global-component-layer-design.md`. Read it first.
 
 Two files hold the styles:
 

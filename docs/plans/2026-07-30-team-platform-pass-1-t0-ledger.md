@@ -155,10 +155,10 @@ platform-scoped CI token (dashboard-minted once T1 names the Worker; the T1
 constraint in the plan carries it). Launch the execution session from
 `~/Projects/ecxc-ski` on Opus 5 with:
 
-> Execute Tasks 1-7 of docs/superpowers/plans/2026-07-30-team-platform-pass-1.md.
-> T0/T0.5 are done; read docs/superpowers/plans/2026-07-30-team-platform-pass-1-t0-ledger.md
+> Execute Tasks 1-7 of docs/plans/2026-07-30-team-platform-pass-1.md.
+> T0/T0.5 are done; read docs/plans/2026-07-30-team-platform-pass-1-t0-ledger.md
 > first for the decisions, live infrastructure, and cairn briefing. Requirements
-> authority: docs/superpowers/specs/2026-07-30-team-platform-requirements.md; where
+> authority: docs/specs/2026-07-30-team-platform-requirements.md; where
 > docs disagree, requirements win. Dispatch each task to site-implementer (Sonnet),
 > review the diff, clear the full gate between dispatches. Scaffold the platform on
 > the latest cairn release (re-check the registry; 0.92.0 as of 2026-08-01).

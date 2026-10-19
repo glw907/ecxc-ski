@@ -4,7 +4,7 @@
 
 **Goal:** Rebuild the content system as a generative drafting authority (the cairn admin-design-system pattern), then prove it by rewriting all five site pages for Geoff to final-edit.
 
-**Architecture:** One generative authority in `docs/content-guide.md` (load-bearing rules, container budgets, per-type recipes with real exemplars), brief-first drafting with durable briefs in `docs/content-briefs/`, demoted scoring in review, and an edit-harvest loop into the corpus. Spec: `docs/superpowers/specs/2026-06-09-coach-voice-drafting-system-design.md` (budgets table in Decision 3).
+**Architecture:** One generative authority in `docs/content-guide.md` (load-bearing rules, container budgets, per-type recipes with real exemplars), brief-first drafting with durable briefs in `docs/content-briefs/`, demoted scoring in review, and an edit-harvest loop into the corpus. Spec: `docs/specs/2026-06-09-coach-voice-drafting-system-design.md` (budgets table in Decision 3).
 
 **Tech Stack:** Markdown docs, dotfiles skills (`content-draft`, `content-review`), the existing directive containers, prose-guard, the repo gate (check, test, build).
 

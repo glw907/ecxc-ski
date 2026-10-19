@@ -12,7 +12,7 @@
 
 ## Background the implementer needs
 
-Read the design spec first: `docs/superpowers/specs/2026-06-05-web-content-authoring-design.md`. It carries the rationale, the rubric, and the verbatim catalog this plan refers to.
+Read the design spec first: `docs/specs/2026-06-05-web-content-authoring-design.md`. It carries the rationale, the rubric, and the verbatim catalog this plan refers to.
 
 This plan spans two git repositories:
 
@@ -216,7 +216,7 @@ hold together. Bring trail shoes, a water bottle, and bug spray."
 
 The full set, sourced from Wikipedia's "Signs of AI writing" page and the user's standard. It lives
 in a fenced block so the guard skips it. Copy the fenced catalog block verbatim from the design spec
-at `docs/superpowers/specs/2026-06-05-web-content-authoring-design.md`, the fenced block under the
+at `docs/specs/2026-06-05-web-content-authoring-design.md`, the fenced block under the
 heading "The shared method doc", and paste it here. It covers the banned vocabulary, the banned
 constructions, the structural tells, the tonal tells, and the Wikipedia additions (copula avoidance,
 formulaic upbeat conclusions, vague attribution openers).

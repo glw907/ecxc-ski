@@ -4,7 +4,7 @@
 
 **Goal:** Replace the nav's "ECXC" text placeholder with the four-spot grid monogram and add a matching SVG favicon.
 
-**Architecture:** One glyph geometry (a 100x100 viewBox, four rectilinear letterforms in a 2x2 grid) rendered two ways. The nav inlines the paths in `Nav.svelte` filled with `currentColor`; the favicon embeds a copy of the same paths knocked out white on a crimson rounded square. Spec: `docs/superpowers/specs/2026-06-09-ecxc-brand-mark-design.md`.
+**Architecture:** One glyph geometry (a 100x100 viewBox, four rectilinear letterforms in a 2x2 grid) rendered two ways. The nav inlines the paths in `Nav.svelte` filled with `currentColor`; the favicon embeds a copy of the same paths knocked out white on a crimson rounded square. Spec: `docs/specs/2026-06-09-ecxc-brand-mark-design.md`.
 
 **Tech Stack:** SvelteKit, hand-authored SVG, vitest.
 

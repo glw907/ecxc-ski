@@ -8,7 +8,7 @@
 
 **Tech Stack:** SvelteKit 2, Svelte 5, TypeScript, `@glw907/cairn-cms@^0.10.0`, vitest, npm workspaces (ecnordic is a member of the `~/Projects/cairn` root workspace).
 
-**Design reference:** `docs/superpowers/specs/2026-05-31-ecnordic-cairn-0.10-migration-design.md` (Pass 1 split into 1a catch-up and 1b delivery, recorded in the design's pass breakdown).
+**Design reference:** `docs/specs/2026-05-31-ecnordic-cairn-0.10-migration-design.md` (Pass 1 split into 1a catch-up and 1b delivery, recorded in the design's pass breakdown).
 
 ---
 

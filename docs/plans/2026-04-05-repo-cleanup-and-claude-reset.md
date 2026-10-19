@@ -151,7 +151,7 @@ find . -not -path './.git/*' -not -path './.wrangler/*' | sort
 Expected to remain:
 ```
 .claude/
-docs/superpowers/
+docs/
 src/content/
 static/fonts/
 static/images/
@@ -221,7 +221,7 @@ cat .gitignore
 
 ### Task 4: Write docs/architecture.md
 
-Captures all design decisions from the brainstorming session. This is a living reference document, not the spec (spec lives in `docs/superpowers/specs/`).
+Captures all design decisions from the brainstorming session. This is a living reference document, not the spec (spec lives in `docs/specs/`).
 
 **Files:**
 - Create: `docs/architecture.md`
@@ -370,7 +370,7 @@ to avoid escaping issues):
 
 Personal blog — SvelteKit + TypeScript, deployed to Cloudflare Workers.
 
-See `docs/architecture.md` for design decisions and `docs/superpowers/specs/` for the rebuild spec.
+See `docs/architecture.md` for design decisions and `docs/specs/` for the rebuild spec.
 
 ## Stack
 

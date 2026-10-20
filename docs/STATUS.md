@@ -30,7 +30,7 @@ passes, decommission the old `cairn-ecnordic-auth` D1.
   `~/Projects/xcathletes-org`, private), and that repo's `docs/STATUS.md` is the canonical live
   state. This repo keeps the
   initiative's authority docs, and
-  `docs/superpowers/specs/2026-07-30-team-platform-requirements.md` wins over everything.
+  `docs/specs/2026-07-30-team-platform-requirements.md` wins over everything.
   ecxc-ski itself still owes a hand-off link at `ecxc.ski/team` (links, never data) and
   retiring CrewLAB at the pass 5 cutover.
 - **Small candidates.** A site-wide varied-phrasing sweep of the repeated contact-us formula,

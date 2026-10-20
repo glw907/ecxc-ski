@@ -52,7 +52,7 @@ Full text of superseded STATUS entries, moved out of the context-loaded STATUS.m
   parent email → athlete email → skip.
 
 - **CrewLAB invite integration + nav grouping (2026-07-13), SHIPPED and verified live.** Spec:
-  `docs/superpowers/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced
+  `docs/specs/2026-07-13-crewlab-invite-integration-design.md` (with the sourced
   research record `docs/crewlab-onboarding-research.md`, the operating reference for the invite
   loop); plan archived. CrewLAB onboarding is invite-only through the existing forms, no new
   ones: registration (both forms, shared schema) collects the athlete's invite contact
@@ -94,8 +94,8 @@ Full text of superseded STATUS entries, moved out of the context-loaded STATUS.m
   longer exist).
 
 - **Registration forms + digital waiver (2026-07-13), SHIPPED and verified live.** Spec/plan:
-  `docs/superpowers/specs/2026-07-13-registration-forms-design.md`,
-  `docs/superpowers/plans/2026-07-13-registration-forms.md`. Training (`/training`, re-scoped
+  `docs/specs/2026-07-13-registration-forms-design.md`,
+  `docs/plans/2026-07-13-registration-forms.md`. Training (`/training`, re-scoped
   from the old page, URL kept generic for future seasons) and Talkeetna Camp (`/talkeetna`,
   new) each carry a registration form sharing one code-owned digital waiver
   (`src/theme/waiver/waiver.ts`, SHA-256-pinned). A submission validates (valibot), verifies
@@ -143,7 +143,7 @@ Full text of superseded STATUS entries, moved out of the context-loaded STATUS.m
   explicit historical-snapshot framing (it predates both the ecxc rename and the meta-workspace
   flattening) and its now-resolved npm-workspace finding leads with the resolution instead of
   burying it after the complaint. The fully executed `2026-07-05-rebuild-from-waymark.md` plan
-  moved to `docs/superpowers/archive/plans/`. Grepped `docs/` and `CLAUDE.md` for `TODO`/`FIXME`/
+  moved to `docs/archive/plans/`. Grepped `docs/` and `CLAUDE.md` for `TODO`/`FIXME`/
   `WATCH:` markers: none found. `docs/architecture.md` and `docs/design-language.md` remained
   pre-rebuild at the time of this sweep; both were rewritten in the family repo tidy above.
 
@@ -189,7 +189,7 @@ Full text of superseded STATUS entries, moved out of the context-loaded STATUS.m
   live content instance to probe (see "Next up" above), an honest gap, not a regression.
 
 - **Chassis restructure (2026-07-05), deployed.** Task 4 of
-  `../cairn-cms/docs/superpowers/plans/2026-07-05-chassis-restructure.md`. Split `src/lib` into
+  `../cairn-cms/docs/plans/2026-07-05-chassis-restructure.md`. Split `src/lib` into
   `src/chassis/` (the genre-free plumbing: `content.ts`, `feed.ts`, `cairn.server.ts`, `render.ts`'s
   `makeIconRenderer` icon wiring, `theme-toggle.ts`, `tokens.css`, `prose.css`, `composition.css`,
   verbatim from cairn-cms's showcase, or adopting its exact shape) and `src/theme/` (ecxc's own
@@ -226,7 +226,7 @@ Full text of superseded STATUS entries, moved out of the context-loaded STATUS.m
   `npm run build` all pass.
 
 - **Rebuild from Waymark (2026-07-05), deployed 2026-07-06.** Plan:
-  `docs/superpowers/plans/2026-07-05-rebuild-from-waymark.md`. Five tasks: (1) retired the
+  `docs/plans/2026-07-05-rebuild-from-waymark.md`. Five tasks: (1) retired the
   0.62.2-era app wholesale for a fresh Waymark scaffold on the v2 adapter idiom
   (`defineConcept`/`fieldset`, `posts`+`pages` concepts, `githubApp(...)`, entry-aware `render`);
   (2) migrated the six content entries and rationalized the eighteen legacy directives into
